@@ -5,12 +5,16 @@ import heroImg from './assets/hero.png'
 import './App.css'
 import LoginPage from './pages/login'
 import Dashboard from './pages/Dashboard'
+import CreateRoomPage from './pages/AddChambre'
+import Sidebar from './components/Sidebar'
 
 function App() {
   return (
     <>
     {/* <LoginPage/> */}
-    <Dashboard/>
+    {/* <Dashboard/> */}
+    {/* <Sidebar/> */}
+    <CreateRoomPage/>
     </>
   )
 }
