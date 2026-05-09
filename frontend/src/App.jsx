@@ -7,14 +7,26 @@ import LoginPage from './pages/login'
 import Dashboard from './pages/Dashboard'
 import CreateRoomPage from './pages/AddChambre'
 import Sidebar from './components/Sidebar'
-
+import { Route, Routes } from 'react-router-dom'
+import { Layout } from './pages/Layout'
+import ChambresAdmin from './pages/ListRoom'
 function App() {
   return (
     <>
+    <Routes>
+      <Route path='/' element={<Layout/>} >
+        <Route path='Dashboard' element={<Dashboard/>} />
+        <Route path='Createroom' element={<CreateRoomPage/>} />
+        <Route path='Listroom' element={<ChambresAdmin/>} />
+        <Route path='login' element={<LoginPage/>} />
+       
+      </Route>
+    
+    </Routes>
     {/* <LoginPage/> */}
     {/* <Dashboard/> */}
-    {/* <Sidebar/> */}
-    <CreateRoomPage/>
+
+    {/* <CreateRoomPage/> */}
     </>
   )
 }

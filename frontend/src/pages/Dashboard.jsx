@@ -1,459 +1,272 @@
-import React from "react";
+import { useState } from "react";
 import {
-  LayoutDashboard,
-  BedDouble,
-  Users,
-  CreditCard,
-  BarChart3,
-  Settings,
-  Bell,
-  Search,
-  Plus,
-  Wallet,
-  TrendingUp,
-  CalendarDays,
-  Trash2,
-  Hotel,
-  Shield,
-  User,
-  MoreHorizontal,
-} from "lucide-react";
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell
+} from "recharts";
 
-export default function Dashboard() {
-  const stats = [
-    {
-      title: "Revenu total",
-      value: "€ 5 700",
-      sub: "vs mois dernier",
-      icon: Wallet,
-      badge: "+12.4%",
-      primary: true,
-    },
-    {
-      title: "Taux d'occupation",
-      value: "29%",
-      sub: "2 / 7 chambres",
-      icon: TrendingUp,
-      badge: "+4.1%",
-    },
-    {
-      title: "Réservations",
-      value: "4",
-      sub: "actives",
-      icon: CalendarDays,
-      badge: "+8.2%",
-    },
-    {
-      title: "Annulations",
-      value: "0",
-      sub: "ce mois",
-      icon: Trash2,
-      badge: "-0.6%",
-      danger: true,
-    },
-  ];
+const revenueData = [
+  { month: "Jan", value: 2800 },
+  { month: "Fév", value: 2200 },
+  { month: "Mar", value: 3100 },
+  { month: "Avr", value: 5700 },
+  { month: "Mai", value: 4900 },
+  { month: "Juin", value: 3800 },
+  { month: "Juil", value: 4200 },
+  { month: "Août", value: 3600 },
+  { month: "Sep", value: 3000 },
+  { month: "Oct", value: 2700 },
+  { month: "Nov", value: 2400 },
+  { month: "Déc", value: 2100 },
+];
 
-  const reservations = [
-    {
-      id: "RES-2841",
-      client: "Émile Rousseau",
-      room: "Chambre 402",
-      date: "12 Avr → 15 Avr",
-      amount: "€ 1560",
-      status: "Confirmée",
-    },
-    {
-      id: "RES-2840",
-      client: "Léa Bernard",
-      room: "Chambre 202",
-      date: "13 Avr → 14 Avr",
-      amount: "€ 220",
-      status: "Check-in",
-    },
-    {
-      id: "RES-2839",
-      client: "Hugo Martin",
-      room: "Chambre 101",
-      date: "11 Avr → 13 Avr",
-      amount: "€ 240",
-      status: "En attente",
-    },
-  ];
+const roomData = [
+  { name: "Disponibles", value: 4, color: "#2DD4BF" },
+  { name: "Occupées", value: 2, color: "#818CF8" },
+  { name: "À nettoyer", value: 1, color: "#FB923C" },
+];
+
+const reservations = [
+  { id: "RES-2841", client: "Émile Rousseau", initials: "ÉR", color: "#6366f1", chambre: "Chambre 402", dates: "12 Avr → 15 Avr", montant: "€ 1 560", statut: "Confirmée", statutColor: "bg-emerald-100 text-emerald-700" },
+  { id: "RES-2840", client: "Léa Bernard", initials: "LB", color: "#ec4899", chambre: "Chambre 202", dates: "13 Avr → 14 Avr", montant: "€ 220", statut: "Check-in", statutColor: "bg-blue-100 text-blue-700" },
+  { id: "RES-2839", client: "Hugo Martin", initials: "HM", color: "#f59e0b", chambre: "Chambre 101", dates: "11 Avr → 13 Avr", montant: "€ 240", statut: "En attente", statutColor: "bg-orange-100 text-orange-700" },
+  { id: "RES-2838", client: "Camille Petit", initials: "CP", color: "#10b981", chambre: "Chambre 501", dates: "14 Avr → 18 Avr", montant: "€ 3 920", statut: "Confirmée", statutColor: "bg-emerald-100 text-emerald-700" },
+];
+
+
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white rounded-xl shadow-xl px-4 py-3 border border-slate-100">
+        <p className="text-sm font-bold text-slate-800">€ {payload[0].value.toLocaleString()}</p>
+        <p className="text-xs text-slate-500">{label} 2026</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function LumiereHotelsDashboard() {
+ 
 
   return (
-    <div className="min-h-screen bg-[#f5f7ff] flex flex-col lg:flex-row">
-      {/* SIDEBAR */}
-
-
-      
-      {/* MAIN */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        {/* TOPBAR */}
-        <div className="flex flex-col xl:flex-row justify-between gap-5 mb-8">
-          <div className="relative w-full xl:w-[500px]">
-            <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
-              size={20}
-            />
-
-            <input
-              type="text"
-              placeholder="Rechercher chambres, clients, réservations..."
-              className="w-full h-14 bg-white rounded-2xl border border-gray-200 pl-14 pr-5 outline-none"
-            />
-          </div>
-
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+    
+      {/* Main */}
+      <main className="flex-1 overflow-y-auto">
+        {/* Top bar */}
+        <div className="sticky top-0 z-10 bg-slate-50 px-8 pt-6 pb-2">
           <div className="flex items-center gap-4">
-            <button className="w-14 h-14 rounded-2xl bg-white border border-gray-200 flex items-center justify-center relative">
-              <Bell size={20} />
-
-              <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-
-            <button className="h-14 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold flex items-center gap-2">
-              <Plus size={18} />
-              Nouvelle réservation
-            </button>
+            <div className="flex-1 relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+              <input
+                type="text"
+                placeholder="Rechercher chambres, clients, réservations..."
+                className="w-full pl-9 pr-4 py-2.5 bg-white rounded-xl border border-slate-200 text-sm text-slate-600 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 shadow-sm"
+              />
+            </div>
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm cursor-pointer">
+                <span className="text-slate-500">🔔</span>
+              </div>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-50" />
+            </div>
           </div>
         </div>
 
-        {/* HEADER */}
-        <div className="mb-8">
-          <h1 className="text-4xl lg:text-5xl font-bold text-[#111827]">
-            Tableau de bord 
-          </h1>
-
-          <p className="text-gray-500 text-lg mt-2">
-            Vue d'ensemble — Avril 2026
-          </p>
-        </div>
-
-        {/* STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          {stats.map((item, index) => {
-            const Icon = item.icon;
-
-            return (
-              <div
-                key={index}
-                className={`rounded-[30px] p-6 border relative overflow-hidden
-                ${
-                  item.primary
-                    ? "bg-gradient-to-br from-blue-600 to-violet-600 text-white border-transparent"
-                    : "bg-white border-gray-200"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center
-                    ${
-                      item.primary
-                        ? "bg-white/20"
-                        : "bg-blue-50 text-blue-600"
-                    }`}
-                  >
-                    <Icon size={24} />
-                  </div>
-
-                  <div
-                    className={`px-3 py-1 rounded-full text-sm font-semibold
-                    ${
-                      item.danger
-                        ? "bg-red-100 text-red-500"
-                        : "bg-emerald-100 text-emerald-600"
-                    }`}
-                  >
-                    {item.badge}
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <p
-                    className={`text-sm ${
-                      item.primary
-                        ? "text-white/70"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {item.title}
-                  </p>
-
-                  <h2 className="text-4xl font-bold mt-2">
-                    {item.value}
-                  </h2>
-
-                  <p
-                    className={`mt-2 ${
-                      item.primary
-                        ? "text-white/70"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {item.sub}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* CHART + STATUS */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-          {/* CHART */}
-          <div className="xl:col-span-2 bg-white rounded-[32px] p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold">
-                  Revenu mensuel
-                </h2>
-
-                <p className="text-gray-400">
-                  Montant total perçu (€)
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button className="px-5 py-3 rounded-2xl border border-gray-200">
-                  2026
-                </button>
-
-                <button className="w-12 h-12 rounded-2xl border border-gray-200 flex items-center justify-center">
-                  <MoreHorizontal size={20} />
-                </button>
-              </div>
+        <div className="px-8 py-5">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800">Tableau de bord </h1>
+              <p className="text-slate-400 text-sm mt-0.5">Vue d'ensemble — Avril 2026</p>
             </div>
-
-            {/* GRAPH */}
-            <div className="relative h-[350px] bg-gradient-to-b from-violet-50 to-white rounded-[28px] overflow-hidden border border-gray-100">
-              {/* GRID */}
-              <div className="absolute inset-0 flex flex-col justify-between px-6 py-8">
-                {[1, 2, 3, 4, 5].map((line) => (
-                  <div
-                    key={line}
-                    className="border-t border-dashed border-gray-200"
-                  ></div>
-                ))}
-              </div>
-
-              {/* SVG */}
-              <svg
-                viewBox="0 0 800 300"
-                className="absolute inset-0 w-full h-full"
-              >
-                <defs>
-                  <linearGradient
-                    id="lineGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="0%"
-                  >
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#8b5cf6" />
-                  </linearGradient>
-
-                  <linearGradient
-                    id="fillGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="0%"
-                    y2="100%"
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor="#8b5cf6"
-                      stopOpacity="0.35"
-                    />
-
-                    <stop
-                      offset="100%"
-                      stopColor="#8b5cf6"
-                      stopOpacity="0"
-                    />
-                  </linearGradient>
-                </defs>
-
-                <path
-                  d="M40 250 C120 220 170 170 240 180 C300 190 360 60 430 90 C500 120 560 40 630 70 C700 100 740 80 780 60 L780 300 L40 300 Z"
-                  fill="url(#fillGradient)"
-                />
-
-                <path
-                  d="M40 250 C120 220 170 170 240 180 C300 190 360 60 430 90 C500 120 560 40 630 70 C700 100 740 80 780 60"
-                  fill="none"
-                  stroke="url(#lineGradient)"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                />
-              </svg>
-
-              {/* MONTHS */}
-              <div className="absolute bottom-5 left-0 right-0 flex justify-around text-sm text-gray-400 px-4">
-                {[
-                  "Jan",
-                  "Fév",
-                  "Mar",
-                  "Avr",
-                  "Mai",
-                  "Jun",
-                  "Jul",
-                  "Aoû",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Déc",
-                ].map((month) => (
-                  <span key={month}>{month}</span>
-                ))}
-              </div>
-
-              {/* ANALYTICS */}
-              <div className="absolute top-24 left-[45%] bg-white shadow-2xl rounded-3xl px-6 py-5 border border-gray-100">
-                <h3 className="text-3xl font-bold">€ 5 700</h3>
-
-                <p className="text-gray-400 mt-1">
-                  Avril 2026
-                </p>
-              </div>
+            <div className="flex gap-3">
+              <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
+                Exporter <span className="text-xs">▾</span>
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 rounded-xl text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors">
+                <span>+</span> Nouvelle réservation
+              </button>
             </div>
           </div>
 
-          {/* STATUS */}
-          <div className="bg-white rounded-[32px] p-6 border border-gray-200">
-            <h2 className="text-2xl font-bold">
-              État des chambres
-            </h2>
-
-            <p className="text-gray-400 mt-1">
-              Temps réel
-            </p>
-
-            {/* DONUT */}
-            <div className="flex justify-center mt-10">
-              <div className="relative w-60 h-60">
-                <div className="absolute inset-0 rounded-full bg-[conic-gradient(#06b6d4_0deg,#8b5cf6_140deg,#fb923c_260deg,#06b6d4_360deg)]"></div>
-
-                <div className="absolute inset-5 rounded-full bg-white flex flex-col items-center justify-center">
-                  <h3 className="text-5xl font-bold">7</h3>
-
-                  <p className="text-gray-400 mt-2">
-                    chambres
-                  </p>
-                </div>
+          {/* KPI Cards */}
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            {/* Revenu total */}
+            <div className="col-span-1 bg-indigo-600 rounded-2xl p-5 text-white relative overflow-hidden">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-lg">💳</div>
+                <span className="text-xs bg-emerald-400/20 text-emerald-300 px-2 py-1 rounded-full font-medium">↗ +12.4%</span>
+              </div>
+              <p className="text-indigo-200 text-sm mb-1">Revenu total</p>
+              <p className="text-3xl font-bold mb-1">€ 5 700</p>
+              <p className="text-indigo-300 text-xs">vs mois dernier</p>
+              <div className="absolute bottom-4 right-4 opacity-40">
+                <svg width="80" height="30" viewBox="0 0 80 30"><polyline points="0,25 15,20 30,22 45,15 60,10 75,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
             </div>
 
-            {/* STATUS CARDS */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-1 gap-4 mt-10">
-              <div className="rounded-3xl border border-cyan-100 bg-cyan-50 p-5 flex items-center justify-between">
+            {/* Taux d'occupation */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 text-lg">📊</div>
+                <span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full font-medium">↗ +4.1%</span>
+              </div>
+              <p className="text-slate-500 text-sm mb-1">Taux d'occupation</p>
+              <p className="text-3xl font-bold text-slate-800 mb-1">29%</p>
+              <p className="text-slate-400 text-xs">2 / 7 chambres</p>
+            </div>
+
+            {/* Réservations */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-500 text-lg">📅</div>
+                <span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full font-medium">↗ +8.2%</span>
+              </div>
+              <p className="text-slate-500 text-sm mb-1">Réservations</p>
+              <p className="text-3xl font-bold text-slate-800 mb-1">4</p>
+              <p className="text-slate-400 text-xs">actives</p>
+            </div>
+
+            {/* Annulations */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-400 text-lg">🗑️</div>
+                <span className="text-xs bg-red-50 text-red-500 px-2 py-1 rounded-full font-medium">↘ -0.6%</span>
+              </div>
+              <p className="text-slate-500 text-sm mb-1">Annulations</p>
+              <p className="text-3xl font-bold text-slate-800 mb-1">0</p>
+              <p className="text-slate-400 text-xs">ce mois</p>
+            </div>
+          </div>
+
+          {/* Charts row */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {/* Revenue chart */}
+            <div className="col-span-2 bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+              <div className="flex items-start justify-between mb-4">
                 <div>
-                  <p className="text-gray-500">
-                    Disponibles
-                  </p>
-
-                  <h3 className="text-4xl font-bold text-cyan-600 mt-2">
-                    4
-                  </h3>
+                  <h3 className="font-semibold text-slate-800">Revenu mensuel</h3>
+                  <p className="text-slate-400 text-xs mt-0.5">Montant total perçu (€)</p>
                 </div>
-
-                <BedDouble className="text-cyan-500" />
+                <div className="flex items-center gap-2">
+                  <button className="flex items-center gap-1 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+                    2026 <span className="text-xs">▾</span>
+                  </button>
+                  <button className="text-slate-400 hover:text-slate-600 px-1">•••</button>
+                </div>
               </div>
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={revenueData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} tickFormatter={v => `${v/1000}k`} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={2.5} fill="url(#revenueGrad)" dot={{ fill: "#6366f1", r: 3, strokeWidth: 0 }} activeDot={{ r: 5, fill: "#6366f1" }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
 
-              <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5 flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500">Occupées</p>
-
-                  <h3 className="text-4xl font-bold text-violet-600 mt-2">
-                    2
-                  </h3>
+            {/* Room status */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+              <h3 className="font-semibold text-slate-800 mb-0.5">État des chambres</h3>
+              <p className="text-slate-400 text-xs mb-4">Temps réel</p>
+              <div className="flex justify-center mb-4 relative">
+                <PieChart width={160} height={160}>
+                  <Pie
+                    data={roomData}
+                    cx={75}
+                    cy={75}
+                    innerRadius={50}
+                    outerRadius={70}
+                    dataKey="value"
+                    strokeWidth={0}
+                  >
+                    {roomData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+                <div className="absolute inset-0 flex items-center justify-center flex-col">
+                  <span className="text-2xl font-bold text-slate-800">7</span>
+                  <span className="text-slate-400 text-xs">chambres</span>
                 </div>
-
-                <Shield className="text-violet-500" />
               </div>
-
-              <div className="rounded-3xl border border-orange-100 bg-orange-50 p-5 flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500">À nettoyer</p>
-
-                  <h3 className="text-4xl font-bold text-orange-500 mt-2">
-                    1
-                  </h3>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-teal-50 rounded-xl p-2.5 text-center">
+                  <div className="text-teal-500 text-base mb-1">🛋️</div>
+                  <p className="text-xs text-slate-500">Disponibles</p>
+                  <p className="text-lg font-bold text-teal-600">4</p>
                 </div>
-
-                <Trash2 className="text-orange-500" />
+                <div className="bg-violet-50 rounded-xl p-2.5 text-center">
+                  <div className="text-violet-500 text-base mb-1">📋</div>
+                  <p className="text-xs text-slate-500">Occupées</p>
+                  <p className="text-lg font-bold text-violet-600">2</p>
+                </div>
+                <div className="bg-orange-50 rounded-xl p-2.5 text-center">
+                  <div className="text-orange-500 text-base mb-1">✨</div>
+                  <p className="text-xs text-slate-500">À nettoyer</p>
+                  <p className="text-lg font-bold text-orange-500">1</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* TABLE */}
-        <div className="bg-white rounded-[32px] p-6 border border-gray-200 overflow-x-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">
-              Réservations récentes
-            </h2>
-
-            <button className="text-blue-600 font-semibold">
-              Voir tout
-            </button>
-          </div>
-
-          <table className="w-full min-w-[850px]">
-            <thead>
-              <tr className="border-b text-left text-gray-400">
-                <th className="pb-5">N°</th>
-                <th className="pb-5">Client</th>
-                <th className="pb-5">Chambre</th>
-                <th className="pb-5">Dates</th>
-                <th className="pb-5">Montant</th>
-                <th className="pb-5">Statut</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {reservations.map((item, index) => (
-                <tr
-                  key={index}
-                  className="border-b last:border-0"
-                >
-                  <td className="py-6 text-gray-500">
-                    {item.id}
-                  </td>
-
-                  <td className="py-6 font-semibold">
-                    {item.client}
-                  </td>
-
-                  <td className="py-6 text-gray-500">
-                    {item.room}
-                  </td>
-
-                  <td className="py-6 text-gray-500">
-                    {item.date}
-                  </td>
-
-                  <td className="py-6 font-bold">
-                    {item.amount}
-                  </td>
-
-                  <td className="py-6">
-                    <span
-                      className={`px-4 py-2 rounded-full text-sm font-semibold
-                      ${
-                        item.status === "Confirmée"
-                          ? "bg-emerald-100 text-emerald-600"
-                          : item.status === "Check-in"
-                          ? "bg-blue-100 text-blue-600"
-                          : "bg-orange-100 text-orange-500"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
+          {/* Recent reservations */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h3 className="font-semibold text-slate-800">Réservations récentes</h3>
+              <button className="text-indigo-600 text-sm font-medium hover:text-indigo-800 flex items-center gap-1">
+                Voir tout <span>›</span>
+              </button>
+            </div>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-50">
+                  {["N°", "Client", "Chambre", "Dates", "Montant", "Statut"].map(h => (
+                    <th key={h} className="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {reservations.map((r, i) => (
+                  <tr key={r.id} className={`hover:bg-slate-50 transition-colors ${i !== reservations.length - 1 ? 'border-b border-slate-50' : ''}`}>
+                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{r.id}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style={{ backgroundColor: r.color }}>
+                          {r.initials}
+                        </div>
+                        <span className="text-sm font-medium text-slate-800">{r.client}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <span>🛏</span> {r.chambre}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <span>📅</span> {r.dates}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-semibold text-slate-800">{r.montant}</td>
+                    <td className="px-6 py-4">
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${r.statutColor}`}>
+                        {r.statut}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>

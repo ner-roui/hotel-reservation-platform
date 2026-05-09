@@ -1,3 +1,4 @@
+import { useState } from "react";
 import React from "react";
 import {
   LayoutDashboard,
@@ -8,8 +9,21 @@ import {
   Settings,
   Hotel,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
+
+
+const navItems = [
+  { label: "Dashboard", icon: "⊞", active: true , path : "/Dashboard"},
+  { label: "Chambres", icon: "🛏" , path : "/Createroom"},
+  { label: "Utilisateurs", icon: "👤" , path : "/Listroom"},
+  { label: "Réservations", icon: "📅" },
+  { label: "Paiements", icon: "💳" },
+  { label: "Rapports", icon: "📊" },
+  { label: "Paramètres", icon: "⚙️" },
+];
 
 export default function Sidebar() {
+  const [activeNav, setActiveNav] = useState("Dashboard");
   const menu = [
     {
       name: "Dashboard",
@@ -40,79 +54,62 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-[280px] bg-gradient-to-b from-[#050b2c] via-[#09143d] to-[#07112f] text-white p-6 flex flex-col justify-between">
-
-      {/* TOP */}
-      <div>
-
-        {/* LOGO */}
-        <div className="flex items-center gap-4 mb-12">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <Hotel />
-          </div>
-
+        <aside className="w-56 bg-slate-900 flex flex-col py-5 px-3 shrink-0">
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-2 mb-8">
+          <div className="w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">L</div>
           <div>
-            <h1 className="text-2xl font-bold">Lumière Hotels</h1>
-            <p className="text-gray-400 text-sm">Admin • Power user</p>
+            <p className="text-white font-semibold text-sm leading-tight">Lumière Hotels</p>
+            <p className="text-slate-400 text-xs">Admin • Power user</p>
           </div>
         </div>
 
-        {/* MENU */}
-        <nav className="space-y-3">
-          {menu.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <button
-                key={item.name}
-                className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300
-                ${
-                  item.active
-                    ? "bg-gradient-to-r from-blue-600 to-violet-600 shadow-lg shadow-blue-500/20"
-                    : "hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                <Icon size={22} />
-                <span className="text-lg">{item.name}</span>
-              </button>
-            );
-          })}
+        {/* Nav */}
+        <nav className="flex flex-col gap-1 flex-1">
+          {navItems.map((item) => (
+            <NavLink to={item.path}
+              key={item.label}
+              onClick={() => setActiveNav(item.label)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
+                activeNav === item.label
+                  ? "bg-indigo-600 text-white"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+              }`}
+            >
+              <span className="text-base">{item.icon}</span>
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
 
-        {/* CARD PROMO */}
-        <div className="mt-14 rounded-[32px] overflow-hidden bg-white/5 border border-white/10 p-4 backdrop-blur-xl">
-          <img
-            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
-            alt="hotel"
-            className="rounded-2xl h-52 w-full object-cover"
-          />
-
-          <div className="mt-5">
-            <h3 className="text-2xl font-bold">Lumière Hotels</h3>
-            <p className="text-gray-400 mt-2">
-              L'excellence à chaque séjour.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* USER */}
-      <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl p-4 mt-10">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-violet-500 flex items-center justify-center font-bold text-xl">
-            SL
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-lg">Sophie Laurent</h4>
-            <p className="text-gray-400 text-sm">Power user</p>
+        {/* Hotel card */}
+        <div className="rounded-2xl overflow-hidden mt-4 relative">
+          <div
+            className="h-28 bg-gradient-to-b from-indigo-900 to-slate-900 flex flex-col justify-end p-3"
+            style={{
+              backgroundImage: "linear-gradient(to bottom, rgba(30,27,75,0.6), rgba(15,23,42,0.95)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400')",
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }}
+          >
+            <div className="flex gap-1 justify-center mb-2">
+              {[0,1,2].map(i => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === 0 ? 'bg-white' : 'bg-slate-600'}`} />)}
+            </div>
+            <div className="text-yellow-400 text-xs mb-0.5">👑</div>
+            <p className="text-white text-xs font-bold">Lumière Hotels</p>
+            <p className="text-slate-400 text-xs">L'excellence à chaque séjour.</p>
           </div>
         </div>
 
-        <button className="text-gray-400 hover:text-white">
-          →
-        </button>
-      </div>
-    </aside>
+        {/* User */}
+        <div className="flex items-center gap-2 mt-4 px-2 pt-4 border-t border-slate-800">
+          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">SL</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-xs font-semibold truncate">Sophie Laurent</p>
+            <p className="text-slate-400 text-xs">Power user</p>
+          </div>
+          <span className="text-slate-400 text-xs">▾</span>
+        </div>
+      </aside>
   );
 }
