@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Shield,
   ConciergeBell,
@@ -10,86 +11,168 @@ import {
 } from "lucide-react";
 
 export default function LoginPage() {
+  // ─────────────────────────────
+  // STATE
+  // ─────────────────────────────
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const [role, setRole] = useState("Client");
+  const [mode, setMode] = useState("login"); // login | signup
+  const [loading, setLoading] = useState(false);
+
+  const set = (k, v) =>
+    setForm((prev) => ({
+      ...prev,
+      [k]: v,
+    }));
 
   const roles = [
-    {
-      name: "Admin",
-      icon: Shield,
-    },
-    {
-      name: "Réception",
-      icon: ConciergeBell,
-    },
-    {
-      name: "Client",
-      icon: User,
-    },
+    { name: "Admin", icon: Shield },
+    { name: "Réception", icon: ConciergeBell },
+    { name: "Client", icon: User },
   ];
+
+  // ─────────────────────────────
+  // SUBMIT
+  // ─────────────────────────────
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // validation
+      if (mode === "signup" && !form.name) {
+        return alert("Veuillez entrer votre nom");
+      }
+
+      if (!form.email || !form.password) {
+        return alert("Veuillez remplir tous les champs");
+      }
+
+      setLoading(true);
+
+      const url =
+        mode === "login"
+          ? "http://localhost:3000/api/auth/login"
+          : "http://localhost:3000/api/auth/register";
+
+      const res = await axios.post(url, {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role,
+      });
+
+      console.log(res.data);
+
+      alert(
+        mode === "login"
+          ? "✅ Connexion réussie"
+          : "✅ Compte créé"
+      );
+
+   
+  
+
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        "Erreur serveur";
+
+      alert(message);
+
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-700 via-blue-500 to-cyan-400 flex items-center justify-center px-6 py-10 relative overflow-hidden">
-      {/* Blur circles */}
+
+      {/* background */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 blur-3xl rounded-full"></div>
+
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-300/20 blur-3xl rounded-full"></div>
 
-      <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 items-center">
-        {/* LEFT SIDE */}
-        <div className="text-white space-y-8">
+      <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 items-center relative z-10">
+        {/* LEFT */}
+        <div className="text-white space-y-8 hidden lg:block">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-              <Building2 size={24} />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+              <Building2 size={28} />
             </div>
 
-            <h2 className="text-3xl font-semibold">Lumière Hotels</h2>
+            <h2 className="text-4xl font-bold">
+              Lumière Hotels
+            </h2>
           </div>
 
-          {/* Heading */}
-          <div className="space-y-4">
+          {/* Hero */}
+          <div className="space-y-5">
             <h1 className="text-6xl font-bold leading-tight max-w-xl">
               Bon retour parmi nous.
             </h1>
 
-            <p className="text-xl text-white/80 max-w-lg">
-              Sélectionnez votre rôle et accédez à votre espace dédié.
+            <p className="text-xl text-white/80 max-w-lg leading-relaxed">
+              Connectez-vous à votre espace
+              sécurisé et gérez votre hôtel
+              facilement.
             </p>
           </div>
 
           {/* Stats */}
-          <div className="flex gap-12 pt-6">
+          <div className="flex gap-14 pt-8">
             <div>
-              <h3 className="text-5xl font-bold">128</h3>
-              <p className="text-white/70 mt-1">chambres</p>
+              <h3 className="text-5xl font-bold">
+                128
+              </h3>
+
+              <p className="text-white/70 mt-2">
+                chambres
+              </p>
             </div>
 
             <div>
-              <h3 className="text-5xl font-bold">94%</h3>
-              <p className="text-white/70 mt-1">occupation</p>
+              <h3 className="text-5xl font-bold">
+                94%
+              </h3>
+
+              <p className="text-white/70 mt-2">
+                occupation
+              </p>
             </div>
 
             <div>
-              <h3 className="text-5xl font-bold">4.9★</h3>
-              <p className="text-white/70 mt-1">satisfaction</p>
+              <h3 className="text-5xl font-bold">
+                4.9★
+              </h3>
+
+              <p className="text-white/70 mt-2">
+                satisfaction
+              </p>
             </div>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT */}
         <div className="flex justify-center lg:justify-end">
-          <div className="w-full max-w-xl bg-white rounded-[32px] p-10 shadow-2xl">
-            {/* Title */}
-            <div className="mb-8">
+          <div className="w-full max-w-xl bg-white rounded-[36px] p-10 shadow-2xl">
+            {/* Header */}
+            <div className="mb-10">
               <h2 className="text-4xl font-bold text-gray-900">
                 Connexion
               </h2>
 
-              <p className="text-gray-500 mt-2 text-lg">
-                Sélectionnez votre rôle pour continuer.
+              <p className="text-gray-500 mt-3 text-lg">
+                Sélectionnez votre rôle pour
+                continuer.
               </p>
             </div>
-
-            {/* Role selector */}
+            {/* ROLES */}
             <div className="grid grid-cols-3 gap-4 mb-8">
               {roles.map((item) => {
                 const Icon = item.icon;
@@ -97,93 +180,129 @@ export default function LoginPage() {
 
                 return (
                   <button
+                    type="button"
                     key={item.name}
                     onClick={() => setRole(item.name)}
-                    className={`border rounded-2xl py-5 flex flex-col items-center justify-center gap-2 transition-all duration-300
+                    className={`border rounded-2xl py-5 flex flex-col items-center gap-2 transition
                     ${
                       active
                         ? "border-blue-500 bg-blue-50 text-blue-600"
-                        : "border-gray-200 hover:border-blue-300 text-gray-500"
+                        : "border-gray-200 text-gray-500"
                     }`}
                   >
                     <Icon size={22} />
-                    <span className="font-medium">{item.name}</span>
+                    {item.name}
                   </button>
                 );
               })}
             </div>
 
-            {/* Form */}
-            <form className="space-y-6">
-              {/* Email */}
+            {/* FORM */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+
+              {/* NAME (signup only) */}
+              {mode === "signup" && (
+                <div>
+                  <label className="text-sm font-semibold text-gray-500 uppercase">
+                    Nom complet
+                  </label>
+
+                  <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
+                    <User size={20} className="text-gray-400" />
+
+                    <input
+                      value={form.name}
+                      onChange={(e) => set("name", e.target.value)}
+                      type="text"
+                      placeholder="Votre nom"
+                      className="w-full h-full px-3 outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* EMAIL */}
               <div>
-                <label className="block text-sm font-semibold text-gray-500 uppercase mb-3">
+                <label className="text-sm font-semibold text-gray-500 uppercase">
                   Email
                 </label>
 
-                <div className="flex items-center border border-gray-200 rounded-2xl px-4 h-16 focus-within:border-blue-500 transition">
-                  <Mail className="text-gray-400" size={20} />
+                <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
+                  <Mail size={20} className="text-gray-400" />
 
                   <input
+                    value={form.email}
+                    onChange={(e) => set("email", e.target.value)}
                     type="email"
-                    placeholder="guest@lumiere.com"
-                    className="w-full h-full px-3 outline-none text-gray-700 bg-transparent"
+                    placeholder="guest@hotel.com"
+                    className="w-full h-full px-3 outline-none bg-transparent"
                   />
                 </div>
               </div>
 
-              {/* Password */}
+              {/* PASSWORD */}
               <div>
-                <label className="block text-sm font-semibold text-gray-500 uppercase mb-3">
+                <label className="text-sm font-semibold text-gray-500 uppercase">
                   Mot de passe
                 </label>
 
-                <div className="flex items-center border border-gray-200 rounded-2xl px-4 h-16 focus-within:border-blue-500 transition">
-                  <Lock className="text-gray-400" size={20} />
+                <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
+                  <Lock size={20} className="text-gray-400" />
 
                   <input
+                    value={form.password}
+                    onChange={(e) => set("password", e.target.value)}
                     type="password"
                     placeholder="••••••••"
-                    className="w-full h-full px-3 outline-none text-gray-700 bg-transparent"
+                    className="w-full h-full px-3 outline-none bg-transparent"
                   />
                 </div>
               </div>
 
-              {/* Options */}
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 text-gray-500">
-                  <input type="checkbox" className="accent-blue-600" />
-                  Se souvenir de moi
-                </label>
+              {/* BUTTON */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-16 rounded-2xl bg-blue-600 text-white font-semibold text-lg flex items-center justify-center gap-3 disabled:opacity-70"
+              >
+                {loading
+                  ? "Chargement..."
+                  : mode === "login"
+                  ? "Se connecter"
+                  : "Créer compte"}
 
-                <button
-                  type="button"
-                  className="text-blue-600 hover:underline font-medium"
-                >
-                  Mot de passe oublié ?
-                </button>
-              </div>
-
-              {/* Submit */}
-              <button className="w-full h-16 rounded-2xl bg-blue-600 hover:bg-blue-700 transition text-white font-semibold text-lg flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30">
-                Se connecter
                 <ArrowRight size={20} />
               </button>
 
-              {/* Footer */}
+              {/* SWITCH */}
               <p className="text-center text-gray-500 pt-4">
-                Pas de compte ?{" "}
-                <span className="text-blue-600 font-semibold cursor-pointer hover:underline">
-                  Créer un compte
-                </span>
+                {mode === "login" ? (
+                  <>
+                    Pas de compte ?{" "}
+                    <span
+                      onClick={() => setMode("signup")}
+                      className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                    >
+                      Créer un compte
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Déjà un compte ?{" "}
+                    <span
+                      onClick={() => setMode("login")}
+                      className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                    >
+                      Se connecter
+                    </span>
+                  </>
+                )}
               </p>
             </form>
+
           </div>
         </div>
       </div>
-
-      {/* Bottom Role Tabs */}
-     
     </div>
   );
 }

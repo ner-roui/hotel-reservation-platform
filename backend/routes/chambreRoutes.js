@@ -27,11 +27,11 @@ router.get("/:id", getRoomById);
 
 
 // UPDATE ROOM
-router.put("/:id",upload.array("images", 10),updateRoom);
+router.put("/update-room/:id",upload.array("images", 10),updateRoom);
 
 
 // DELETE ROOM
-router.delete("/:id", deleteRoom);
+router.delete("/delete/:id", deleteRoom);
 
 
 module.exports = router;

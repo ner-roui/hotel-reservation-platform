@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import axios from "axios"
+import { useParams } from "react-router-dom";
 // ─── Sidebar nav items ────────────────────────────────────────────────────────
 const NAV = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard", badge: null, section: "Principal" },
@@ -80,6 +81,8 @@ export default function CreateRoomPage() {
   const [status, setStatus] = useState("Disponible");
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef();
+  const {id} = useParams()
+  console.log(id)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -190,8 +193,19 @@ if (!form.priceWE) missingFields.push("Prix week-end");
     images.forEach((img) => {
       formData.append("images", img.file);
     });
+    if(id){
 
-    const res = await axios.post("http://localhost:3000/api/chambres/add-room",
+    const res = await axios.post("http://localhost:3000/api/chambres/update-room",
+      formData
+    )
+
+   
+    console.log(res);
+
+
+    alert("✅ Chambre modifiée");
+    }else{
+      const res = await axios.post("http://localhost:3000/api/chambres/add-room",
       formData
     )
 
@@ -200,6 +214,9 @@ if (!form.priceWE) missingFields.push("Prix week-end");
 
 
     alert("✅ Chambre créée");
+    }
+
+ 
 
   } catch (err) {
     const message =
