@@ -130,4 +130,26 @@ login = async (req, res) => {
 };
 
 
-module.exports = {register, login }
+
+logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    return res.status(200).json({
+      message: "Déconnexion réussie",
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+
+module.exports = {register, login , logout}
