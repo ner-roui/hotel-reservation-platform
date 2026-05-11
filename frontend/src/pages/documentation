@@ -1,0 +1,93 @@
+// const reader = new FileReader();
+// crée un objet FileReader.
+// FileReader est une API JavaScript du navigateur qui permet de lire des fichiers côté client.
+// Par exemple :
+
+
+// images
+
+
+// PDF
+
+
+// fichiers texte
+
+
+// vidéos
+
+
+// sans envoyer le fichier au serveur.
+
+// Exemple simple
+// const reader = new FileReader();reader.onload = (e) => {  console.log(e.target.result);};reader.readAsText(file);
+// Ici :
+
+
+// le fichier est lu
+
+
+// quand la lecture est terminée → onload
+
+
+// le contenu est dans e.target.result
+
+
+
+// Pourquoi on l’utilise souvent ?
+// Pour :
+
+
+// afficher preview image
+
+
+// lire un fichier texte
+
+
+// convertir image en Base64
+
+
+// drag & drop upload
+
+
+
+// Dans ton code
+// reader.readAsDataURL(f);
+// Cela transforme l’image en :
+// data:image/png;base64,...
+// Ensuite tu peux faire :
+// <img src={image.src} />
+// et afficher l’image directement dans React.
+
+// Méthodes importantes de FileReader
+// Lire comme texte
+// reader.readAsText(file);
+
+// Lire comme image/Base64
+// reader.readAsDataURL(file);
+
+// Lire comme données binaires
+// reader.readAsArrayBuffer(file);
+
+// Cycle complet
+// const reader = new FileReader();reader.onload = (e) => {  console.log(e.target.result);};reader.readAsDataURL(file);
+
+
+// création du lecteur
+
+
+// attente de fin lecture
+
+
+// lecture du fichier
+
+
+// résultat récupéré dans result
+
+
+
+// Important
+// FileReader fonctionne de manière asynchrone.
+// Donc :
+// reader.readAsDataURL(file);
+// ne retourne pas directement le résultat.
+// Il faut attendre onload.

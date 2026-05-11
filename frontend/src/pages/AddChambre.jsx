@@ -83,13 +83,36 @@ export default function CreateRoomPage() {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  const handleFiles = useCallback((files) => {
-    Array.from(files).forEach(f => {
-      const reader = new FileReader();
-      reader.onload = e => setImages(prev => [...prev, { src: e.target.result, name: f.name }]);
-      reader.readAsDataURL(f);
-    });
-  }, []);
+  // const handleFiles = useCallback((files) => {
+  //   Array.from(files).forEach(f => {
+  //     // FileReader est une API JavaScript du navigateur qui permet de lire des fichiers côté client.
+  //     const reader = new FileReader();
+
+
+  //     reader.onload = e => setImages(prev => [...prev, { src: e.target.result, name: f.name }]);
+
+
+  //     reader.readAsDataURL(f);
+  //     // Cela transforme l’image en : data:image/png;base64,... => 
+
+  //   });
+  // }, []);
+
+
+  const handleFiles = (files) => {
+  Array.from(files).forEach(file => {
+    const preview = URL.createObjectURL(file);
+
+    setImages(prev => [
+      ...prev,
+      {
+        src: preview,
+        file,
+        name: file.name
+      }
+    ]);
+  });
+};
 
   const toggleAmenity = (label) => setAmenities(prev => prev.includes(label) ? prev.filter(a => a !== label) : [...prev, label]);
 
@@ -112,15 +135,67 @@ export default function CreateRoomPage() {
     inactive: { label: "Inactive", sub: "Masquée du catalogue", bg: "bg-red-50", border: "border-red-400", icon: "🚫", iconBg: "bg-red-100" },
   };
 
-  const publish = () => {
-    if (!form.num) return alert("Veuillez saisir un numéro de chambre.");
-    if (!images.length) return alert("Ajoutez au moins une photo.");
-    alert(`✅ Chambre ${form.num} publiée avec ${images.length} photo(s) !`);
-  };
+  const publish = async () => {
+  try {
+    const formData = new FormData();
+
+    // Champs
+    formData.append("numero", form.num);
+
+    formData.append("type", form.type);
+    formData.append("etage", form.floor);
+
+    formData.append("capacite", form.capacity);
+
+    formData.append("superficie", form.area);
+
+    formData.append("vue", form.view);
+
+    formData.append("prix_nuit", form.priceWeek);
+
+    formData.append("prix_week", form.priceWE);
+
+    formData.append("statut", status);
+
+    // Equipements
+    formData.append(
+      "equipements",
+      JSON.stringify(amenities)
+    );
+
+    // Images
+    images.forEach((img) => {
+      formData.append("images", img.file);
+    });
+
+    const res = await fetch(
+      "http://localhost:3000/api/chambres/add-room",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+
+    console.log(data);
+
+    if (!res.ok) {
+      throw new Error(data.message);
+    }
+
+    alert("✅ Chambre créée");
+
+  } catch (err) {
+    console.error(err);
+
+    alert(err.message);
+  }
+};
 
   return (
     <div className="flex min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: "#f0f1f5" }}>
-      {/* <Sidebar /> */}
+    
 
       <div className="flex-1 flex flex-col overflow-auto">
         {/* Topbar */}

@@ -14,11 +14,12 @@ function App() {
   return (
     <>
     <Routes>
+        <Route path='/login' element={<LoginPage/>} />
       <Route path='/' element={<Layout/>} >
         <Route path='Dashboard' element={<Dashboard/>} />
         <Route path='Createroom' element={<CreateRoomPage/>} />
         <Route path='Listroom' element={<ChambresAdmin/>} />
-        <Route path='login' element={<LoginPage/>} />
+      
        
       </Route>
     

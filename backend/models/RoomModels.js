@@ -14,7 +14,7 @@ const equipementSchema = new Schema(
 
     disponible: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   { _id: false }
