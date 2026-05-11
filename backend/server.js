@@ -5,9 +5,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
-const mongoose = require("mongoose");
 
-const chambresRoutes = require("./routes/chambres");
+// const chambresRoutes = require("./routes/chambres");
 
 const app = express();
 
@@ -34,7 +33,7 @@ app.use(
 // Routes
 // ─────────────────────────────────────────────
 
-app.use("/api/chambres", chambresRoutes);
+// app.use("/api/chambres", chambresRoutes);
 
 // ─────────────────────────────────────────────
 // Test route
@@ -42,7 +41,7 @@ app.use("/api/chambres", chambresRoutes);
 
 app.get("/", (req, res) => {
   res.json({
-    message: "API running 🚀",
+    message: "API running ",
   });
 });
 
@@ -51,14 +50,15 @@ app.get("/", (req, res) => {
 // ─────────────────────────────────────────────
 
 
-
+console.log('process env' , process.env.MONGO_URI);
 mongoose
+    
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected");
 
     app.listen(3000, () => {
-      console.log("🚀 Server running on port 3000");
+      console.log(" Server running on port 3000");
     });
   })
   .catch((err) => {
