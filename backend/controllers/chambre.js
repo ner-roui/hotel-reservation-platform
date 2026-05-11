@@ -33,7 +33,7 @@ addRoom = async (req, res) => {
     const images = req.files?.map(
       (file) => `/uploads/chambres/${file.filename}`
     ) || [];
-    
+
     // equipements
     let equipements = [];
 
@@ -81,4 +81,84 @@ addRoom = async (req, res) => {
   }
 };
 
-module.exports = {addRoom}
+
+
+// ─────────────────────────────────────────────
+// GET ALL ROOMS
+// ─────────────────────────────────────────────
+
+getAllRooms = async (req, res) => {
+  try {
+    const chambres = await ChambreModel.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      message: "Liste des chambres",
+      count: chambres.length,
+      chambres,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+// ─────────────────────────────────────────────
+// GET ROOM BY ID
+// ─────────────────────────────────────────────
+
+getRoomById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const chambre = await ChambreModel.findById(id)
+
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Chambre trouvée",
+      chambre,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+
+
+// ─────────────────────────────────────────────
+// GET AVAILABLE ROOMS
+// ─────────────────────────────────────────────
+
+exports.getAvailableRooms = async (req, res) => {
+  try {
+    const chambres = await ChambreModel.find({
+      statut: "Disponible",
+      disponible_reservation: true,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      message: "Chambres disponibles",
+      count: chambres.length,
+      chambres,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+module.exports = {addRoom, getAllRooms, getRoomById, }
