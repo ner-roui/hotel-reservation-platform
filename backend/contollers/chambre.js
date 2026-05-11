@@ -1,0 +1,1 @@
+const ChambreModel = require("../models/RoomModels")
