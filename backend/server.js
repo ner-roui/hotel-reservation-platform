@@ -5,6 +5,11 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
+const chambreRoutes = require("./routes/chambreRoutes");
+
+
+
+
 
 // const chambresRoutes = require("./routes/chambres");
 
@@ -19,6 +24,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+app.use("/api/chambres", chambreRoutes);
 
 // ─────────────────────────────────────────────
 // Static uploads

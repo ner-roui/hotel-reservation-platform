@@ -6,7 +6,7 @@ const ChambreModel = require("../models/RoomModels");
 // ADD ROOM
 // ─────────────────────────────────────────────
 
-exports.addRoom = async (req, res) => {
+addRoom = async (req, res) => {
   try {
     const {
       numero,
@@ -78,3 +78,5 @@ exports.addRoom = async (req, res) => {
     });
   }
 };
+
+module.exports = {addRoom}
