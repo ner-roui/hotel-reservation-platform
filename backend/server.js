@@ -7,7 +7,7 @@ const path = require("path");
 require("dotenv").config();
 const chambreRoutes = require("./routes/chambreRoutes");
 
-
+const authRoutes = require("./routes/userRoutes");
 
 
 
@@ -25,7 +25,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/chambres", chambreRoutes);
-
+app.use("/api/auth", authRoutes);
 // ─────────────────────────────────────────────
 // Static uploads
 // ─────────────────────────────────────────────
