@@ -126,21 +126,17 @@ const chambreSchema = new Schema(
       trim: true,
     },
 
-    hotel_id: {
-      type: Schema.Types.ObjectId,
-      ref: "Hotel",
-      required: true,
-    },
+    // hotel_id: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Hotel",
+    //   required: true,
+    // },
 
     // Informations chambre
     type: {
       type: String,
       enum: [
-        "Standard",
-        "Supérieure",
-        "Deluxe",
-        "Suite",
-        "Suite Présidentielle",
+        "Simple", "Double", "Suite junior", "Suite deluxe", "Suite présidentielle", "Familiale"
       ],
       required: true,
     },

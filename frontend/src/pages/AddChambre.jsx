@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-
+import axios from "axios"
 // ─── Sidebar nav items ────────────────────────────────────────────────────────
 const NAV = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard", badge: null, section: "Principal" },
@@ -77,7 +77,7 @@ export default function CreateRoomPage() {
   const [amenities, setAmenities] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
-  const [status, setStatus] = useState("available");
+  const [status, setStatus] = useState("Disponible");
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef();
 
@@ -137,6 +137,29 @@ export default function CreateRoomPage() {
 
   const publish = async () => {
   try {
+
+    const missingFields = [];
+
+if (!form.num) missingFields.push("Numéro");
+if (!form.type) missingFields.push("Type");
+if (!form.capacity) missingFields.push("Capacité");
+if (!form.priceWeek) missingFields.push("Prix semaine");
+if (!form.priceWE) missingFields.push("Prix week-end");
+
+  if (missingFields.length > 0) {
+    return alert(
+      "❌ Champs manquants : " + missingFields.join(", ")
+    );
+  }
+
+    if (images.length === 0) {
+      return alert("❌ Ajoutez au moins une image");
+    }
+
+    if (!amenities.length) {
+      return alert("❌ Sélectionnez au moins un équipement");
+    }
+
     const formData = new FormData();
 
     // Champs
@@ -168,28 +191,21 @@ export default function CreateRoomPage() {
       formData.append("images", img.file);
     });
 
-    const res = await fetch(
-      "http://localhost:3000/api/chambres/add-room",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const res = await axios.post("http://localhost:3000/api/chambres/add-room",
+      formData
+    )
 
-    const data = await res.json();
+   
+    console.log(res);
 
-    console.log(data);
-
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
 
     alert("✅ Chambre créée");
 
   } catch (err) {
-    console.error(err);
+    const message =
+    err.response?.data?.message || "Erreur serveur";
 
-    alert(err.message);
+  alert(message);
   }
 };
 

@@ -7,6 +7,8 @@ const ChambreModel = require("../models/RoomModels");
 // ─────────────────────────────────────────────
 
 addRoom = async (req, res) => {
+  console.log("BODY:", req.body);
+  console.log("FILES:", req.files);
   try {
     const {
       numero,
@@ -31,7 +33,7 @@ addRoom = async (req, res) => {
     const images = req.files?.map(
       (file) => `/uploads/chambres/${file.filename}`
     ) || [];
-
+    
     // equipements
     let equipements = [];
 
