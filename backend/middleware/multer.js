@@ -1,6 +1,5 @@
 const express = require("express");
 const multer = require("multer");
-const ChambreModel = require("../models/Chambre");
 
 const router = express.Router();
 
