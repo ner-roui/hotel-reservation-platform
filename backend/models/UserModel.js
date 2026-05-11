@@ -52,4 +52,5 @@ const userSchema = new Schema(
 // Index pour optimiser login
 userSchema.index({ email: 1 });
 
-module.exports = model("User", userSchema);
+UserModel =  model("User", userSchema);
+module.exports = UserModel
