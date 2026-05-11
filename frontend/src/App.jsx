@@ -18,6 +18,7 @@ function App() {
       <Route path='/' element={<Layout/>} >
         <Route path='Dashboard' element={<Dashboard/>} />
         <Route path='Createroom' element={<CreateRoomPage/>} />
+        <Route path='edit-room/:id' element={<CreateRoomPage/>} />
         <Route path='Listroom' element={<ChambresAdmin/>} />
       
        

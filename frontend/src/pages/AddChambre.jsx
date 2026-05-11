@@ -255,7 +255,7 @@ if (!form.priceWE) missingFields.push("Prix week-end");
                 <Field label="Type de chambre">
                   <select className={inputCls} value={form.type} onChange={e => set("type", e.target.value)}>
                     <option value="">Sélectionner...</option>
-                    {["Simple", "Double", "Suite junior", "Suite deluxe", "Suite présidentielle", "Familiale"].map(t => <option key={t}>{t}</option>)}
+                    {["Standard","Supérieure","Deluxe","Suite","Suite Présidentielle",].map(t => <option key={t}>{t}</option>)}
                   </select>
                 </Field>
                 <Field label="Étage">

@@ -140,7 +140,7 @@ getRoomById = async (req, res) => {
 // GET AVAILABLE ROOMS
 // ─────────────────────────────────────────────
 
-exports.getAvailableRooms = async (req, res) => {
+getAvailableRooms = async (req, res) => {
   try {
     const chambres = await ChambreModel.find({
       statut: "Disponible",
@@ -161,4 +161,124 @@ exports.getAvailableRooms = async (req, res) => {
   }
 };
 
-module.exports = {addRoom, getAllRooms, getRoomById, }
+// ─────────────────────────────────────────────
+// UPDATE ROOM
+// ─────────────────────────────────────────────
+
+updateRoom = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      numero,
+      type,
+      etage,
+      capacite,
+      superficie,
+      vue,
+      prix_nuit,
+      prix_week,
+      statut,
+    } = req.body;
+
+    // check room
+    const chambre = await ChambreModel.findById(id);
+
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    // images
+    let images = chambre.images;
+
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(
+        (file) => `/uploads/chambres/${file.filename}`
+      );
+    }
+
+    // equipements
+    let equipements = chambre.equipements;
+
+    if (req.body.equipements) {
+      const parsed = JSON.parse(req.body.equipements);
+
+      equipements = parsed.map((nom) => ({
+        nom,
+        disponible: true,
+      }));
+    }
+
+    // update
+    const updatedRoom = await ChambreModel.findByIdAndUpdate(
+      id,
+      {
+        numero,
+        type,
+        etage,
+        capacite,
+        superficie,
+        vue,
+        prix_nuit,
+        prix_week,
+        statut,
+        images,
+        equipements,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.status(200).json({
+      message: "Chambre mise à jour",
+      chambre: updatedRoom,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+// ─────────────────────────────────────────────
+// DELETE ROOM
+// ─────────────────────────────────────────────
+
+deleteRoom = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const chambre = await ChambreModel.findById(id);
+
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    await ChambreModel.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      message: "Chambre supprimée",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+
+
+
+module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , updateRoom  ,deleteRoom }

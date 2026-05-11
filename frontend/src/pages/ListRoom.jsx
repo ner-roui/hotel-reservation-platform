@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const chambres = [
   { id: 1, numero: "101", type: "Standard", etage: 1, capacite: 2, prix: 80, statut: "Disponible", superficie: 22, vue: "Jardin", equipements: ["WiFi", "TV", "Climatisation", "Sèche-cheveux"], client: null, checkIn: null, checkOut: null, note: 4.2, image: "🛏️" },
@@ -131,6 +132,7 @@ function ChambreCard({ chambre, onSelect }) {
 }
 
 function DetailPanel({ chambre, onClose }) {
+  const navigate = useNavigate()
   if (!chambre) return null;
   const sc = statutConfig[chambre.statut];
   const tc = typeColors[chambre.type];
@@ -231,7 +233,8 @@ function DetailPanel({ chambre, onClose }) {
                 ✓ Fin de maintenance
               </button>
             )}
-            <button className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors">
+            <button onClick={() => navigate(`/edit-room/${chambre.id}`)}
+            className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors">
               ✏️ Modifier la chambre
             </button>
           </div>
@@ -248,6 +251,7 @@ export default function ChambresAdmin() {
   const [filterType, setFilterType] = useState("Tous");
   const [viewMode, setViewMode] = useState("grid");
   const [selected, setSelected] = useState(null);
+  const navigate = useNavigate()
 
   const statuts = ["Tous", "Disponible", "Occupée", "À nettoyer", "Maintenance"];
   const types = ["Tous", "Standard", "Supérieure", "Deluxe", "Suite", "Suite Présidentielle"];
@@ -279,7 +283,8 @@ export default function ChambresAdmin() {
               <h1 className="text-2xl font-bold text-slate-800">Gestion des chambres 🛏️</h1>
               <p className="text-slate-400 text-sm mt-0.5">{chambres.length} chambres au total · Mai 2026</p>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 rounded-xl text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
+            <button onClick={() => {navigate('/Createroom')}}
+            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 rounded-xl text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
               + Ajouter une chambre
             </button>
           </div>

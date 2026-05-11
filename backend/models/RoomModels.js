@@ -136,7 +136,11 @@ const chambreSchema = new Schema(
     type: {
       type: String,
       enum: [
-        "Simple", "Double", "Suite junior", "Suite deluxe", "Suite présidentielle", "Familiale"
+        "Standard",
+        "Supérieure",
+        "Deluxe",
+        "Suite",
+        "Suite Présidentielle",
       ],
       required: true,
     },
