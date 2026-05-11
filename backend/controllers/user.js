@@ -67,4 +67,67 @@ register = async (req, res) => {
 };
 
 
-module.exports = {register }
+login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. validation
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email et mot de passe obligatoires",
+      });
+    }
+
+    // 2. check user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Email ou mot de passe incorrect",
+      });
+    }
+
+    // 3. check password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Email ou mot de passe incorrect",
+      });
+    }
+
+    // 4. generate token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // 5. cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // true en production
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      message: "Connexion réussie",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+
+module.exports = {register, login }
