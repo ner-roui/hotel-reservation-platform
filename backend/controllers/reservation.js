@@ -112,7 +112,6 @@ const getReservationById = async (req, res) => {
   }
 };
 
-const Reservation = require("../models/ReservationModel");
 
 /**
  * UPDATE RESERVATION

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import ChambreCard from '../components/ChambreCard'
 import Sidebar from "../components/SidebarReservation";
 import ModalReservation from "../components/ModalReservation";
@@ -18,13 +18,13 @@ const CHAMBRES = [
   {
     id: 1, numero: "101", type: "Standard", superficie: 22, lit: "1 lit double",
     prix: 120, note: 4.8, statut: "Disponible", etage: 1, capacite: 2,
-    equipements: ["WiFi", "TV", "Clim", "Sèche-cheveux"],
+    equipements: ["TV", "Clim", "Sèche-cheveux"],
     img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=700&q=80",
   },
   {
     id: 2, numero: "102", type: "Standard", superficie: 22, lit: "1 lit double",
     prix: 120, note: 4.8, statut: "Occupée", etage: 1, capacite: 2,
-    equipements: ["WiFi", "TV", "Clim"],
+    equipements: ["TV", "Clim"],
     img: "https://images.unsplash.com/photo-1505693314120-0d443867891c?w=700&q=80",
   },
   {
@@ -98,13 +98,52 @@ export default function ReservationPage() {
   const toggleType = t => setFilterTypes(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
   const toggleEquip = e => setFilterEquip(prev => prev.includes(e) ? prev.filter(x => x !== e) : [...prev, e]);
 
-  const filtered = CHAMBRES.filter(c => {
-    const mType = filterTypes.some(t => c.type === t || c.type.includes(t));
-    const mPrix = c.prix <= prixMax;
-    const mSearch = !search || c.type.toLowerCase().includes(search.toLowerCase()) || c.numero.includes(search) || (c.statut.toLowerCase().includes(search.toLowerCase()));
-    return mType && mPrix && mSearch;
-  });
+  console.log('filters', filterTypes, 'filterEquip', filterEquip)
 
+  // const filtered = CHAMBRES.filter(c => {
+  //   const mType = filterTypes.some(t => c.type === t || c.type.includes(t));
+  //   const mPrix = c.prix <= prixMax;
+  //   const mSearch = !search || c.type.toLowerCase().includes(search.toLowerCase()) || c.numero.includes(search) || (c.statut.toLowerCase().includes(search.toLowerCase()));
+  //   return mType && mPrix && mSearch;
+  // });
+
+    const filtered = useMemo(() => {
+      let filterrooms = [...CHAMBRES];
+
+   
+      if (search) {
+        filterrooms = filterrooms.filter(item =>
+          item.type.toLowerCase().includes(search.toLowerCase()) ||
+          item.numero.includes(search) ||
+          item.statut?.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+    
+      if (filterEquip.length > 0) {
+        filterrooms = filterrooms.filter(item =>
+          (item.equipements || []).some(eq =>
+            filterEquip.includes(eq)
+          )
+        );
+      }
+
+    
+      if (filterTypes.length > 0) {
+        filterrooms = filterrooms.filter(item =>
+          filterTypes.includes(item.type)
+        );
+      }
+
+   
+      filterrooms = filterrooms.filter(item =>
+        item.prix <= prixMax
+      );
+
+      return filterrooms;
+    }, [filterTypes, filterEquip, prixMax, search]);
+
+    console.log('llllllllll', filtered)
   const stats = {
     dispo: CHAMBRES.filter(c => c.statut === "Disponible").length,
     occupee: CHAMBRES.filter(c => c.statut === "Occupée").length,

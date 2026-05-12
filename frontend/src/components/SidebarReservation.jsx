@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function Sidebar({ prixMax, setPrixMax, filterTypes, toggleType, filterEquip, toggleEquip }) {
   const types = ["Standard", "Deluxe", "Suite", "Présidentielle"];
   const equips = [
-    { label: "Wi-Fi", icon: "📶" },
+    { label: "WiFi", icon: "📶" },
     { label: "Petit-déj inclus", icon: "🥐" },
     { label: "Spa privé", icon: "🌿" },
     { label: "TV 4K", icon: "📺" },
