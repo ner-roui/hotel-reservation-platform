@@ -67,4 +67,24 @@ const getAllReservations = async (req, res) => {
   }
 };
 
+const getUserReservations = async (req, res) => {
+  try {
+    const { userId } = req.user;
+
+    const reservations = await Reservation.find({ user: userId })
+      .populate("chambre")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Réservations utilisateur",
+      reservations,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = { createReservation };
