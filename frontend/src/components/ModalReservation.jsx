@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 /* ── Modal Réservation ──────────────────────────────── */
-function ModalReservation({ chambre, onClose, arrivee, depart }) {
+export default function ModalReservation({ chambre, onClose, arrivee, depart }) {
   const [step, setStep] = useState(1);
   const [done, setDone] = useState(false);
   const nights = 4;

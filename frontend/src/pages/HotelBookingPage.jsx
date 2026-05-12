@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import ChambreCard from '../components/ChambreCard'
+import Sidebar from "../components/SidebarReservation";
 
 /* ── Font injection ─────────────────────────────────── */
 const useFont = () => {
@@ -67,99 +68,6 @@ const CHAMBRES = [
 
 
 
-/* ── Sidebar Filtres ────────────────────────────────── */
-function Sidebar({ prixMax, setPrixMax, filterTypes, toggleType, filterEquip, toggleEquip }) {
-  const types = ["Standard", "Deluxe", "Suite", "Présidentielle"];
-  const equips = [
-    { label: "Wi-Fi", icon: "📶" },
-    { label: "Petit-déj inclus", icon: "🥐" },
-    { label: "Spa privé", icon: "🌿" },
-    { label: "TV 4K", icon: "📺" },
-  ];
-
-  return (
-    <aside className="w-64 shrink-0 sticky top-28 self-start">
-      <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
-        <p className="font-semibold text-white text-base mb-0.5" style={{ fontFamily: "'Playfair Display',serif" }}>Filtres</p>
-        <p className="text-slate-500 text-xs mb-6">Affinez votre recherche</p>
-
-        {/* Prix */}
-        <div className="mb-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Prix max / nuit</p>
-          <div className="relative mb-2">
-            <input type="range" min={80} max={1000} step={20} value={prixMax}
-              onChange={e => setPrixMax(Number(e.target.value))}
-              className="w-full h-1 appearance-none rounded-full outline-none"
-              style={{
-                background: `linear-gradient(to right, #7c3aed ${((prixMax-80)/920)*100}%, rgba(255,255,255,.1) 0%)`,
-                accentColor: "#7c3aed",
-              }}
-            />
-          </div>
-          <div className="flex justify-between text-xs text-slate-500">
-            <span>€80</span>
-            <span className="text-violet-400 font-semibold">€{prixMax}</span>
-          </div>
-        </div>
-
-        {/* Type */}
-        <div className="mb-6">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Type</p>
-          <div className="space-y-2">
-            {types.map(t => (
-              <label key={t} className="flex items-center gap-3 cursor-pointer group">
-                <div
-                  onClick={() => toggleType(t)}
-                  className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200 cursor-pointer"
-                  style={{
-                    background: filterTypes.includes(t) ? "#7c3aed" : "transparent",
-                    border: filterTypes.includes(t) ? "none" : "1.5px solid rgba(255,255,255,.15)",
-                    boxShadow: filterTypes.includes(t) ? "0 0 10px rgba(124,58,237,.5)" : "none",
-                  }}
-                >
-                  {filterTypes.includes(t) && <span className="text-white text-xs">✓</span>}
-                </div>
-                <span className="text-sm text-slate-300 group-hover:text-white transition-colors select-none" onClick={() => toggleType(t)}>{t}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Équipements */}
-        <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Équipements</p>
-          <div className="space-y-2">
-            {equips.map(e => (
-              <label key={e.label} className="flex items-center gap-3 cursor-pointer group">
-                <div
-                  onClick={() => toggleEquip(e.label)}
-                  className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200 cursor-pointer"
-                  style={{
-                    background: filterEquip.includes(e.label) ? "#7c3aed" : "transparent",
-                    border: filterEquip.includes(e.label) ? "none" : "1.5px solid rgba(255,255,255,.15)",
-                    boxShadow: filterEquip.includes(e.label) ? "0 0 10px rgba(124,58,237,.5)" : "none",
-                  }}
-                >
-                  {filterEquip.includes(e.label) && <span className="text-white text-xs">✓</span>}
-                </div>
-                <span className="text-sm text-slate-300 group-hover:text-white transition-colors select-none flex items-center gap-1.5" onClick={() => toggleEquip(e.label)}>
-                  <span>{e.icon}</span> {e.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Reset */}
-        <button
-          onClick={() => { setPrixMax(1000); }}
-          className="w-full mt-6 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-colors"
-          style={{ border: "1px solid rgba(255,255,255,.07)" }}
-        >Réinitialiser les filtres</button>
-      </div>
-    </aside>
-  );
-}
 
 /* ── Main App ───────────────────────────────────────── */
 export default function ReservationPage() {
@@ -204,55 +112,6 @@ export default function ReservationPage() {
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#080b14", fontFamily: "'Outfit',sans-serif" }}>
-
-      {/* ── Sidebar nav ── */}
-      <aside className="w-56 flex flex-col py-6 px-3 shrink-0 z-10"
-        style={{ background: "rgba(255,255,255,.02)", borderRight: "1px solid rgba(255,255,255,.06)" }}>
-
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 px-3 mb-8">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold"
-            style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>L</div>
-          <div>
-            <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display',serif" }}>Lumière Hotels</p>
-            <p className="text-slate-500 text-xs">Espace client · Client</p>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex flex-col gap-1 flex-1">
-          {[
-            { label: "Réserver",    icon: "🔍" },
-            { label: "Mes séjours", icon: "📅" },
-            { label: "Favoris",     icon: "♡" },
-            { label: "Paramètres",  icon: "⚙️" },
-          ].map(item => (
-            <button key={item.label} onClick={() => setActiveNav(item.label)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left"
-              style={{
-                background: activeNav === item.label ? "rgba(124,58,237,.18)" : "transparent",
-                color: activeNav === item.label ? "#a78bfa" : "rgba(148,163,184,.6)",
-                borderLeft: activeNav === item.label ? "2px solid #7c3aed" : "2px solid transparent",
-              }}
-            >
-              <span className="text-base">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* User */}
-        <div className="px-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,.05)" }}>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
-              style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>SL</div>
-            <div className="min-w-0">
-              <p className="text-white text-xs font-semibold truncate">Sophie Laurent</p>
-              <p className="text-slate-500 text-xs">Client Premium</p>
-            </div>
-          </div>
-        </div>
-      </aside>
 
       {/* ── Main ── */}
       <main ref={mainRef} className="flex-1 overflow-y-auto flex flex-col">
@@ -384,7 +243,7 @@ export default function ReservationPage() {
               </div>
 
               {/* Cards */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 {filtered.map((c, i) => (
                   <div key={c.id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
                     <ChambreCard c={c} onReserver={setSelected} />
@@ -403,26 +262,7 @@ export default function ReservationPage() {
           </div>
         </div>
 
-        {/* ── Bottom role switcher ── */}
-        <div className="sticky bottom-0 py-3 flex justify-center gap-2"
-          style={{ background: "rgba(8,11,20,.95)", backdropFilter: "blur(10px)", borderTop: "1px solid rgba(255,255,255,.06)" }}>
-          {[
-            { role: "Admin",     icon: "🛡" },
-            { role: "Réception", icon: "🪪" },
-            { role: "Client",    icon: "👤" },
-          ].map(({ role, icon }) => (
-            <button key={role} onClick={() => setActiveRole(role)}
-              className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200"
-              style={{
-                background: activeRole === role ? "linear-gradient(135deg,#7c3aed,#4f46e5)" : "transparent",
-                color: activeRole === role ? "white" : "rgba(148,163,184,.6)",
-                border: activeRole === role ? "none" : "1px solid rgba(255,255,255,.07)",
-                boxShadow: activeRole === role ? "0 4px 15px rgba(124,58,237,.35)" : "none",
-              }}>
-              {icon} {role}
-            </button>
-          ))}
-        </div>
+
       </main>
 
       {/* Modal */}
