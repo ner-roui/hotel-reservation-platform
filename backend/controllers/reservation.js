@@ -172,11 +172,41 @@ const updateReservation = async (req, res) => {
 };
 
 
+/**
+ * DELETE RESERVATION
+ */
+
+const deleteReservation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const reservation = await Reservation.findById(id);
+
+    if (!reservation) {
+      return res.status(404).json({
+        message: "Réservation introuvable",
+      });
+    }
+
+    await Reservation.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Réservation supprimée avec succès",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
 
 
 module.exports = { createReservation, 
   getAllReservations,
   getUserReservations,
   getReservationById,
-  updateReservation
+  updateReservation,
+  deleteReservation
  };
