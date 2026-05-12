@@ -112,10 +112,71 @@ const getReservationById = async (req, res) => {
   }
 };
 
+const Reservation = require("../models/ReservationModel");
+
+/**
+ * UPDATE RESERVATION
+ */
+const updateReservation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { arrivee, depart, prixParNuit } = req.body;
+
+    const reservation = await Reservation.findById(id);
+
+    if (!reservation) {
+      return res.status(404).json({
+        message: "Réservation introuvable",
+      });
+    }
+
+    // recalcul dates si modifiées
+    let start = reservation.arrivee;
+    let end = reservation.depart;
+
+    if (arrivee) start = new Date(arrivee);
+    if (depart) end = new Date(depart);
+
+    const nuits = Math.ceil(
+      (end - start) / (1000 * 60 * 60 * 24)
+    );
+
+    if (nuits <= 0) {
+      return res.status(400).json({
+        message: "Dates invalides",
+      });
+    }
+
+    const price = prixParNuit || reservation.prixParNuit;
+    const total = nuits * price;
+
+    reservation.arrivee = start;
+    reservation.depart = end;
+    reservation.nuits = nuits;
+    reservation.prixParNuit = price;
+    reservation.total = total;
+
+    await reservation.save();
+
+    res.status(200).json({
+      message: "Réservation mise à jour",
+      reservation,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
 
 
 
 module.exports = { createReservation, 
   getAllReservations,
   getUserReservations,
-  getReservationById, };
+  getReservationById,
+  updateReservation
+ };
