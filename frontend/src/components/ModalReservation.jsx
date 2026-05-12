@@ -1,6 +1,15 @@
 
 import { useState } from "react";
 
+function Stars({ note }) {
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-amber-400 text-sm">★</span>
+      <span className="text-sm font-semibold text-slate-200">{note.toFixed(1)}</span>
+    </div>
+  );
+}
+
 
 /* ── Modal Réservation ──────────────────────────────── */
 export default function ModalReservation({ chambre, onClose, arrivee, depart }) {

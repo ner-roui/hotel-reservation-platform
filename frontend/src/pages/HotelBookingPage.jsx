@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import ChambreCard from '../components/ChambreCard'
 import Sidebar from "../components/SidebarReservation";
+import ModalReservation from "../components/ModalReservation";
 
 /* ── Font injection ─────────────────────────────────── */
 const useFont = () => {

@@ -1,40 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-import LoginPage from './pages/login'
-import Dashboard from './pages/Dashboard'
-import CreateRoomPage from './pages/AddChambre'
-import Sidebar from './components/Sidebar'
-import { Route, Routes } from 'react-router-dom'
-import { Layout } from './pages/Layout'
-import ChambresAdmin from './pages/ListRoom'
-import Home from './pages/Home'
-import ReservationPage from './pages/HotelBookingPage'
+import "./App.css";
+
+import { Routes, Route } from "react-router-dom";
+
+import LoginPage from "./pages/login";
+import Dashboard from "./pages/Dashboard";
+import CreateRoomPage from "./pages/AddChambre";
+import ChambresAdmin from "./pages/ListRoom";
+import Home from "./pages/Home";
+import ReservationPage from "./pages/HotelBookingPage";
+
+import Navbar from "./components/Navbar";
+import { Layout } from "./pages/Layout";
+
 function App() {
   return (
-    <>
     <Routes>
-        <Route path='/login' element={<LoginPage/>} />
-        <Route path='/home' element={<Home/>}/>
-        <Route path='/meschambres' element={<ReservationPage/>} />
-        <Route path='/' element={<Layout/>} >
-        <Route path='Dashboard' element={<Dashboard/>} />
-        <Route path='Createroom' element={<CreateRoomPage/>} />
-        <Route path='edit-room/:id' element={<CreateRoomPage/>} />
-        <Route path='Listroom' element={<ChambresAdmin/>} />
-      
-       
-      </Route>
-    
-    </Routes>
-    {/* <LoginPage/> */}
-    {/* <Dashboard/> */}
 
-    {/* <CreateRoomPage/> */}
-    </>
-  )
+      {/* LOGIN */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* PUBLIC PAGES WITH NAVBAR */}
+      <Route
+        path="/home"
+        element={
+          <>
+            <Navbar />
+            <Home />
+          </>
+        }
+      />
+
+      <Route
+        path="/meschambres"
+        element={
+          <>
+            <Navbar />
+            <ReservationPage />
+          </>
+        }
+      />
+
+      {/* ADMIN LAYOUT */}
+      <Route path="/" element={<Layout />}>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="createroom" element={<CreateRoomPage />} />
+        <Route path="edit-room/:id" element={<CreateRoomPage />} />
+        <Route path="listroom" element={<ChambresAdmin />} />
+      </Route>
+
+    </Routes>
+  );
 }
 
-export default App
+export default App;

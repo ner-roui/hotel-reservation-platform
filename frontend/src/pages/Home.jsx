@@ -12,6 +12,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import ChambreCard from '../components/ChambreCard'
+import ModalReservation from "../components/ModalReservation";
+import Navbar from "../components/Navbar";
+
 /* ─────────────────────────────────────────────
    GOOGLE FONT
 ───────────────────────────────────────────── */
@@ -85,6 +89,7 @@ export default function HomePage() {
   const [arrivee, setArrivee] = useState("14 Avr 2026");
   const [depart, setDepart] = useState("18 Avr 2026");
   const [voyageurs, setVoyageurs] = useState("2 Adultes");
+   const [selected, setSelected] = useState(null);
 
   const filtered = useMemo(() => {
     return chambres.filter(
@@ -100,52 +105,7 @@ export default function HomePage() {
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#070b14]/80 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 font-bold">
-              L
-            </div>
 
-            <div>
-              <h2
-                className="text-lg font-semibold"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                Lumière Hotels
-              </h2>
-
-              <p className="text-xs text-slate-500">
-                Luxury Experience
-              </p>
-            </div>
-          </div>
-
-          <div className="hidden items-center gap-10 md:flex">
-            <a className="text-sm text-slate-300 transition hover:text-white">
-              Chambres
-            </a>
-
-            <a className="text-sm text-slate-300 transition hover:text-white">
-              Services
-            </a>
-
-            <a className="text-sm text-slate-300 transition hover:text-white">
-              Contact
-            </a>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03]">
-              <Bell size={18} />
-            </button>
-
-            <button className="rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-3 text-sm font-semibold">
-              Réserver
-            </button>
-          </div>
-        </div>
-      </header>
 
       {/* HERO */}
       <section className="relative overflow-hidden">
@@ -200,6 +160,7 @@ export default function HomePage() {
 
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                   <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-slate-500">
+                   
                     <Calendar size={14} />
                     Départ
                   </div>
@@ -282,12 +243,16 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((chambre) => (
-            <ChambreCard key={chambre.id} chambre={chambre} />
+        <div className="grid gap-7 md:grid-cols-3 xl:grid-cols-3">
+          {filtered.map((c, i) => (
+             <div key={c.id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
+                <ChambreCard c={c} onReserver={setSelected} />
+            </div>
           ))}
         </div>
       </section>
+        {/* Modal */}
+            {selected && <ModalReservation chambre={selected} arrivee={arrivee} depart={depart} onClose={() => setSelected(null)} />}
     </div>
   );
 }
