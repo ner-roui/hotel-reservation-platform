@@ -1,8 +1,23 @@
+
+
+
 const express = require("express");
 const router = express.Router();
 
-const { createReservation } = require("../controllers/reservation");
+const auth = require("../middleware/auth");
 
-router.post("/reservations/:roomId",authMiddleware,createReservation);
+const {
+  createReservation, 
+  getAllReservations,
+  getUserReservations,
+  getReservationById,
+} = require("../controllers/reservationController");
+
+router.post("/reservations/:roomId",auth, createReservation);
+router.get("/reservations", auth, getAllReservations);
+router.get("/reservations/me", auth, getUserReservations);
+router.get("/reservations/:id", auth, getReservationById);
+
+
 
 module.exports = router;

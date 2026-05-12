@@ -115,4 +115,7 @@ const getReservationById = async (req, res) => {
 
 
 
-module.exports = { createReservation };
+module.exports = { createReservation, 
+  getAllReservations,
+  getUserReservations,
+  getReservationById, };
