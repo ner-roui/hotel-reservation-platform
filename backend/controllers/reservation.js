@@ -87,4 +87,32 @@ const getUserReservations = async (req, res) => {
   }
 };
 
+const getReservationById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const reservation = await Reservation.findById(id)
+      .populate("user", "-password")
+      .populate("chambre");
+
+    if (!reservation) {
+      return res.status(404).json({
+        message: "Réservation introuvable",
+      });
+    }
+
+    res.status(200).json({
+      reservation,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
+
+
+
 module.exports = { createReservation };
