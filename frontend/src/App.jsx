@@ -11,13 +11,15 @@ import { Route, Routes } from 'react-router-dom'
 import { Layout } from './pages/Layout'
 import ChambresAdmin from './pages/ListRoom'
 import Home from './pages/Home'
+import ReservationPage from './pages/HotelBookingPage'
 function App() {
   return (
     <>
     <Routes>
         <Route path='/login' element={<LoginPage/>} />
         <Route path='/home' element={<Home/>}/>
-      <Route path='/' element={<Layout/>} >
+        <Route path='/meschambres' element={<ReservationPage/>} />
+        <Route path='/' element={<Layout/>} >
         <Route path='Dashboard' element={<Dashboard/>} />
         <Route path='Createroom' element={<CreateRoomPage/>} />
         <Route path='edit-room/:id' element={<CreateRoomPage/>} />

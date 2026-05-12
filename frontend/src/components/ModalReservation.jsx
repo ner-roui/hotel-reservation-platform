@@ -1,0 +1,114 @@
+
+import { useState } from "react";
+
+
+/* ── Modal Réservation ──────────────────────────────── */
+function ModalReservation({ chambre, onClose, arrivee, depart }) {
+  const [step, setStep] = useState(1);
+  const [done, setDone] = useState(false);
+  const nights = 4;
+  if (!chambre) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
+      <div
+        className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: "linear-gradient(145deg, #1a1f2e 0%, #0f1420 100%)", border: "1px solid rgba(255,255,255,0.08)" }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Progress bar */}
+        <div className="h-0.5 bg-slate-800">
+          <div className="h-full bg-gradient-to-r from-violet-500 to-indigo-400 transition-all duration-500"
+            style={{ width: done ? "100%" : step === 1 ? "50%" : "100%" }} />
+        </div>
+
+        {done ? (
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
+            <h3 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Playfair Display',serif" }}>Réservation confirmée !</h3>
+            <p className="text-slate-400 text-sm mb-6">Un email de confirmation vous a été envoyé.</p>
+            <button onClick={onClose} className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-sm transition-colors">Fermer</button>
+          </div>
+        ) : step === 1 ? (
+          <div className="p-6">
+            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors text-sm">✕</button>
+            <p className="text-xs font-medium text-violet-400 uppercase tracking-widest mb-1">Étape 1 / 2</p>
+            <h3 className="text-xl font-semibold text-white mb-5" style={{ fontFamily: "'Playfair Display',serif" }}>Récapitulatif</h3>
+
+            {/* Chambre preview */}
+            <div className="flex gap-4 rounded-2xl overflow-hidden mb-5" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.07)" }}>
+              <img src={chambre.img} className="w-28 h-24 object-cover flex-shrink-0" alt="" />
+              <div className="py-3 pr-3">
+                <p className="font-semibold text-white text-sm">{chambre.type} — Ch. {chambre.numero}</p>
+                <p className="text-slate-400 text-xs mt-0.5">{chambre.superficie} m² · {chambre.lit}</p>
+                <Stars note={chambre.note} />
+              </div>
+            </div>
+
+            {/* Date chips */}
+            <div className="grid grid-cols-3 gap-2 mb-5">
+              {[
+                { l: "Arrivée", v: arrivee },
+                { l: "Départ", v: depart },
+                { l: "Durée", v: `${nights} nuits` },
+              ].map(f => (
+                <div key={f.l} className="rounded-xl py-2.5 text-center" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.07)" }}>
+                  <p className="text-xs text-slate-500 mb-0.5">{f.l}</p>
+                  <p className="text-sm font-medium text-white">{f.v}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Total */}
+            <div className="flex justify-between items-center py-3 mb-5" style={{ borderTop: "1px solid rgba(255,255,255,.06)", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
+              <span className="text-slate-400 text-sm">€{chambre.prix} × {nights} nuits</span>
+              <span className="text-white text-lg font-bold">€{chambre.prix * nights}</span>
+            </div>
+
+            <button onClick={() => setStep(2)}
+              className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-white"
+              style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
+              Continuer →
+            </button>
+          </div>
+        ) : (
+          <div className="p-6">
+            <button onClick={() => setStep(1)} className="absolute top-4 left-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors text-sm">←</button>
+            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 transition-colors text-sm">✕</button>
+            <p className="text-xs font-medium text-violet-400 uppercase tracking-widest mb-1">Étape 2 / 2</p>
+            <h3 className="text-xl font-semibold text-white mb-5" style={{ fontFamily: "'Playfair Display',serif" }}>Paiement</h3>
+            <div className="space-y-3 mb-5">
+              {[
+                { l: "Nom complet", ph: "Sophie Laurent", t: "text" },
+                { l: "Email", ph: "sophie@email.com", t: "email" },
+                { l: "N° de carte", ph: "•••• •••• •••• 4242", t: "text" },
+                { l: "Expiration / CVV", ph: "04/28   •   •••", t: "text" },
+              ].map(f => (
+                <div key={f.l}>
+                  <label className="text-xs font-medium text-slate-400 block mb-1">{f.l}</label>
+                  <input defaultValue={f.ph} type={f.t}
+                    className="w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none transition-all"
+                    style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)" }}
+                    onFocus={e => e.target.style.borderColor = "rgba(124,58,237,.6)"}
+                    onBlur={e => e.target.style.borderColor = "rgba(255,255,255,.08)"}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between items-center py-3 rounded-xl px-4 mb-4" style={{ background: "rgba(124,58,237,.12)", border: "1px solid rgba(124,58,237,.2)" }}>
+              <span className="text-violet-300 text-sm font-medium">Total à payer</span>
+              <span className="text-white font-bold text-lg">€{chambre.prix * nights}</span>
+            </div>
+            <button onClick={() => setDone(true)}
+              className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-white"
+              style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
+              ✓ Confirmer la réservation
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
