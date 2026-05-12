@@ -14,11 +14,12 @@ const {
   updateReservation
 } = require("../controllers/reservationController");
 
-router.post("/reservations/:roomId",auth, createReservation);
-router.get("/reservations", auth, getAllReservations);
-router.get("/reservations/me", auth, getUserReservations);
-router.get("/reservations/:id", auth, getReservationById);
-router.put("/reservations/:id", auth, updateReservation);
+router.post("/:roomId",auth, createReservation);
+router.get("/getallreservations", auth, getAllReservations);
+router.get("/me", auth, getUserReservations);
+router.get("/reservationbyid/:id", auth, getReservationById);
+router.put("/updatereservation/:id", auth, updateReservation);
+router.delete("/deletereservation/:id", auth, deleteReservation);
 
 
 
