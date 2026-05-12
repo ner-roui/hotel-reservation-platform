@@ -267,7 +267,7 @@ export default function ReservationPage() {
       </main>
 
       {/* Modal */}
-      {selected && <ModalReservation chambre={selected} arrivee={arrivee} depart={depart} onClose={() => setSelected(null)} />}
+      {selected && <ModalReservation chambre={selected} onClose={() => setSelected(null)} />}
 
       <style>{`
         @keyframes fadeUp {
