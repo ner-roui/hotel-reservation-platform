@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -24,9 +25,19 @@ function Stars({ note }) {
 /* ── Chambre Card ───────────────────────────────────── */
 export default function ChambreCard({ c, onReserver }) {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate()
   const sc = STATUT_CFG[c.statut] || STATUT_CFG["Disponible"];
   const dispo = c.statut === "Disponible";
+  const user = "nada";
 
+  const handleReservation = (c) => {
+  if (!user) {
+    navigate("/login");
+    return;
+  }
+
+  onReserver(c)
+};
   return (
     <div
       className="rounded-2xl overflow-hidden flex flex-col transition-all duration-300 cursor-pointer"
@@ -97,7 +108,7 @@ export default function ChambreCard({ c, onReserver }) {
           </div>
           {dispo ? (
             <button
-              onClick={() => onReserver(c)}
+              onClick={() => handleReservation(c)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
               style={{
                 background: hovered ? "linear-gradient(135deg,#7c3aed,#4f46e5)" : "rgba(124,58,237,.8)",

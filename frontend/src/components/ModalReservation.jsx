@@ -19,13 +19,18 @@ export default function ModalReservation({ chambre, onClose }) {
   const [step, setStep] = useState(1);
   const [done, setDone] = useState(false);
 
-  const [arrivee, setArrivee] = useState(null);
-  const [depart, setDepart] = useState(null);
+    const [arrivee, setArrivee] = useState(new Date());
+
+    const [depart, setDepart] = useState(
+      new Date(Date.now() + 24 * 60 * 60 * 1000)
+    );
 
   const [openArrivee, setOpenArrivee] = useState(false);
   const [openDepart, setOpenDepart] = useState(false);
 
   if (!chambre) return null;
+
+  
 
   /* ── Calcul nuits ── */
   const nights =
@@ -38,8 +43,10 @@ export default function ModalReservation({ chambre, onClose }) {
 
   /* ── Format date ── */
   const formatDate = (date) => {
+    console.log(date, 'date')
     if (!date) return "";
 
+   
     return date.toLocaleDateString("fr-FR", {
       day: "2-digit",
       month: "long",
@@ -47,6 +54,7 @@ export default function ModalReservation({ chambre, onClose }) {
     });
   };
 
+  console.log('arriverrrr=>', arrivee, formatDate(arrivee), 'asasassa', new Date())
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -173,9 +181,11 @@ export default function ModalReservation({ chambre, onClose }) {
                   selected={arrivee}
                   onChange={(date) => {
                     setArrivee(date);
+                    setDepart(new Date(date.getTime() + 24 * 60 * 60 * 1000));
                     setOpenArrivee(false);
                   }}
                   open={openArrivee}
+                   minDate={new Date()}
                   onClickOutside={() => setOpenArrivee(false)}
                   popperPlacement="bottom"
                   customInput={<div />}
