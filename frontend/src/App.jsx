@@ -14,6 +14,7 @@ import { Layout } from "./pages/Layout";
 import PaiementPage from "./pages/PaiementPage";
 import MesSejours from "./pages/MesSejours";
 import EditReservation from "./pages/EditReservation";
+import UtilisateursPage from "./pages/UtilisateursPage";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
         <Route path="createroom" element={<CreateRoomPage />} />
         <Route path="edit-room/:id" element={<CreateRoomPage />} />
         <Route path="listroom" element={<ChambresAdmin />} />
+        <Route path="Listusers" element={<UtilisateursPage/>}/>
       </Route>
 
     </Routes>
