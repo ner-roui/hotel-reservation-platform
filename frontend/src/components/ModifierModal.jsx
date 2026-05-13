@@ -1,4 +1,41 @@
 /* ── Modal ──────────────────────────────────────────── */
+
+import { useState } from "react";
+import Steps from "./Steps";
+import StepDates from "./StepDates";
+import StepChambre from "./StepChambre";
+import StepRecap from "./StepRecap";
+
+const RESERVATION = {
+  id: "RES-2842",
+  type: "Deluxe", numero: "202", etage: 2,
+  lit: "1 lit king", superficie: 32,
+  dateIn: "2026-04-14", dateOut: "2026-04-17",
+  voyageurs: 2, prixNuit: 220,
+  img: "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=600&q=80",
+  equipements: ["WiFi", "TV 4K", "Minibar", "Spa privé"],
+  statut: "En attente",
+  notes: "",
+};
+
+const CHAMBRES_DISPO = [
+  { type: "Standard",       numero: "101", prixNuit: 120, superficie: 22,  lit: "1 lit double",        img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80" },
+  { type: "Standard",       numero: "103", prixNuit: 120, superficie: 22,  lit: "1 lit double",        img: "https://images.unsplash.com/photo-1505693314120-0d443867891c?w=400&q=80" },
+  { type: "Deluxe",         numero: "202", prixNuit: 220, superficie: 32,  lit: "1 lit king",          img: "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=400&q=80" },
+  { type: "Deluxe",         numero: "203", prixNuit: 220, superficie: 32,  lit: "2 lits queen",        img: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400&q=80" },
+  { type: "Suite",          numero: "301", prixNuit: 380, superficie: 55,  lit: "1 lit king + canapé", img: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400&q=80" },
+  { type: "Présidentielle", numero: "501", prixNuit: 680, superficie: 120, lit: "2 lits king",         img: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&q=80" },
+];
+
+/* ── Helpers ────────────────────────────────────────── */
+function diffDays(a, b) {
+  return Math.max(1, Math.round((new Date(b) - new Date(a)) / 86400000));
+}
+function formatDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 export default function ModifierModal({ onClose }) {
   const [step, setStep] = useState(0);
   const [saved, setSaved] = useState(false);
@@ -84,6 +121,7 @@ export default function ModifierModal({ onClose }) {
             </div>
           ) : (
             <>
+        
               <Steps current={step} />
               {step === 0 && <StepDates dateIn={form.dateIn} dateOut={form.dateOut} voyageurs={form.voyageurs} notes={form.notes} onChange={handleChange} />}
               {step === 1 && <StepChambre selected={form.chambre} onSelect={c => handleChange("chambre", c)} voyageurs={form.voyageurs} />}

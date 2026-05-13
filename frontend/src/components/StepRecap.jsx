@@ -1,5 +1,5 @@
 /* ── Step 3: Recap ──────────────────────────────────── */
-function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, notes }) {
+export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, notes }) {
   const nights = diffDays(dateIn, dateOut);
   const prixBase = chambre.prixNuit * nights;
   const taxes = Math.round(prixBase * 0.1);

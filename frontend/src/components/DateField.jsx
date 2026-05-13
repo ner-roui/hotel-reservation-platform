@@ -1,5 +1,7 @@
 /* ── Date input ─────────────────────────────────────── */
-function DateField({ label, value, onChange, min }) {
+import { useState } from "react";
+
+export default function DateField({ label, value, onChange, min }) {
   const [focused, setFocused] = useState(false);
   return (
     <div className="flex-1">

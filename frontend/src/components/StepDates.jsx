@@ -1,11 +1,25 @@
 /* ── Step 1: Dates & Voyageurs ──────────────────────── */
-function StepDates({ dateIn, dateOut, voyageurs, notes, onChange }) {
+import { useState } from "react";
+
+import DateField from "./DateField";
+
+/* ── Helpers ────────────────────────────────────────── */
+function diffDays(a, b) {
+  return Math.max(1, Math.round((new Date(b) - new Date(a)) / 86400000));
+}
+function formatDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+
+export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange }) {
   const nights = diffDays(dateIn, dateOut);
   return (
     <div style={{ animation: "fadeUp .4s ease both" }}>
       <h2 className="text-lg font-semibold text-white mb-1" style={{ fontFamily: "'Playfair Display',serif" }}>Dates & Voyageurs</h2>
       <p className="text-sm mb-6" style={{ color: "rgba(100,116,139,.7)" }}>Modifiez vos dates de séjour et le nombre de voyageurs.</p>
-
+    
       {/* Dates */}
       <div className="flex gap-4 mb-5">
         <DateField label="Arrivée" value={dateIn} onChange={v => onChange("dateIn", v)} min="2026-01-01" />

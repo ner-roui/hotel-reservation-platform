@@ -1,5 +1,5 @@
 /* ── Step indicator ─────────────────────────────────── */
-function Steps({ current }) {
+export default function Steps({ current }) {
   const steps = ["Dates & Voyageurs", "Chambre", "Récapitulatif"];
   return (
     <div className="flex items-center gap-0 mb-8">

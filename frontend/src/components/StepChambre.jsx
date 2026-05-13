@@ -1,5 +1,5 @@
 /* ── Step 2: Choose room ────────────────────────────── */
-function StepChambre({ selected, onSelect, voyageurs }) {
+export default function StepChambre({ selected, onSelect, voyageurs }) {
   const [hov, setHov] = useState(null);
   return (
     <div style={{ animation: "fadeUp .4s ease both" }}>
