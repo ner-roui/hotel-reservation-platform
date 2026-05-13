@@ -11,6 +11,7 @@ import ReservationPage from "./pages/HotelBookingPage";
 
 import Navbar from "./components/Navbar";
 import { Layout } from "./pages/Layout";
+import PaiementPage from "./pages/PaiementPage";
 
 function App() {
   return (
@@ -36,6 +37,16 @@ function App() {
           <>
             <Navbar />
             <ReservationPage />
+          </>
+        }
+      />
+
+      <Route
+        path="/payementpage"
+        element={
+          <>
+            <Navbar />
+            <PaiementPage/>
           </>
         }
       />
