@@ -51,6 +51,16 @@ function App() {
         }
       />
 
+      <Route
+        path="/messejours"
+        element={
+          <>
+            <Navbar />
+            <PaiementPage/>
+          </>
+        }
+      />
+
       {/* ADMIN LAYOUT */}
       <Route path="/" element={<Layout />}>
         <Route path="dashboard" element={<Dashboard />} />
