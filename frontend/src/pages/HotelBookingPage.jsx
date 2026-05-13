@@ -81,6 +81,7 @@ export default function ReservationPage() {
   const [voyageurs, setVoyageurs] = useState("2 adultes");
   const [search, setSearch] = useState("");
   const [prixMax, setPrixMax] = useState(1000);
+  const [price, setPrice] = useState("note")
   const [filterTypes, setFilterTypes] = useState(["Standard","Deluxe","Suite","Présidentielle"]);
   const [filterEquip, setFilterEquip] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -110,16 +111,18 @@ export default function ReservationPage() {
     const filtered = useMemo(() => {
       let filterrooms = [...CHAMBRES];
 
-   
+      const searchValue = search.toLowerCase();
+
+      // SEARCH
       if (search) {
         filterrooms = filterrooms.filter(item =>
-          item.type.toLowerCase().includes(search.toLowerCase()) ||
+          item.type.toLowerCase().includes(searchValue) ||
           item.numero.includes(search) ||
-          item.statut?.toLowerCase().includes(search.toLowerCase())
+          item.statut?.toLowerCase().includes(searchValue)
         );
       }
 
-    
+      // EQUIPMENTS
       if (filterEquip.length > 0) {
         filterrooms = filterrooms.filter(item =>
           (item.equipements || []).some(eq =>
@@ -128,22 +131,31 @@ export default function ReservationPage() {
         );
       }
 
-    
+      // TYPES
       if (filterTypes.length > 0) {
         filterrooms = filterrooms.filter(item =>
           filterTypes.includes(item.type)
         );
       }
 
-   
+      // PRICE FILTER
       filterrooms = filterrooms.filter(item =>
         item.prix <= prixMax
       );
 
-      return filterrooms;
-    }, [filterTypes, filterEquip, prixMax, search]);
+      // SORT
+      if (price === "asc") {
+        return [...filterrooms].sort((a, b) => a.prix - b.prix);
+      }
 
-    console.log('llllllllll', filtered)
+      if (price === "desc") {
+        return [...filterrooms].sort((a, b) => b.prix - a.prix);
+      }
+
+      return filterrooms;
+    }, [filterTypes, filterEquip, prixMax, search, price]);
+
+   
   const stats = {
     dispo: CHAMBRES.filter(c => c.statut === "Disponible").length,
     occupee: CHAMBRES.filter(c => c.statut === "Occupée").length,
@@ -273,11 +285,27 @@ export default function ReservationPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-500">Trier par</span>
-                  <select className="text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none"
-                    style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
-                    <option>Prix croissant</option>
-                    <option>Prix décroissant</option>
-                    <option>Note</option>
+                  <select value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none"
+                    style={{
+                      background: "rgba(255,255,255,.06)",
+                      border: "1px solid rgba(255,255,255,.08)",
+                    }}
+                  >
+                     <option className="bg-slate-900 text-white" value="note">
+                      Note
+                    </option>
+
+                    <option className="bg-slate-900 text-white" value="asc">
+                      Prix croissant
+                    </option>
+
+                    <option className="bg-slate-900 text-white" value="desc">
+                      Prix décroissant
+                    </option>
+
+                   
                   </select>
                 </div>
               </div>
