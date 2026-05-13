@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useFont = () => {
   useEffect(() => {
@@ -89,6 +90,7 @@ function SejourCard({ s, onPay, onCancel, style }) {
   const sc = STATUT_CFG[s.statut] || STATUT_CFG["En attente"];
   const pc = PAIE_CFG[s.paiement] || PAIE_CFG["Payé"];
   const isActive = s.statut === "En attente" || s.statut === "Confirmée";
+  const navigate = useNavigate()
 
   return (
     <div className="rounded-2xl overflow-hidden transition-all duration-300"
@@ -176,7 +178,8 @@ function SejourCard({ s, onPay, onCancel, style }) {
               </button>
             )}
             {isActive && (
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+              <button onClick={() => navigate(`/reservations/${s.id}/edit`)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.7)" }}
                 onMouseEnter={e => { e.currentTarget.style.background="rgba(255,255,255,.09)"; e.currentTarget.style.color="#f8fafc"; }}
                 onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,.05)"; e.currentTarget.style.color="rgba(148,163,184,.7)"; }}
@@ -261,38 +264,6 @@ export default function MesSejours() {
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#080b14", fontFamily: "'Outfit',sans-serif", fontWeight: 300 }}>
-
-      {/* ── Sidebar ── */}
-      <aside className="w-56 flex flex-col py-6 px-3 shrink-0" style={{ background: "rgba(255,255,255,.02)", borderRight: "1px solid rgba(255,255,255,.06)" }}>
-        <div className="flex items-center gap-2.5 px-3 mb-8">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>L</div>
-          <div>
-            <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Playfair Display',serif" }}>Lumière Hotels</p>
-            <p className="text-xs" style={{ color: "rgba(100,116,139,.7)" }}>Espace client · Client</p>
-          </div>
-        </div>
-        <nav className="flex flex-col gap-1 flex-1">
-          {NAV.map(item => (
-            <button key={item.label} onClick={() => setActiveNav(item.label)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left"
-              style={{ background: activeNav === item.label ? "rgba(124,58,237,.18)" : "transparent", color: activeNav === item.label ? "#a78bfa" : "rgba(148,163,184,.55)", borderLeft: activeNav === item.label ? "2px solid #7c3aed" : "2px solid transparent" }}>
-              <span className="text-base">{item.icon}</span>{item.label}
-            </button>
-          ))}
-        </nav>
-        <div className="px-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,.05)" }}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>EM</div>
-              <div>
-                <p className="text-white text-xs font-semibold">Élise Moreau</p>
-                <p style={{ fontSize: 11, color: "rgba(100,116,139,.6)" }}>Client</p>
-              </div>
-            </div>
-            <span style={{ color: "rgba(100,116,139,.45)", fontSize: 14, cursor: "pointer" }}>→</span>
-          </div>
-        </div>
-      </aside>
 
       {/* ── Main ── */}
       <main className="flex-1 overflow-y-auto flex flex-col">
@@ -382,21 +353,6 @@ export default function MesSejours() {
           </div>
         </div>
 
-        {/* Role switcher */}
-        <div className="sticky bottom-0 py-3 flex justify-center gap-2" style={{ background: "rgba(8,11,20,.95)", backdropFilter: "blur(10px)", borderTop: "1px solid rgba(255,255,255,.06)" }}>
-          {[{ role: "Admin", icon: "🛡" }, { role: "Réception", icon: "🪪" }, { role: "Client", icon: "👤" }].map(({ role, icon }) => (
-            <button key={role} onClick={() => setActiveRole(role)}
-              className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200"
-              style={{
-                background: activeRole === role ? "linear-gradient(135deg,#7c3aed,#4f46e5)" : "transparent",
-                color: activeRole === role ? "white" : "rgba(148,163,184,.55)",
-                border: activeRole === role ? "none" : "1px solid rgba(255,255,255,.07)",
-                boxShadow: activeRole === role ? "0 4px 14px rgba(124,58,237,.35)" : "none",
-              }}>
-              {icon} {role}
-            </button>
-          ))}
-        </div>
       </main>
 
       {/* Cancel modal */}

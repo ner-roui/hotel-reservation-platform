@@ -1,0 +1,138 @@
+/* ── Modal ──────────────────────────────────────────── */
+function ModifierModal({ onClose }) {
+  const [step, setStep] = useState(0);
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [form, setForm] = useState({
+    dateIn:    RESERVATION.dateIn,
+    dateOut:   RESERVATION.dateOut,
+    voyageurs: RESERVATION.voyageurs,
+    notes:     RESERVATION.notes,
+    chambre:   CHAMBRES_DISPO.find(c => c.numero === RESERVATION.numero) || CHAMBRES_DISPO[2],
+  });
+
+  const handleChange = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  const handleSave = () => {
+    setSaving(true);
+    setTimeout(() => { setSaving(false); setSaved(true); }, 1600);
+  };
+
+  const nights = diffDays(form.dateIn, form.dateOut);
+  const total = form.chambre.prixNuit * nights + Math.round(form.chambre.prixNuit * nights * 0.1);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md" />
+      <div
+        className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: "linear-gradient(160deg,#131827 0%,#0b0f1c 100%)", border: "1px solid rgba(255,255,255,.09)", maxHeight: "90vh", display: "flex", flexDirection: "column" }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Progress bar */}
+        <div className="h-0.5" style={{ background: "rgba(255,255,255,.06)" }}>
+          <div className="h-full transition-all duration-500"
+            style={{ width: saved ? "100%" : `${((step + 1) / 3) * 100}%`, background: "linear-gradient(to right,#7c3aed,#6366f1,#a78bfa)" }} />
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-7 pt-6 pb-0 shrink-0">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-0.5" style={{ color: "#a78bfa", letterSpacing: ".14em", fontSize: 10 }}>
+              Modifier la réservation
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-md flex items-center justify-center text-xs" style={{ background: "rgba(124,58,237,.2)", color: "#a78bfa" }}>✏️</span>
+              <span className="font-semibold text-white text-base" style={{ fontFamily: "'Playfair Display',serif" }}>{RESERVATION.id}</span>
+            </div>
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all"
+            style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)", color: "rgba(148,163,184,.7)" }}
+            onMouseEnter={e => { e.currentTarget.style.background="rgba(239,68,68,.1)"; e.currentTarget.style.color="#f87171"; }}
+            onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,.05)"; e.currentTarget.style.color="rgba(148,163,184,.7)"; }}
+          >✕</button>
+        </div>
+
+        {/* Body — scrollable */}
+        <div className="flex-1 overflow-y-auto px-7 py-6" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(124,58,237,.3) transparent" }}>
+          {saved ? (
+            /* Success */
+            <div className="flex flex-col items-center justify-center py-10 text-center" style={{ animation: "fadeUp .4s ease both" }}>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-5"
+                style={{ background: "rgba(52,211,153,.12)", border: "1.5px solid rgba(52,211,153,.3)" }}>✓</div>
+              <h3 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Playfair Display',serif" }}>Modifications enregistrées !</h3>
+              <p className="text-sm mb-1" style={{ color: "rgba(148,163,184,.7)" }}>
+                <span style={{ color: "#a78bfa", fontWeight: 600 }}>{RESERVATION.id}</span> a été mis à jour avec succès.
+              </p>
+              <p className="text-xs mb-6" style={{ color: "rgba(100,116,139,.6)" }}>
+                {form.chambre.type} {form.chambre.numero} · {formatDate(form.dateIn)} → {formatDate(form.dateOut)} · {nights} nuits
+              </p>
+              <div className="flex gap-3">
+                <button onClick={onClose}
+                  className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 4px 15px rgba(124,58,237,.35)" }}>
+                  Voir mes séjours
+                </button>
+                <button
+                  className="px-6 py-2.5 rounded-xl text-sm font-medium"
+                  style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.7)" }}>
+                  Payer maintenant
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Steps current={step} />
+              {step === 0 && <StepDates dateIn={form.dateIn} dateOut={form.dateOut} voyageurs={form.voyageurs} notes={form.notes} onChange={handleChange} />}
+              {step === 1 && <StepChambre selected={form.chambre} onSelect={c => handleChange("chambre", c)} voyageurs={form.voyageurs} />}
+              {step === 2 && <StepRecap res={RESERVATION} chambre={form.chambre} dateIn={form.dateIn} dateOut={form.dateOut} voyageurs={form.voyageurs} notes={form.notes} />}
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        {!saved && (
+          <div className="px-7 py-5 shrink-0 flex items-center justify-between"
+            style={{ borderTop: "1px solid rgba(255,255,255,.06)", background: "rgba(8,11,20,.5)", backdropFilter: "blur(8px)" }}>
+            <div>
+              {step === 2 && (
+                <div>
+                  <p className="text-xs" style={{ color: "rgba(100,116,139,.6)" }}>Nouveau total</p>
+                  <p className="text-lg font-bold" style={{ color: "#c4b5fd", fontFamily: "'Playfair Display',serif" }}>€ {total}</p>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              {step > 0 && (
+                <button onClick={() => setStep(s => s - 1)}
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
+                  style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.7)" }}
+                  onMouseEnter={e => { e.currentTarget.style.background="rgba(255,255,255,.09)"; e.currentTarget.style.color="#f8fafc"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,.05)"; e.currentTarget.style.color="rgba(148,163,184,.7)"; }}
+                >← Retour</button>
+              )}
+              {step < 2 ? (
+                <button onClick={() => setStep(s => s + 1)}
+                  className="px-7 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 4px 14px rgba(124,58,237,.35)" }}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = "0 6px 20px rgba(124,58,237,.55)"}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = "0 4px 14px rgba(124,58,237,.35)"}
+                >Continuer →</button>
+              ) : (
+                <button onClick={handleSave} disabled={saving}
+                  className="flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                  style={{ background: saving ? "rgba(124,58,237,.6)" : "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: saving ? "none" : "0 4px 14px rgba(124,58,237,.35)", cursor: saving ? "not-allowed" : "pointer" }}>
+                  {saving ? (
+                    <><span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white" style={{ animation: "spin .7s linear infinite" }} />Enregistrement…</>
+                  ) : "✓ Confirmer les modifications"}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -12,6 +12,8 @@ import ReservationPage from "./pages/HotelBookingPage";
 import Navbar from "./components/Navbar";
 import { Layout } from "./pages/Layout";
 import PaiementPage from "./pages/PaiementPage";
+import MesSejours from "./pages/MesSejours";
+import EditReservation from "./pages/EditReservation";
 
 function App() {
   return (
@@ -56,11 +58,14 @@ function App() {
         element={
           <>
             <Navbar />
-            <PaiementPage/>
+            <MesSejours/>
           </>
         }
       />
-
+      <Route
+        path="/reservations/:id/edit"
+        element={<EditReservation />}
+      />
       {/* ADMIN LAYOUT */}
       <Route path="/" element={<Layout />}>
         <Route path="dashboard" element={<Dashboard />} />
