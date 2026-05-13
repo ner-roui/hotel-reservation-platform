@@ -1,5 +1,5 @@
 /* ── Modal ──────────────────────────────────────────── */
-function ModifierModal({ onClose }) {
+export default function ModifierModal({ onClose }) {
   const [step, setStep] = useState(0);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
