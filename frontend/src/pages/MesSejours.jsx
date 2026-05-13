@@ -119,7 +119,7 @@ function CancelModal({ sejour, onConfirm, onClose }) {
 }
 
 /* ── Sejour Card ────────────────────────────────────── */
-function SejourCard({ s, onPay, onCancel, style }) {
+function SejourCard({ s, onPay, onCancel, style , setOpen}) {
   const [hovered, setHovered] = useState(false);
   const sc = STATUT_CFG[s.statut] || STATUT_CFG["En attente"];
   const pc = PAIE_CFG[s.paiement] || PAIE_CFG["Payé"];
@@ -211,8 +211,8 @@ function SejourCard({ s, onPay, onCancel, style }) {
                 🔒 Payer
               </button>
             )}
-            {isActive && (
-              <button onClick={() => navigate(`/reservations/${s.id}/edit`)}
+            {isActive && ( 
+              <button onClick={() => setOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.7)" }}
                 onMouseEnter={e => { e.currentTarget.style.background="rgba(255,255,255,.09)"; e.currentTarget.style.color="#f8fafc"; }}
@@ -269,11 +269,11 @@ export default function MesSejours() {
   const [sejours, setSejours] = useState(SEJOURS);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [notification, setNotification] = useState(null);
- const [open, setOpen] = useState(true);
+ const [open, setOpen] = useState(false);
   const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
   const handleCancel = (id) => {
-    setSejours(prev => prev.map(s => s.id === id ? { ...s, statut: "Annulée", paiement: "Payé" } : s));
+    setSejours(prev => prev.map(s => s.id === id ? { ...s, statut: "Annulée"} : s));
     setCancelTarget(null);
     showNotif("Réservation annulée avec succès.");
   };
@@ -377,7 +377,7 @@ export default function MesSejours() {
               <EmptyState />
             ) : (
               filtered.map((s, i) => (
-                <SejourCard key={s.id} s={s}
+                <SejourCard key={s.id} s={s} setOpen={setOpen}
                   onPay={() => {}}
                   onCancel={(sej) => setCancelTarget(sej)}
                   style={{ animation: `fadeUp .4s ${i * .07}s ease both` }}

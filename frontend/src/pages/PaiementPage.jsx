@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const useFont = () => {
   useEffect(() => {
@@ -162,6 +163,7 @@ function Summary({ res }) {
 
 /* ── Success Screen ────────────────────────────────── */
 function SuccessScreen() {
+  const navigate = useNavigate()
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
       <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-5"
@@ -176,11 +178,13 @@ function SuccessScreen() {
       </p>
       <p className="text-sm" style={{ color: "rgba(100,116,139,.7)" }}>Un email de confirmation a été envoyé à votre adresse.</p>
       <div className="flex gap-3 mt-8">
-        <button className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
+        <button onClick={() => navigate('/messejours')}
+        className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
           style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 4px 15px rgba(124,58,237,.3)" }}>
           Voir mes séjours
         </button>
-        <button className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+        <button onClick={() => navigate('/home')}
+        className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
           style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(148,163,184,.8)" }}>
           Retour à l'accueil
         </button>
@@ -372,22 +376,7 @@ export default function PaiementPage() {
           )}
         </div>
 
-        {/* ── Bottom role switcher ── */}
-        <div className="sticky bottom-0 py-3 flex justify-center gap-2"
-          style={{ background: "rgba(8,11,20,.95)", backdropFilter: "blur(10px)", borderTop: "1px solid rgba(255,255,255,.06)" }}>
-          {[{ role: "Admin", icon: "🛡" }, { role: "Réception", icon: "🪪" }, { role: "Client", icon: "👤" }].map(({ role, icon }) => (
-            <button key={role} onClick={() => setActiveRole(role)}
-              className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200"
-              style={{
-                background: activeRole === role ? "linear-gradient(135deg,#7c3aed,#4f46e5)" : "transparent",
-                color: activeRole === role ? "white" : "rgba(148,163,184,.55)",
-                border: activeRole === role ? "none" : "1px solid rgba(255,255,255,.07)",
-                boxShadow: activeRole === role ? "0 4px 14px rgba(124,58,237,.35)" : "none",
-              }}>
-              {icon} {role}
-            </button>
-          ))}
-        </div>
+     
       </main>
 
       <style>{`

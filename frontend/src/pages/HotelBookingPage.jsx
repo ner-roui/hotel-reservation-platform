@@ -148,8 +148,10 @@ export default function ReservationPage() {
         return [...filterrooms].sort((a, b) => a.prix - b.prix);
       }
 
-      if (price === "desc") {
+      else if (price === "desc") {
         return [...filterrooms].sort((a, b) => b.prix - a.prix);
+      }else{
+        return [...filterrooms];
       }
 
       return filterrooms;

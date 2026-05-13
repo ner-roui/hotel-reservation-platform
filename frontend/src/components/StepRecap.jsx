@@ -1,4 +1,34 @@
 /* ── Step 3: Recap ──────────────────────────────────── */
+
+const RESERVATION = {
+  id: "RES-2842",
+  type: "Deluxe", numero: "202", etage: 2,
+  lit: "1 lit king", superficie: 32,
+  dateIn: "2026-04-14", dateOut: "2026-04-17",
+  voyageurs: 2, prixNuit: 220,
+  img: "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=600&q=80",
+  equipements: ["WiFi", "TV 4K", "Minibar", "Spa privé"],
+  statut: "En attente",
+  notes: "",
+};
+
+const TYPE_COLORS = {
+  "Standard":       { bg: "rgba(96,165,250,.12)",  border: "rgba(96,165,250,.25)",  text: "#93c5fd" },
+  "Deluxe":         { bg: "rgba(167,139,250,.12)", border: "rgba(167,139,250,.25)", text: "#c4b5fd" },
+  "Suite":          { bg: "rgba(251,191,36,.12)",  border: "rgba(251,191,36,.25)",  text: "#fde68a" },
+  "Présidentielle": { bg: "rgba(52,211,153,.12)",  border: "rgba(52,211,153,.25)",  text: "#6ee7b7" },
+};
+
+
+/* ── Helpers ────────────────────────────────────────── */
+function diffDays(a, b) {
+  return Math.max(1, Math.round((new Date(b) - new Date(a)) / 86400000));
+}
+function formatDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, notes }) {
   const nights = diffDays(dateIn, dateOut);
   const prixBase = chambre.prixNuit * nights;
