@@ -248,12 +248,44 @@ const updatePayment = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────
+// DELETE PAYMENT
+// ─────────────────────────────────────
+
+const deletePayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedPayment = await PaymentModel.findByIdAndDelete(id);
+
+    if (!deletedPayment) {
+      return res.status(404).json({
+        success: false,
+        message: "Paiement introuvable",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Paiement supprimé avec succès",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   createPayment,
   getPayments,
     getPaymentById,
-    updatePayment
+    updatePayment,
+    deletePayment,
 };
 
 
