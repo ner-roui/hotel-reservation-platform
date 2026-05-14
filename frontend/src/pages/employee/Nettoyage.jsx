@@ -87,7 +87,6 @@ export default function Nettoyage() {
   const [pending, setPending] = useState(initialPending);
   const [done, setDone] = useState(initialDone);
   const [activeNav, setActiveNav] = useState("cleaning");
-  const [activeRole, setActiveRole] = useState("reception");
   const [marking, setMarking] = useState(null);
 
   const handleMark = async (item) => {
@@ -233,18 +232,7 @@ export default function Nettoyage() {
           )}
         </div>
 
-        {/* Role bar */}
-        <footer className="bg-white border-t border-gray-100 px-6 py-2.5 flex items-center justify-center gap-2">
-          <RolePill label="Admin" active={activeRole === "admin"} onClick={() => setActiveRole("admin")}
-            icon={<svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>}
-          />
-          <RolePill label="Réception" active={activeRole === "reception"} onClick={() => setActiveRole("reception")}
-            icon={<svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21" /></svg>}
-          />
-          <RolePill label="Client" active={activeRole === "client"} onClick={() => setActiveRole("client")}
-            icon={<svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>}
-          />
-        </footer>
+   
       </main>
     </div>
   );
