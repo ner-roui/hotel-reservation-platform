@@ -148,6 +148,35 @@ const createPayment = async (req, res) => {
   }
 };
 
+
+const getPayments = async (req, res) => {
+  try {
+    const payments = await PaymentModel.find()
+      .populate("reservation_id")
+      .populate("chambre_id")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: payments.length,
+      payments,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   createPayment,
+  getPayments,
 };
+
+
+
