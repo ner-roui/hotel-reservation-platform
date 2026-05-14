@@ -77,7 +77,7 @@ export default function SidebarEmp() {
         />
 
         <NavItem
-          to="/roomspage"
+          to="/planchambres"
           label="Plan des chambres"
           icon={
             <svg

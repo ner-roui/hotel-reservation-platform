@@ -21,6 +21,7 @@ import Nettoyage from "./pages/employee/Nettoyage";
 import Sidebar from "./components/SidebarReservation";
 import SidebarEmp from "./pages/employee/SidebarEmp";
 import EmployeLayout from "./pages/employee/EmployeLayout";
+import PlanChambres from "./pages/employee/Planchambres";
 
 function App() {
   return (
@@ -30,8 +31,9 @@ function App() {
     // <Nettoyage/>
     <Routes>
       <Route path="/" element={<EmployeLayout/>}>
-        <Route path="resemployepage" element={ <> <ResEmployePage/></>} />
-        <Route path="nettoyagepage" element={<> <Nettoyage/> </>} />
+        <Route path="resemployepage" element={<ResEmployePage/>} />
+        <Route path="nettoyagepage" element={<Nettoyage/>} />
+        <Route path="planchambres" element={<PlanChambres/>} />
       </Route>
       {/* LOGIN */}
       <Route path="/login" element={<LoginPage />} />
