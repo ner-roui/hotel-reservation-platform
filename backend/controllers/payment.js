@@ -172,11 +172,48 @@ const getPayments = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────
+// GET PAYMENT BY ID
+// ─────────────────────────────────────
+
+const getPaymentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const payment = await PaymentModel.findById(id)
+      .populate("reservation_id")
+      .populate("chambre_id");
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Paiement introuvable",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      payment,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
 
 module.exports = {
   createPayment,
   getPayments,
+    getPaymentById,
 };
+
+
 
 
 
