@@ -16,69 +16,72 @@ import MesSejours from "./pages/MesSejours";
 import EditReservation from "./pages/EditReservation";
 import UtilisateursPage from "./pages/UtilisateursPage";
 import PaiementsPage from "./pages/PaiementsDahsboard";
+import ResEmployePage from "./pages/employee/ResEmployePage";
 
 function App() {
   return (
-    <Routes>
+    
+    <ResEmployePage/>
+    // <Routes>
+      
+    //   {/* LOGIN */}
+    //   <Route path="/login" element={<LoginPage />} />
 
-      {/* LOGIN */}
-      <Route path="/login" element={<LoginPage />} />
+    //   {/* PUBLIC PAGES WITH NAVBAR */}
+    //   <Route
+    //     path="/home"
+    //     element={
+    //       <>
+    //         <Navbar />
+    //         <Home />
+    //       </>
+    //     }
+    //   />
 
-      {/* PUBLIC PAGES WITH NAVBAR */}
-      <Route
-        path="/home"
-        element={
-          <>
-            <Navbar />
-            <Home />
-          </>
-        }
-      />
+    //   <Route
+    //     path="/meschambres"
+    //     element={
+    //       <>
+    //         <Navbar />
+    //         <ReservationPage />
+    //       </>
+    //     }
+    //   />
 
-      <Route
-        path="/meschambres"
-        element={
-          <>
-            <Navbar />
-            <ReservationPage />
-          </>
-        }
-      />
+    //   <Route
+    //     path="/payementpage"
+    //     element={
+    //       <>
+    //         <Navbar />
+    //         <PaiementPage/>
+    //       </>
+    //     }
+    //   />
 
-      <Route
-        path="/payementpage"
-        element={
-          <>
-            <Navbar />
-            <PaiementPage/>
-          </>
-        }
-      />
+    //   <Route
+    //     path="/messejours"
+    //     element={
+    //       <>
+    //         <Navbar />
+    //         <MesSejours/>
+    //       </>
+    //     }
+    //   />
+    //   <Route
+    //     path="/reservations/:id/edit"
+    //     element={<EditReservation />}
+    //   />
+    //   {/* ADMIN LAYOUT */}
+    //   <Route path="/" element={<Layout />}>
+    //     <Route path="dashboard" element={<Dashboard />} />
+    //     <Route path="createroom" element={<CreateRoomPage />} />
+    //     <Route path="edit-room/:id" element={<CreateRoomPage />} />
+    //     <Route path="listroom" element={<ChambresAdmin />} />
+    //     <Route path="Listusers" element={<UtilisateursPage/>}/>
+    //     <Route path="Paiements" element={<PaiementsPage/>} />
+    //   </Route>
 
-      <Route
-        path="/messejours"
-        element={
-          <>
-            <Navbar />
-            <MesSejours/>
-          </>
-        }
-      />
-      <Route
-        path="/reservations/:id/edit"
-        element={<EditReservation />}
-      />
-      {/* ADMIN LAYOUT */}
-      <Route path="/" element={<Layout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="createroom" element={<CreateRoomPage />} />
-        <Route path="edit-room/:id" element={<CreateRoomPage />} />
-        <Route path="listroom" element={<ChambresAdmin />} />
-        <Route path="Listusers" element={<UtilisateursPage/>}/>
-        <Route path="Paiements" element={<PaiementsPage/>} />
-      </Route>
-
-    </Routes>
+    // </Routes>
   );
 }
 
