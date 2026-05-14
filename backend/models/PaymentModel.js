@@ -155,12 +155,7 @@ const paymentSchema = new Schema(
     },
   },
 
-  // reservation_active: {
-//   reservation_id,
-//   client_nom,
-//   date_checkin,
-//   date_checkout,
-// },
+
   {
     timestamps: true,
   }

@@ -246,6 +246,12 @@ const chambreSchema = new Schema(
       default: true,
     },
   },
+    // reservation_active: {
+//   reservation_id,
+//   client_nom,
+//   date_checkin,
+//   date_checkout,
+// },
   {
     timestamps: true,
   }
