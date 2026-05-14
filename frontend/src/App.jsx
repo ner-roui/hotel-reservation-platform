@@ -15,6 +15,7 @@ import PaiementPage from "./pages/PaiementPage";
 import MesSejours from "./pages/MesSejours";
 import EditReservation from "./pages/EditReservation";
 import UtilisateursPage from "./pages/UtilisateursPage";
+import PaiementsPage from "./pages/PaiementsDahsboard";
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
         <Route path="edit-room/:id" element={<CreateRoomPage />} />
         <Route path="listroom" element={<ChambresAdmin />} />
         <Route path="Listusers" element={<UtilisateursPage/>}/>
+        <Route path="Paiements" element={<PaiementsPage/>} />
       </Route>
 
     </Routes>

@@ -15,10 +15,10 @@ import { NavLink } from "react-router-dom";
 const navItems = [
   { label: "Dashboard", icon: "⊞", active: true , path : "/Dashboard"},
   { label: "Ajouter Chambre", icon: "🛏" , path : "/Createroom"},
-  { label: "Chambres", icon: "👤" , path : "/Listroom"},
+  { label: "Chambres", icon: "🛏" , path : "/Listroom"},
   { label: "Utilisateurs", icon: "👤" , path : "/Listusers"},
-  { label: "Réservations", icon: "📅" },
-  { label: "Paiements", icon: "💳" },
+  { label: "Réservations", icon: "📅"  , path : "/Listusers"},
+  { label: "Paiements", icon: "💳"  , path : "/Paiements"},
   { label: "Rapports", icon: "📊" },
   { label: "Paramètres", icon: "⚙️" },
 ];
