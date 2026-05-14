@@ -206,11 +206,54 @@ const getPaymentById = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────
+// UPDATE PAYMENT
+// ─────────────────────────────────────
+
+const updatePayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updatedPayment = await PaymentModel.findByIdAndUpdate(
+      id,
+      req.body,
+      {
+        new: true, // retourne le document mis à jour
+        runValidators: true, // applique les validations du schema
+      }
+    )
+      .populate("reservation_id")
+      .populate("chambre_id");
+
+    if (!updatedPayment) {
+      return res.status(404).json({
+        success: false,
+        message: "Paiement introuvable",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Paiement mis à jour avec succès",
+      payment: updatedPayment,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
 
 module.exports = {
   createPayment,
   getPayments,
     getPaymentById,
+    updatePayment
 };
 
 
