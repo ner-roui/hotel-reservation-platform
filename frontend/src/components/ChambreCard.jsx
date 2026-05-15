@@ -17,7 +17,7 @@ function Stars({ note }) {
   return (
     <div className="flex items-center gap-1">
       <span className="text-amber-400 text-sm">★</span>
-      <span className="text-sm font-semibold text-slate-200">{note.toFixed(1)}</span>
+      <span className="text-sm font-semibold text-slate-200">{note?.toFixed(1)}</span>
     </div>
   );
 }
@@ -85,9 +85,9 @@ export default function ChambreCard({ c, onReserver }) {
         {/* Equipements */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {c.equipements.slice(0, 4).map(e => (
-            <span key={e} className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
+            <span key={e.nom} className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
               style={{ background: "rgba(255,255,255,.05)", color: "rgba(255,255,255,.5)", border: "1px solid rgba(255,255,255,.06)" }}>
-              <span className="text-xs">{EQUIP_ICONS[e] || "•"}</span> {e}
+              <span className="text-xs">{EQUIP_ICONS[e] || "•"}</span> {e.nom}
             </span>
           ))}
           {c.equipements.length > 4 && (
@@ -101,7 +101,7 @@ export default function ChambreCard({ c, onReserver }) {
         <div className="flex items-end justify-between mt-auto">
           <div>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-white">€{c.prix}</span>
+              <span className="text-2xl font-bold text-white">€{c.prix_nuit}</span>
               <span className="text-slate-500 text-sm">/nuit</span>
             </div>
             <p className="text-emerald-400 text-xs font-medium mt-0.5">✓ Annulation gratuite</p>

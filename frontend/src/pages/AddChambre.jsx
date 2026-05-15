@@ -133,9 +133,9 @@ export default function CreateRoomPage() {
   const progPct = Math.round((progress / 5) * 100);
 
   const statusConfig = {
-    available: { label: "Disponible", sub: "Ouverte aux réservations", bg: "bg-emerald-50", border: "border-emerald-400", icon: "✅", iconBg: "bg-emerald-100" },
-    maintenance: { label: "Maintenance", sub: "Temporairement fermée", bg: "bg-amber-50", border: "border-amber-400", icon: "🔧", iconBg: "bg-amber-100" },
-    inactive: { label: "Inactive", sub: "Masquée du catalogue", bg: "bg-red-50", border: "border-red-400", icon: "🚫", iconBg: "bg-red-100" },
+    Disponible: { label: "Disponible", sub: "Ouverte aux réservations", bg: "bg-emerald-50", border: "border-emerald-400", icon: "✅", iconBg: "bg-emerald-100" },
+    Maintenance: { label: "Maintenance", sub: "Temporairement fermée", bg: "bg-amber-50", border: "border-amber-400", icon: "🔧", iconBg: "bg-amber-100" },
+    Inactive: { label: "Inactive", sub: "Masquée du catalogue", bg: "bg-red-50", border: "border-red-400", icon: "🚫", iconBg: "bg-red-100" },
   };
 
   const publish = async () => {
@@ -180,7 +180,7 @@ if (!form.priceWE) missingFields.push("Prix week-end");
     formData.append("prix_nuit", form.priceWeek);
 
     formData.append("prix_week", form.priceWE);
-
+    console.log('statussssssssss', status);
     formData.append("statut", status);
 
     // Equipements

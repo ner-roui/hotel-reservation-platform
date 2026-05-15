@@ -15,6 +15,8 @@ import {
 import ChambreCard from '../components/ChambreCard'
 import ModalReservation from "../components/ModalReservation";
 import Navbar from "../components/Navbar";
+import { useContext } from "react";
+import { AppContext } from "../context/Context";
 
 /* ─────────────────────────────────────────────
    GOOGLE FONT
@@ -33,48 +35,48 @@ const useFont = () => {
 /* ─────────────────────────────────────────────
    DATA
 ───────────────────────────────────────────── */
-const chambres = [
-  {
-    id: 1,
-    type: "Suite Royale",
-    numero: "501",
-    prix: 680,
-    note: 5.0,
-    statut: "Disponible",
-    img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1400&auto=format&fit=crop",
-    equipements: ["WiFi", "TV 4K", "Petit-déjeuner"],
-  },
-  {
-    id: 2,
-    type: "Deluxe",
-    numero: "203",
-    prix: 320,
-    note: 4.9,
-    statut: "Occupée",
-    img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400&auto=format&fit=crop",
-    equipements: ["WiFi", "TV 4K"],
-  },
-  {
-    id: 3,
-    type: "Suite Spa",
-    numero: "301",
-    prix: 480,
-    note: 4.8,
-    statut: "Disponible",
-    img: "https://images.unsplash.com/photo-1522798514-97ceb8c4f1c8?q=80&w=1400&auto=format&fit=crop",
-    equipements: ["WiFi", "Spa", "TV 4K"],
-  },
-  {
-    id: 4,
-    type: "Standard",
-    numero: "105",
-    prix: 140,
-    note: 4.7,
-    statut: "À nettoyer",
-    img: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1400&auto=format&fit=crop",
-    equipements: ["WiFi", "Petit-déjeuner"],
-  },
-];
+// const chambres = [
+//   {
+//     id: 1,
+//     type: "Suite Royale",
+//     numero: "501",
+//     prix: 680,
+//     note: 5.0,
+//     statut: "Disponible",
+//     img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1400&auto=format&fit=crop",
+//     equipements: ["WiFi", "TV 4K", "Petit-déjeuner"],
+//   },
+//   {
+//     id: 2,
+//     type: "Deluxe",
+//     numero: "203",
+//     prix: 320,
+//     note: 4.9,
+//     statut: "Occupée",
+//     img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400&auto=format&fit=crop",
+//     equipements: ["WiFi", "TV 4K"],
+//   },
+//   {
+//     id: 3,
+//     type: "Suite Spa",
+//     numero: "301",
+//     prix: 480,
+//     note: 4.8,
+//     statut: "Disponible",
+//     img: "https://images.unsplash.com/photo-1522798514-97ceb8c4f1c8?q=80&w=1400&auto=format&fit=crop",
+//     equipements: ["WiFi", "Spa", "TV 4K"],
+//   },
+//   {
+//     id: 4,
+//     type: "Standard",
+//     numero: "105",
+//     prix: 140,
+//     note: 4.7,
+//     statut: "À nettoyer",
+//     img: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1400&auto=format&fit=crop",
+//     equipements: ["WiFi", "Petit-déjeuner"],
+//   },
+// ];
 
 
 
@@ -90,7 +92,11 @@ export default function HomePage() {
   const [depart, setDepart] = useState("18 Avr 2026");
   const [voyageurs, setVoyageurs] = useState("2 Adultes");
    const [selected, setSelected] = useState(null);
+   
+   const {chambres, loading} = useContext(AppContext);
+   
 
+  console.log(chambres, loading ,'xiwwwhome')
   const filtered = useMemo(() => {
     return chambres.filter(
       (c) =>
@@ -98,6 +104,14 @@ export default function HomePage() {
         c.numero.includes(search)
     );
   }, [search]);
+  
+    if (loading) {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-10 w-10 border-4 border-indigo-500 border-t-transparent" />
+    </div>
+  );
+}
 
   return (
     <div

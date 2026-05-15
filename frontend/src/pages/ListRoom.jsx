@@ -1,17 +1,19 @@
+import { useContext } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/Context";
 
-const chambres = [
-  { id: 1, numero: "101", type: "Standard", etage: 1, capacite: 2, prix: 80, statut: "Disponible", superficie: 22, vue: "Jardin", equipements: ["WiFi", "TV", "Climatisation", "Sèche-cheveux"], client: null, checkIn: null, checkOut: null, note: 4.2, image: "🛏️" },
-  { id: 2, numero: "102", type: "Standard", etage: 1, capacite: 2, prix: 80, statut: "Occupée", superficie: 22, vue: "Jardin", equipements: ["WiFi", "TV", "Climatisation"], client: "Marc Dupont", checkIn: "08 Mai", checkOut: "11 Mai", note: 4.5, image: "🛏️" },
-  { id: 3, numero: "201", type: "Supérieure", etage: 2, capacite: 2, prix: 120, statut: "Disponible", superficie: 30, vue: "Piscine", equipements: ["WiFi", "TV", "Climatisation", "Minibar", "Coffre-fort"], client: null, checkIn: null, checkOut: null, note: 4.7, image: "🛏️" },
-  { id: 4, numero: "202", type: "Supérieure", etage: 2, capacite: 3, prix: 140, statut: "Occupée", superficie: 34, vue: "Piscine", equipements: ["WiFi", "TV", "Climatisation", "Minibar", "Baignoire"], client: "Léa Bernard", checkIn: "13 Avr", checkOut: "14 Mai", note: 4.8, image: "🛏️" },
-  { id: 5, numero: "301", type: "Deluxe", etage: 3, capacite: 2, prix: 180, statut: "À nettoyer", superficie: 40, vue: "Mer", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Balcon"], client: null, checkIn: null, checkOut: null, note: 4.9, image: "✨" },
-  { id: 6, numero: "302", type: "Deluxe", etage: 3, capacite: 2, prix: 180, statut: "Disponible", superficie: 40, vue: "Mer", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Balcon"], client: null, checkIn: null, checkOut: null, note: 4.6, image: "🛏️" },
-  { id: 7, numero: "401", type: "Suite", etage: 4, capacite: 4, prix: 320, statut: "Occupée", superficie: 65, vue: "Panoramique", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Salon", "Cuisine", "Balcon"], client: "Émile Rousseau", checkIn: "12 Avr", checkOut: "15 Mai", note: 5.0, image: "👑" },
-  { id: 8, numero: "402", type: "Suite", etage: 4, capacite: 4, prix: 320, statut: "Maintenance", superficie: 65, vue: "Panoramique", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Salon"], client: null, checkIn: null, checkOut: null, note: 4.9, image: "🔧" },
-  { id: 9, numero: "501", type: "Suite Présidentielle", etage: 5, capacite: 6, prix: 680, statut: "Occupée", superficie: 120, vue: "Panoramique 360°", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Salon", "Cuisine", "Salle à manger", "Terrasse"], client: "Camille Petit", checkIn: "14 Avr", checkOut: "18 Mai", note: 5.0, image: "👑" },
-];
+// const chambres = [
+//   { id: 1, numero: "101", type: "Standard", etage: 1, capacite: 2, prix: 80, statut: "Disponible", superficie: 22, vue: "Jardin", equipements: ["WiFi", "TV", "Climatisation", "Sèche-cheveux"], client: null, checkIn: null, checkOut: null, note: 4.2, image: "🛏️" },
+//   { id: 2, numero: "102", type: "Standard", etage: 1, capacite: 2, prix: 80, statut: "Occupée", superficie: 22, vue: "Jardin", equipements: ["WiFi", "TV", "Climatisation"], client: "Marc Dupont", checkIn: "08 Mai", checkOut: "11 Mai", note: 4.5, image: "🛏️" },
+//   { id: 3, numero: "201", type: "Supérieure", etage: 2, capacite: 2, prix: 120, statut: "Disponible", superficie: 30, vue: "Piscine", equipements: ["WiFi", "TV", "Climatisation", "Minibar", "Coffre-fort"], client: null, checkIn: null, checkOut: null, note: 4.7, image: "🛏️" },
+//   { id: 4, numero: "202", type: "Supérieure", etage: 2, capacite: 3, prix: 140, statut: "Occupée", superficie: 34, vue: "Piscine", equipements: ["WiFi", "TV", "Climatisation", "Minibar", "Baignoire"], client: "Léa Bernard", checkIn: "13 Avr", checkOut: "14 Mai", note: 4.8, image: "🛏️" },
+//   { id: 5, numero: "301", type: "Deluxe", etage: 3, capacite: 2, prix: 180, statut: "À nettoyer", superficie: 40, vue: "Mer", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Balcon"], client: null, checkIn: null, checkOut: null, note: 4.9, image: "✨" },
+//   { id: 6, numero: "302", type: "Deluxe", etage: 3, capacite: 2, prix: 180, statut: "Disponible", superficie: 40, vue: "Mer", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Balcon"], client: null, checkIn: null, checkOut: null, note: 4.6, image: "🛏️" },
+//   { id: 7, numero: "401", type: "Suite", etage: 4, capacite: 4, prix: 320, statut: "Occupée", superficie: 65, vue: "Panoramique", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Salon", "Cuisine", "Balcon"], client: "Émile Rousseau", checkIn: "12 Avr", checkOut: "15 Mai", note: 5.0, image: "👑" },
+//   { id: 8, numero: "402", type: "Suite", etage: 4, capacite: 4, prix: 320, statut: "Maintenance", superficie: 65, vue: "Panoramique", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Salon"], client: null, checkIn: null, checkOut: null, note: 4.9, image: "🔧" },
+//   { id: 9, numero: "501", type: "Suite Présidentielle", etage: 5, capacite: 6, prix: 680, statut: "Occupée", superficie: 120, vue: "Panoramique 360°", equipements: ["WiFi", "TV 4K", "Climatisation", "Minibar", "Jacuzzi", "Salon", "Cuisine", "Salle à manger", "Terrasse"], client: "Camille Petit", checkIn: "14 Avr", checkOut: "18 Mai", note: 5.0, image: "👑" },
+// ];
 
 const statutConfig = {
   "Disponible":  { bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500", badge: "bg-emerald-500" },
@@ -46,7 +48,7 @@ function StarRating({ note }) {
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
         </svg>
       ))}
-      <span className="text-xs text-slate-500 ml-0.5">{note.toFixed(1)}</span>
+      <span className="text-xs text-slate-500 ml-0.5">{note?.toFixed(1)}</span>
     </div>
   );
 }
@@ -60,8 +62,8 @@ function ChambreCard({ chambre, onSelect }) {
       className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden group"
     >
       {/* Top gradient band */}
-      <div className={`h-24 bg-gradient-to-br ${tc} relative flex items-center justify-center`}>
-        <span className="text-4xl opacity-80">{chambre.image}</span>
+      <div className="h-40 relative overflow-hidden">
+      < img src={`http://localhost:3000${chambre.images[0]}`} />
         <div className="absolute top-3 left-3">
           <span className={`text-xs font-bold text-white bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full`}>
             Ch. {chambre.numero}
@@ -84,7 +86,7 @@ function ChambreCard({ chambre, onSelect }) {
             <p className="text-slate-800 font-bold text-base">Chambre {chambre.numero}</p>
           </div>
           <div className="text-right">
-            <p className="text-indigo-600 font-bold text-lg">€{chambre.prix}</p>
+            <p className="text-indigo-600 font-bold text-lg">€{chambre.prix_nuit}</p>
             <p className="text-slate-400 text-xs">/nuit</p>
           </div>
         </div>
@@ -120,7 +122,7 @@ function ChambreCard({ chambre, onSelect }) {
 
         <div className="mt-3 flex flex-wrap gap-1">
           {chambre.equipements.slice(0, 3).map(e => (
-            <span key={e} className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{e}</span>
+            <span key={e.nom} className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{e.nom}</span>
           ))}
           {chambre.equipements.length > 3 && (
             <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">+{chambre.equipements.length - 3}</span>
@@ -144,8 +146,9 @@ function DetailPanel({ chambre, onClose }) {
         onClick={e => e.stopPropagation()}
       >
         {/* Header image */}
-        <div className={`h-48 bg-gradient-to-br ${tc} flex items-center justify-center relative shrink-0`}>
-          <span className="text-7xl opacity-70">{chambre.image}</span>
+        <div className="h-40 relative overflow-hidden">
+         <img className="w-full h-full object-cover block"
+         src={`http://localhost:3000${chambre.images[0]}`} />
           <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">✕</button>
           <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
             <div>
@@ -165,7 +168,7 @@ function DetailPanel({ chambre, onClose }) {
               { label: "Étage", val: chambre.etage },
               { label: "Surface", val: `${chambre.superficie}m²` },
               { label: "Capacité", val: `${chambre.capacite}p` },
-              { label: "Prix/nuit", val: `€${chambre.prix}` },
+              { label: "Prix/nuit", val: `€${chambre.prix_nuit}` },
             ].map(s => (
               <div key={s.label} className="bg-slate-50 rounded-xl p-3 text-center">
                 <p className="text-slate-400 text-xs mb-0.5">{s.label}</p>
@@ -209,8 +212,8 @@ function DetailPanel({ chambre, onClose }) {
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Équipements</p>
             <div className="flex flex-wrap gap-2">
               {chambre.equipements.map(e => (
-                <span key={e} className="flex items-center gap-1.5 text-sm bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl font-medium">
-                  ✓ {e}
+                <span key={e.nom} className="flex items-center gap-1.5 text-sm bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl font-medium">
+                  ✓ {e.nom}
                 </span>
               ))}
             </div>
@@ -218,11 +221,7 @@ function DetailPanel({ chambre, onClose }) {
 
           {/* Actions */}
           <div className="flex flex-col gap-2 mt-auto">
-            {chambre.statut === "Disponible" && (
-              <button className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors">
-                + Nouvelle réservation
-              </button>
-            )}
+
             {chambre.statut === "À nettoyer" && (
               <button className="w-full bg-amber-500 text-white py-3 rounded-xl font-semibold hover:bg-amber-600 transition-colors">
                 ✓ Marquer comme propre
@@ -233,7 +232,7 @@ function DetailPanel({ chambre, onClose }) {
                 ✓ Fin de maintenance
               </button>
             )}
-            <button onClick={() => navigate(`/edit-room/${chambre.id}`)}
+            <button onClick={() => navigate(`/edit-room/${chambre._id}`)}
             className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors">
               ✏️ Modifier la chambre
             </button>
@@ -251,12 +250,13 @@ export default function ChambresAdmin() {
   const [filterType, setFilterType] = useState("Tous");
   const [viewMode, setViewMode] = useState("grid");
   const [selected, setSelected] = useState(null);
+  const {chambres, lenChambres} = useContext(AppContext)
   const navigate = useNavigate()
 
   const statuts = ["Tous", "Disponible", "Occupée", "À nettoyer", "Maintenance"];
   const types = ["Tous", "Standard", "Supérieure", "Deluxe", "Suite", "Suite Présidentielle"];
 
-  const filtered = chambres.filter(c => {
+  const filtered = chambres?.filter(c => {
     const matchSearch = c.numero.includes(search) || c.type.toLowerCase().includes(search.toLowerCase()) || (c.client && c.client.toLowerCase().includes(search.toLowerCase()));
     const matchStatut = filterStatut === "Tous" || c.statut === filterStatut;
     const matchType = filterType === "Tous" || c.type === filterType;
@@ -264,11 +264,11 @@ export default function ChambresAdmin() {
   });
 
   const stats = {
-    total: chambres.length,
-    disponibles: chambres.filter(c => c.statut === "Disponible").length,
-    occupees: chambres.filter(c => c.statut === "Occupée").length,
-    nettoyage: chambres.filter(c => c.statut === "À nettoyer").length,
-    maintenance: chambres.filter(c => c.statut === "Maintenance").length,
+    total: lenChambres,
+    disponibles: chambres?.filter(c => c.statut === "Disponible").length,
+    occupees: chambres?.filter(c => c.statut === "Occupée").length,
+    nettoyage: chambres?.filter(c => c.statut === "À nettoyer").length,
+    maintenance: chambres?.filter(c => c.statut === "Maintenance").length,
   };
 
   return (
@@ -281,7 +281,7 @@ export default function ChambresAdmin() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-slate-800">Gestion des chambres 🛏️</h1>
-              <p className="text-slate-400 text-sm mt-0.5">{chambres.length} chambres au total · Mai 2026</p>
+              <p className="text-slate-400 text-sm mt-0.5">{lenChambres} chambres au total · Mai 2026</p>
             </div>
             <button onClick={() => {navigate('/Createroom')}}
             className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 rounded-xl text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
@@ -340,11 +340,11 @@ export default function ChambresAdmin() {
         </div>
 
         <div className="px-8 py-6">
-          <p className="text-sm text-slate-400 mb-4">{filtered.length} chambre{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}</p>
+          <p className="text-sm text-slate-400 mb-4">{filtered?.length} chambre{filtered?.length > 1 ? "s" : ""} affichée{filtered?.length > 1 ? "s" : ""}</p>
 
           {viewMode === "grid" ? (
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-              {filtered.map(c => <ChambreCard key={c.id} chambre={c} onSelect={setSelected} />)}
+              {filtered.map(c => <ChambreCard key={c._id} chambre={c} onSelect={setSelected} />)}
             </div>
           ) : (
             /* List view */
@@ -362,7 +362,7 @@ export default function ChambresAdmin() {
                     const sc = statutConfig[c.statut];
                     const tc = typeColors[c.type];
                     return (
-                      <tr key={c.id} onClick={() => setSelected(c)}
+                      <tr key={c._id} onClick={() => setSelected(c)}
                         className={`hover:bg-indigo-50/40 cursor-pointer transition-colors ${i !== filtered.length - 1 ? "border-b border-slate-50" : ""}`}>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">

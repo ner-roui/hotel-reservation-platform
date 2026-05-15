@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Building2,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   // ─────────────────────────────
@@ -19,6 +20,8 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate()
 
   const [role, setRole] = useState("Client");
   const [mode, setMode] = useState("login"); // login | signup
@@ -39,6 +42,8 @@ export default function LoginPage() {
   // ─────────────────────────────
   // SUBMIT
   // ─────────────────────────────
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -59,20 +64,27 @@ export default function LoginPage() {
           ? "http://localhost:3000/api/auth/login"
           : "http://localhost:3000/api/auth/register";
 
-      const res = await axios.post(url, {
+      const {data} = await axios.post(url, {
         name: form.name,
         email: form.email,
         password: form.password,
         role,
       });
 
-      console.log(res.data);
+      console.log(data);
 
       alert(
         mode === "login"
           ? "✅ Connexion réussie"
           : "✅ Compte créé"
       );
+      if(data.user.role === "Admin" ){
+        console.log('hhhhhh')
+          navigate('/dashboard')
+      }
+      else if( data.user.role === "Client" ){
+          navigate('/home')
+      }
 
    
 4  
