@@ -91,26 +91,24 @@ export default function HomePage() {
   const [arrivee, setArrivee] = useState("14 Avr 2026");
   const [depart, setDepart] = useState("18 Avr 2026");
   const [voyageurs, setVoyageurs] = useState("2 Adultes");
-   const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(null);
    
    const {chambres, loading} = useContext(AppContext);
    
-
-  console.log(chambres, loading ,'xiwwwhome')
   const filtered = useMemo(() => {
     return chambres.filter(
       (c) =>
         c.type.toLowerCase().includes(search.toLowerCase()) ||
         c.numero.includes(search)
     );
-  }, [search]);
+  }, [search, chambres]);
   
     if (loading) {
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="animate-spin rounded-full h-10 w-10 border-4 border-indigo-500 border-t-transparent" />
-    </div>
-  );
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-indigo-500 border-t-transparent" />
+        </div>
+      );
 }
 
   return (
