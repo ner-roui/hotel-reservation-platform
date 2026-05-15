@@ -11,8 +11,9 @@ const {
   getAllReservations,
   getUserReservations,
   getReservationById,
-  updateReservation
-} = require("../controllers/reservationController");
+  updateReservation,
+  deleteReservation
+} = require("../controllers/reservation");
 
 router.post("/:roomId",auth, createReservation);
 router.get("/getallreservations", auth, getAllReservations);

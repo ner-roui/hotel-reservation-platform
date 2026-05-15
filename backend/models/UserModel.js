@@ -1,8 +1,8 @@
 // models/User.js
 
-const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
 
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -50,7 +50,7 @@ const userSchema = new Schema(
 );
 
 // Index pour optimiser login
-userSchema.index({ email: 1 });
+// userSchema.index({ email: 1 });
 
-UserModel =  model("User", userSchema);
+const UserModel =  mongoose.model("User", userSchema);
 module.exports = UserModel
