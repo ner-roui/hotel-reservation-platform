@@ -269,6 +269,7 @@ export default function MesSejours() {
   const [sejours, setSejours] = useState(SEJOURS);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [notification, setNotification] = useState(null);
+  
  const [open, setOpen] = useState(false);
   const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 

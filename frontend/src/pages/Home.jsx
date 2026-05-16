@@ -257,7 +257,7 @@ export default function HomePage() {
 
         <div className="grid gap-7 md:grid-cols-3 xl:grid-cols-3">
           {filtered.map((c, i) => (
-             <div key={c.id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
+             <div key={c._id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
                 <ChambreCard c={c} onReserver={setSelected} />
             </div>
           ))}

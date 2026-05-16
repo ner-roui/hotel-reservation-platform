@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useContext } from "react";
 import ChambreCard from '../components/ChambreCard'
 import Sidebar from "../components/SidebarReservation";
 import ModalReservation from "../components/ModalReservation";
+import { AppContext } from "../context/Context";
 
 /* ── Font injection ─────────────────────────────────── */
 const useFont = () => {
@@ -86,6 +87,7 @@ export default function ReservationPage() {
   const [filterEquip, setFilterEquip] = useState([]);
   const [selected, setSelected] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const {chambres} = useContext(AppContext)
   const mainRef = useRef(null);
 
   useEffect(() => {
@@ -99,7 +101,7 @@ export default function ReservationPage() {
   const toggleType = t => setFilterTypes(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
   const toggleEquip = e => setFilterEquip(prev => prev.includes(e) ? prev.filter(x => x !== e) : [...prev, e]);
 
-  console.log('filters', filterTypes, 'filterEquip', filterEquip)
+ 
 
   // const filtered = CHAMBRES.filter(c => {
   //   const mType = filterTypes.some(t => c.type === t || c.type.includes(t));
@@ -109,7 +111,8 @@ export default function ReservationPage() {
   // });
 
     const filtered = useMemo(() => {
-      let filterrooms = [...CHAMBRES];
+      console.log('lllllllll', chambres)
+      let filterrooms = [...chambres];
 
       const searchValue = search.toLowerCase();
 
@@ -140,9 +143,8 @@ export default function ReservationPage() {
 
       // PRICE FILTER
       filterrooms = filterrooms.filter(item =>
-        item.prix <= prixMax
+        item.prix_nuit <= prixMax
       );
-
       // SORT
       if (price === "asc") {
         return [...filterrooms].sort((a, b) => a.prix - b.prix);
@@ -155,13 +157,16 @@ export default function ReservationPage() {
       }
 
       return filterrooms;
-    }, [filterTypes, filterEquip, prixMax, search, price]);
+    }, [filterTypes, filterEquip, prixMax, search, price, chambres]);
 
+  
+  console.log('chmabres,===>', chambres);
+   console.log('filtered,===>', filtered);
    
   const stats = {
-    dispo: CHAMBRES.filter(c => c.statut === "Disponible").length,
-    occupee: CHAMBRES.filter(c => c.statut === "Occupée").length,
-    nettoyage: CHAMBRES.filter(c => c.statut === "À nettoyer").length,
+    dispo: chambres?.filter(c => c.statut === "Disponible").length,
+    occupee: chambres?.filter(c => c.statut === "Occupée").length,
+    nettoyage: chambres?.filter(c => c.statut === "À nettoyer").length,
   };
 
   return (

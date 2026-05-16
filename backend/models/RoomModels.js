@@ -184,7 +184,7 @@ const chambreSchema = new Schema(
     // Statut
     statut: {
       type: String,
-      enum: ["Disponible", "Occupée", "À nettoyer", "Maintenance"],
+      enum: ["Disponible", "Occupée", "À nettoyer", "Maintenance", "Inactive"],
       default: "Disponible",
     },
 
@@ -202,8 +202,8 @@ const chambreSchema = new Schema(
 
     // Réservation active
     reservation_active: {
-      type: reservationActiveSchema,
-      default: null,
+      type: [reservationActiveSchema],
+      default: [],
     },
 
     // Historique nettoyages

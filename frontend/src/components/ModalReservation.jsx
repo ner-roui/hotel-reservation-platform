@@ -9,7 +9,7 @@ function Stars({ note }) {
     <div className="flex items-center gap-1 mt-1">
       <span className="text-amber-400 text-sm">★</span>
       <span className="text-sm font-semibold text-slate-200">
-        {note.toFixed(1)}
+        {note?.toFixed(1)}
       </span>
     </div>
   );
@@ -33,6 +33,11 @@ export default function ModalReservation({ chambre, onClose }) {
   if (!chambre) return null;
 
   
+  const reserver = (c) =>{
+
+    navigate('/payementpage')
+
+  }
 
   /* ── Calcul nuits ── */
   const nights =
@@ -118,7 +123,7 @@ export default function ModalReservation({ chambre, onClose }) {
               }}
             >
               <img
-                src={chambre.img}
+                src={`http://localhost:3000${chambre.images[0]}`}
                 className="w-28 h-24 object-cover flex-shrink-0"
                 alt=""
               />
@@ -229,17 +234,17 @@ export default function ModalReservation({ chambre, onClose }) {
               }}
             >
               <span className="text-slate-400 text-sm">
-                €{chambre.prix} × {nights} nuits
+                €{chambre.prix_nuit} × {nights} nuits
               </span>
 
               <span className="text-white text-lg font-bold">
-                €{chambre.prix * nights}
+                €{chambre.prix_nuit * nights}
               </span>
             </div>
 
             {/* Button */}
             <button
-              onClick={() => navigate('/payementpage')}
+              onClick={() => reserver(chambre)}
               className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-white"
               style={{
                 background:

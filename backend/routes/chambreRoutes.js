@@ -15,7 +15,7 @@ const {addRoom ,
 router.post("/add-room",upload.array("images", 10),addRoom);
 
 // GET all
-router.get("/", getAllRooms);
+router.get("/get-room", getAllRooms);
 
 
 // GET available
