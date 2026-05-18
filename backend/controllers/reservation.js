@@ -7,7 +7,7 @@ const RoomModel = require("../models/RoomModels");
 
 const createReservation = async (req, res) => {
   try {
-    // const { userId } = req.user;
+    const { userId } = req.user;
     const { roomId } = req.params;
     const { arrivee, depart, prixParNuit } = req.body;
 
@@ -20,8 +20,9 @@ const createReservation = async (req, res) => {
     const isOverlap = room.reservation_active?.some((r) => {
       const checkin = new Date(r.date_checkin);
       const checkout = new Date(r.date_checkout);
+      const payment = r.paymentStatus;
 
-      return start < checkout && end > checkin;
+      return start < checkout && end > checkin && payment === "PAID" ;
     });
 
     if (isOverlap) {
@@ -43,7 +44,7 @@ const createReservation = async (req, res) => {
 
     // 3. create reservation
     const reservation = await Reservation.create({
-       // user: userId,
+       user: userId,
       chambre: roomId,
       arrivee: start,
       depart: end,
@@ -55,16 +56,16 @@ const createReservation = async (req, res) => {
     });
 
     // 4. push dans room array
-    await RoomModel.findByIdAndUpdate(roomId, {
-      $push: {
-        reservation_active: {
-          reservation_id: reservation._id,
-          date_checkin: start,
-          date_checkout: end,
-          montant: total,
-        },
-      },
-    });
+  await RoomModel.findByIdAndUpdate(roomId, {
+    $push: {
+      reservation_active: {
+        reservation_id: reservation._id,
+        date_checkin: start,
+        date_checkout: end,
+        montant: total
+      }
+    }
+  });
 
     return res.status(201).json({
       message: "Réservation créée avec succès",

@@ -10,22 +10,25 @@ import {
   Building2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../context/Context";
 
 export default function LoginPage() {
-  // ─────────────────────────────
-  // STATE
-  // ─────────────────────────────
+  
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
   });
 
+
   const navigate = useNavigate()
 
   const [role, setRole] = useState("Client");
   const [mode, setMode] = useState("login"); // login | signup
   const [loading, setLoading] = useState(false);
+
+  const {setUser} = useContext(AppContext)
 
   const set = (k, v) =>
     setForm((prev) => ({
@@ -43,63 +46,55 @@ export default function LoginPage() {
   // SUBMIT
   // ─────────────────────────────
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  try {
+    setLoading(true);
 
-    try {
-      // validation
-      if (mode === "signup" && !form.name) {
-        return alert("Veuillez entrer votre nom");
-      }
+    const url =
+      mode === "login"
+        ? "http://localhost:3000/api/auth/login"
+        : "http://localhost:3000/api/auth/register";
 
-      if (!form.email || !form.password) {
-        return alert("Veuillez remplir tous les champs");
-      }
+    const payload =
+      mode === "login"
+        ? {
+            email: form.email,
+            password: form.password,
+          }
+        : {
+            name: form.name,
+            email: form.email,
+            password: form.password,
+            role,
+          };
 
-      setLoading(true);
+    const { data } = await axios.post(url, payload, {
+      withCredentials: true,
+    });
 
-      const url =
-        mode === "login"
-          ? "http://localhost:3000/api/auth/login"
-          : "http://localhost:3000/api/auth/register";
+    console.log(data);
 
-      const {data} = await axios.post(url, {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        role,
-      });
+    setUser(data.user);
 
-      console.log(data);
+    alert(mode === "login" ? "✅ Connexion réussie" : "✅ Compte créé");
 
-      alert(
-        mode === "login"
-          ? "✅ Connexion réussie"
-          : "✅ Compte créé"
-      );
-      if(data.user.role === "Admin" ){
-        console.log('hhhhhh')
-          navigate('/dashboard')
-      }
-      else if( data.user.role === "Client" ){
-          navigate('/home')
-      }
-
-   
-4  
-
-    } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        "Erreur serveur";
-
-      alert(message);
-
-    } finally {
-      setLoading(false);
+    if (data.user.role === "Admin") {
+      navigate("/dashboard");
+    } else {
+      navigate("/home");
     }
-  };
+  } catch (err) {
+    console.log("ERROR:", err);
+
+    alert(err.response?.data?.message || "Erreur serveur");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-700 via-blue-500 to-cyan-400 flex items-center justify-center px-6 py-10 relative overflow-hidden">

@@ -105,6 +105,12 @@ const reservationActiveSchema = new Schema(
 
     date_checkout: Date,
 
+    paymentStatus: {
+        type: String,
+        enum: ["UNPAID", "PAID"],
+        default: "UNPAID",
+      },
+
     montant: {
       type: Number,
       min: 0,

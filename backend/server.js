@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
+const dns = require("dns");
+cookieParser = require("cookie-parser")
+dns.setDefaultResultOrder("ipv4first");
 const chambreRoutes = require("./routes/chambreRoutes");
 
 const authRoutes = require("./routes/userRoutes");
@@ -20,10 +23,15 @@ const app = express();
 // Middlewares
 // ─────────────────────────────────────────────
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/chambres", chambreRoutes);
 app.use("/api/auth", authRoutes);

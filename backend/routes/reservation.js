@@ -15,7 +15,7 @@ const {
   deleteReservation
 } = require("../controllers/reservation");
 
-router.post("/:roomId", createReservation);
+router.post("/:roomId", auth,createReservation);
 router.get("/getallreservations", auth, getAllReservations);
 router.get("/myreservation", auth, getUserReservations);
 router.get("/reservationbyid/:id", auth, getReservationById);

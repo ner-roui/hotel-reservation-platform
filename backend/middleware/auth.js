@@ -7,7 +7,9 @@ const User = require("../models/UserModel");
 const authMiddleware = async (req, res, next) => {
   try {
     // 1. Récupérer token depuis cookies
+    console.log('piwww', req.cookies)
     const token = req.cookies.token;
+    console.log(token, "tokennn")
 
     if (!token) {
       return res.status(401).json({

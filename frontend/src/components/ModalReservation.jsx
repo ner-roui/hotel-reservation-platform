@@ -2,6 +2,8 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Navigate, useNavigate } from "react-router-dom";
+import axios from "axios"
+
 
 /* ── Stars ──────────────────────────────── */
 function Stars({ note }) {
@@ -33,11 +35,29 @@ export default function ModalReservation({ chambre, onClose }) {
   if (!chambre) return null;
 
   
-  const reserver = (c) =>{
+const reserver = async (c) => {
+  try {
+    const { data } = await axios.post(
+      `http://localhost:3000/reservation/${c._id}`,
+      {
+        arrivee,
+        depart,
+        prixParNuit: c.prix_nuit,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
-    navigate('/payementpage')
+    console.log(data);
 
+    navigate("/payementpage");
+  } catch (e) {
+    console.log(e);
+
+    alert(e.response?.data?.message || e.message);
   }
+};
 
   /* ── Calcul nuits ── */
   const nights =

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/Context";
 
-
+import { useContext } from "react";
 
 const STATUT_CFG = {
   "Disponible": { dot: "bg-emerald-400", badge: "bg-emerald-400/15 text-emerald-400 border-emerald-400/20", glow: "shadow-emerald-400/20" },
@@ -28,7 +29,7 @@ export default function ChambreCard({ c, onReserver }) {
   const navigate = useNavigate()
   const sc = STATUT_CFG[c.statut] || STATUT_CFG["Disponible"];
   const dispo = c.statut === "Disponible";
-  const user = "nada";
+  const {user} = useContext(AppContext)
 
   const handleReservation = (c) => {
   if (!user) {

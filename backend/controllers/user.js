@@ -102,7 +102,7 @@ login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
+    // console.log("waaaatoken", token)/
     // 5. cookie
     res.cookie("token", token, {
       httpOnly: true,
@@ -129,7 +129,30 @@ login = async (req, res) => {
   }
 };
 
+const getuserData = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    console.log(userId)
 
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Utilisateur introuvable",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Utilisateur récupéré avec succès",
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
 
 logout = async (req, res) => {
   try {
@@ -152,4 +175,4 @@ logout = async (req, res) => {
 };
 
 
-module.exports = {register, login , logout}
+module.exports = {register, login , logout, getuserData}
