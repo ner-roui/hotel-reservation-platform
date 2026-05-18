@@ -12,24 +12,26 @@ export default function ContextProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null)
 
+    console.log(user, 'user')
     
-    const getuserData = async (req, res) => {
-        try {
-          console.log(req.user);
+const getUserData = async () => {
+  try {
+    const { data } = await axios.get(
+      "http://localhost:3000/api/auth/getuserdata",
+      {
+        withCredentials: true,
+      }
+    );
 
-          const { userId } = req.user;
+    console.log(data);
 
-          const user = await User.findById(userId);
+    setUser(data.user);
+  } catch (e) {
+    console.log(e);
 
-          res.json({ user });
-        } catch (e) {
-          console.log(e);
-
-          res.status(500).json({
-            message: e.message,
-          });
-        }
-      };
+    alert(e.response?.data?.message || e.message);
+  }
+};
 
 useEffect(() => {
     const fetchChambres = async () => {
@@ -42,6 +44,7 @@ useEffect(() => {
 
         setChambres(data.chambres);
         setLenChambres(data.count);
+        getUserData()
         } catch (err) {
         console.error("Error fetching chambres:", err);
         } finally {
@@ -56,6 +59,7 @@ useEffect(() => {
     chambres,
     loading,
     setUser,
+    getUserData,
     user,
   };
 

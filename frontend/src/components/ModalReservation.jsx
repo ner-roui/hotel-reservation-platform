@@ -38,7 +38,7 @@ export default function ModalReservation({ chambre, onClose }) {
 const reserver = async (c) => {
   try {
     const { data } = await axios.post(
-      `http://localhost:3000/reservation/${c._id}`,
+      `http://localhost:3000/api/reservations/${c._id}`,
       {
         arrivee,
         depart,

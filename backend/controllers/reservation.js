@@ -22,7 +22,7 @@ const createReservation = async (req, res) => {
       const checkout = new Date(r.date_checkout);
       const payment = r.paymentStatus;
 
-      return start < checkout && end > checkin && payment === "PAID" ;
+      return start < checkout && end > checkin && payment === "PAID";
     });
 
     if (isOverlap) {

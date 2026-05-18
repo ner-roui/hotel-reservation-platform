@@ -28,7 +28,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState("login"); // login | signup
   const [loading, setLoading] = useState(false);
 
-  const {setUser} = useContext(AppContext)
+  const {getUserData} = useContext(AppContext)
 
   const set = (k, v) =>
     setForm((prev) => ({
@@ -76,7 +76,7 @@ const handleSubmit = async (e) => {
 
     console.log(data);
 
-    setUser(data.user);
+    getUserData();
 
     alert(mode === "login" ? "✅ Connexion réussie" : "✅ Compte créé");
 
