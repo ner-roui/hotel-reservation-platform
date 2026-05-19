@@ -91,10 +91,10 @@ const SEJOURS = [
 // };
 
 const STATUT_CFG = {
-  "PENDING": { badge: "bg-amber-400/12 text-amber-400 border-amber-400/25",  dot: "bg-amber-400",   glow: "rgba(245,158,11,.3)" },
-  "CONFIRMED":  { badge: "bg-violet-400/12 text-violet-400 border-violet-400/25",dot: "bg-violet-400", glow: "rgba(167,139,250,.3)" },
-  "Terminée":   { badge: "bg-slate-400/12 text-slate-400 border-slate-400/20",   dot: "bg-slate-500",  glow: "rgba(100,116,139,.2)" },
-  "CANCELLED":    { badge: "bg-red-400/12 text-red-400 border-red-400/25",          dot: "bg-red-400",    glow: "rgba(239,68,68,.2)" },
+  "PENDING": { value : "En attente" ,badge: "bg-amber-400/12 text-amber-400 border-amber-400/25",  dot: "bg-amber-400",   glow: "rgba(245,158,11,.3)" },
+  "CONFIRMED":  { value : "Confirmée" , badge: "bg-violet-400/12 text-violet-400 border-violet-400/25",dot: "bg-violet-400", glow: "rgba(167,139,250,.3)" },
+  "Terminée":   { value : "Terminée" , badge: "bg-slate-400/12 text-slate-400 border-slate-400/20",   dot: "bg-slate-500",  glow: "rgba(100,116,139,.2)" },
+  "CANCELLED":    { value : "Annulée" ,badge: "bg-red-400/12 text-red-400 border-red-400/25",          dot: "bg-red-400",    glow: "rgba(239,68,68,.2)" },
 };
 
 
@@ -134,21 +134,65 @@ function CancelModal({ sejour, onConfirm, onClose }) {
   );
 }
 
-/* ── Sejour Card ────────────────────────────────────── */
-function SejourCard({ s, onPay, onCancel, style , setOpen}) {
+  /* ── Format date ── */
+  const formatDate = (date) => {
+    console.log(date, 'date')
+    if (!date) return "";
+
+   
+    return date.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  /* ── Sejour Card ────────────────────────────────────── */
+function SejourCard({ s, onPay, onCancel, style, setOpen }) {
   const [hovered, setHovered] = useState(false);
-  const sc = STATUT_CFG[s.statut] || STATUT_CFG["En attente"];
-  const pc = PAIE_CFG[s.paiement] || PAIE_CFG["Payé"];
-  const isActive = s.statut === "En attente" || s.statut === "Confirmée";
-  const navigate = useNavigate()
+
+  console.log('sssss', s)
+  const chambre = s.chambre;
+
+  const sc = STATUT_CFG[s.statut] || STATUT_CFG["PENDING"];
+  const pc = PAIE_CFG[s.paymentStatus ] || PAIE_CFG["UNPAID"];
+
+  const isActive = s.paymentStatus === "PENDING" || s.statut === "CONFIRMED";
+
+  const nights = Math.max(
+    1,
+    Math.ceil(
+      (new Date(s.depart) - new Date(s.arrivee)) /
+        (1000 * 60 * 60 * 24)
+    )
+  );
+
+  const formatDate = (date) => {
+    if (!date) return "";
+
+    return new Date(date).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
-    <div className="rounded-2xl overflow-hidden transition-all duration-300"
+    <div
+      className="rounded-2xl overflow-hidden transition-all duration-300"
       style={{
-        background: hovered ? "rgba(255,255,255,.06)" : "rgba(255,255,255,.03)",
-        border: hovered ? "1px solid rgba(167,139,250,.22)" : "1px solid rgba(255,255,255,.08)",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hovered ? `0 16px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(167,139,250,.1)` : "none",
+        background: hovered
+          ? "rgba(255,255,255,.06)"
+          : "rgba(255,255,255,.03)",
+        border: hovered
+          ? "1px solid rgba(167,139,250,.22)"
+          : "1px solid rgba(255,255,255,.08)",
+        transform: hovered
+          ? "translateY(-2px)"
+          : "translateY(0)",
+        boxShadow: hovered
+          ? `0 16px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(167,139,250,.1)`
+          : "none",
         cursor: "pointer",
         ...style,
       }}
@@ -158,23 +202,63 @@ function SejourCard({ s, onPay, onCancel, style , setOpen}) {
       <div className="flex items-stretch gap-0">
 
         {/* Image strip */}
-        <div className="relative overflow-hidden shrink-0" style={{ width: 140 }}>
-          <img src={s.img} alt={s.type} className="w-full h-full object-cover transition-transform duration-500"
-            style={{ transform: hovered ? "scale(1.06)" : "scale(1)", filter: s.statut === "Terminée" ? "brightness(.6) saturate(.6)" : "brightness(.85)" }} />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to right,transparent 60%,rgba(8,11,20,.9))" }} />
+        <div
+          className="relative overflow-hidden shrink-0"
+          style={{ width: 140 }}
+        >
+          <img
+            src={`http://localhost:3000${chambre?.images?.[0]}`}
+            alt={chambre?.type}
+            className="w-full h-full object-cover transition-transform duration-500"
+            style={{
+              transform: hovered
+                ? "scale(1.06)"
+                : "scale(1)",
+              filter:
+                s.statut === "COMPLETED"
+                  ? "brightness(.6) saturate(.6)"
+                  : "brightness(.85)",
+            }}
+          />
+
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right,transparent 60%,rgba(8,11,20,.9))",
+            }}
+          />
+
           {/* Floor badge */}
-          <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: "rgba(0,0,0,.55)", color: "rgba(255,255,255,.7)", backdropFilter: "blur(4px)", border: "1px solid rgba(255,255,255,.1)" }}>
-            Étage {s.etage}
+          <div
+            className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-medium"
+            style={{
+              background: "rgba(0,0,0,.55)",
+              color: "rgba(255,255,255,.7)",
+              backdropFilter: "blur(4px)",
+              border: "1px solid rgba(255,255,255,.1)",
+            }}
+          >
+            Étage {chambre?.etage}
           </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 px-5 py-4 flex items-center gap-6 min-w-0">
 
-          {/* Icon + type */}
+          {/* Icon */}
           <div className="shrink-0">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-0"
-              style={{ background: isActive ? "rgba(124,58,237,.15)" : "rgba(255,255,255,.04)", border: isActive ? "1px solid rgba(124,58,237,.3)" : "1px solid rgba(255,255,255,.08)" }}>
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-0"
+              style={{
+                background: isActive
+                  ? "rgba(124,58,237,.15)"
+                  : "rgba(255,255,255,.04)",
+                border: isActive
+                  ? "1px solid rgba(124,58,237,.3)"
+                  : "1px solid rgba(255,255,255,.08)",
+              }}
+            >
               📅
             </div>
           </div>
@@ -182,76 +266,202 @@ function SejourCard({ s, onPay, onCancel, style , setOpen}) {
           {/* Main info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
-              <span className="font-semibold text-white text-base" style={{ fontFamily: "'Playfair Display',serif" }}>
-                {s.type} {s.numero}
+
+              <span
+                className="font-semibold text-white text-base"
+                style={{
+                  fontFamily: "'Playfair Display',serif",
+                }}
+              >
+                {chambre?.type} — Ch. {chambre?.numero}
               </span>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${sc.badge}`}>
-                {s.statut}
+
+              <span
+                className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${sc.badge}`}
+              >
+                {sc.value}
               </span>
-              {s.paiement === "Paiement requis" && (
-                <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${pc}`}>
-                  {s.paiement}
+
+              {s.paymentStatus === "UNPAID" && (
+                <span
+                  className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${pc}`}
+                >
+                  Paiement requis
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-1.5 text-sm" style={{ color: "rgba(148,163,184,.6)" }}>
-              <span>{s.dateIn} → {s.dateOut} {s.year}</span>
-              <span style={{ color: "rgba(100,116,139,.4)" }}>·</span>
-              <span>{s.nuits} nuits</span>
-              <span style={{ color: "rgba(100,116,139,.4)" }}>·</span>
-              <span style={{ color: "rgba(100,116,139,.5)", fontSize: 12 }}>{s.id}</span>
+
+            <div
+              className="flex items-center gap-1.5 text-sm"
+              style={{ color: "rgba(148,163,184,.6)" }}
+            >
+              <span>
+                {formatDate(s.arrivee)} →{" "}
+                {formatDate(s.depart)}
+              </span>
+
+              <span
+                style={{ color: "rgba(100,116,139,.4)" }}
+              >
+                ·
+              </span>
+
+              <span>{nights} nuits</span>
+
+              <span
+                style={{ color: "rgba(100,116,139,.4)" }}
+              >
+                ·
+              </span>
+
+              <span
+                style={{
+                  color: "rgba(100,116,139,.5)",
+                  fontSize: 12,
+                }}
+              >
+                {s._id}
+              </span>
             </div>
+
             <div className="flex items-center gap-3 mt-2">
-              <span className="text-xs" style={{ color: "rgba(100,116,139,.5)" }}>🛏️ {s.lit}</span>
-              <span className="text-xs" style={{ color: "rgba(100,116,139,.5)" }}>📐 {s.superficie} m²</span>
+              <span
+                className="text-xs"
+                style={{ color: "rgba(100,116,139,.5)" }}
+              >
+                🛏️ {chambre?.lit}
+              </span>
+
+              <span
+                className="text-xs"
+                style={{ color: "rgba(100,116,139,.5)" }}
+              >
+                📐 {chambre?.superficie} m²
+              </span>
             </div>
           </div>
 
           {/* Price */}
           <div className="text-right shrink-0">
-            <p className="text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display',serif" }}>€ {s.prix.toLocaleString()}</p>
-            <p className="text-xs mt-0.5" style={{ color: "rgba(100,116,139,.6)" }}>
-              {s.paiement === "Payé" ? <span className="text-emerald-400 font-medium">✓ Payé</span> : <span style={{ color: "#fbbf24" }}>En attente</span>}
+            <p
+              className="text-xl font-bold text-white"
+              style={{
+                fontFamily: "'Playfair Display',serif",
+              }}
+            >
+              €
+              {(
+                (chambre?.prix_nuit || 0) * nights
+              ).toLocaleString()}
+            </p>
+
+            <p
+              className="text-xs mt-0.5"
+              style={{
+                color: "rgba(100,116,139,.6)",
+              }}
+            >
+              {s.paymentStatus === "PAID" ? (
+                <span className="text-emerald-400 font-medium">
+                  ✓ Payé
+                </span>
+              ) : (
+                <span style={{ color: "#fbbf24" }}>
+                  En attente
+                </span>
+              )}
             </p>
           </div>
 
           {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
-            {s.paiement === "Paiement requis" && (
-              <button onClick={() => onPay(s)}
+
+            {s.paymentStatus === "UNPAID" && (
+              <button
+                onClick={() => onPay(s)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
-                style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 4px 14px rgba(124,58,237,.4)" }}
-                onMouseEnter={e => e.currentTarget.style.boxShadow = "0 6px 20px rgba(124,58,237,.6)"}
-                onMouseLeave={e => e.currentTarget.style.boxShadow = "0 4px 14px rgba(124,58,237,.4)"}
+                style={{
+                  background:
+                    "linear-gradient(135deg,#7c3aed,#4f46e5)",
+                  boxShadow:
+                    "0 4px 14px rgba(124,58,237,.4)",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 6px 20px rgba(124,58,237,.6)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 4px 14px rgba(124,58,237,.4)")
+                }
               >
                 🔒 Payer
               </button>
             )}
-            {isActive && ( 
-              <button onClick={() => setOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-                style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.7)" }}
-                onMouseEnter={e => { e.currentTarget.style.background="rgba(255,255,255,.09)"; e.currentTarget.style.color="#f8fafc"; }}
-                onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,.05)"; e.currentTarget.style.color="rgba(148,163,184,.7)"; }}
+
+            {!isActive && (
+              <button
+                onClick={() => setOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                style={{
+                  background: "rgba(255,255,255,.05)",
+                  border:
+                    "1px solid rgba(255,255,255,.09)",
+                  color: "rgba(148,163,184,.7)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,.09)";
+                  e.currentTarget.style.color =
+                    "#f8fafc";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,.05)";
+                  e.currentTarget.style.color =
+                    "rgba(148,163,184,.7)";
+                }}
               >
                 ✏️ Modifier
               </button>
             )}
+
             {isActive && (
-              <button onClick={() => onCancel(s)}
+              <button
+                onClick={() => onCancel(s)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-                style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", color: "rgba(248,113,113,.8)" }}
-                onMouseEnter={e => { e.currentTarget.style.background="rgba(239,68,68,.15)"; e.currentTarget.style.color="#f87171"; }}
-                onMouseLeave={e => { e.currentTarget.style.background="rgba(239,68,68,.08)"; e.currentTarget.style.color="rgba(248,113,113,.8)"; }}
+                style={{
+                  background: "rgba(239,68,68,.08)",
+                  border:
+                    "1px solid rgba(239,68,68,.2)",
+                  color: "rgba(248,113,113,.8)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background =
+                    "rgba(239,68,68,.15)";
+                  e.currentTarget.style.color =
+                    "#f87171";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background =
+                    "rgba(239,68,68,.08)";
+                  e.currentTarget.style.color =
+                    "rgba(248,113,113,.8)";
+                }}
               >
                 ✕ Annuler
               </button>
             )}
-            {s.statut === "Terminée" && (
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-                style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.07)", color: "rgba(100,116,139,.6)" }}
-                onMouseEnter={e => { e.currentTarget.style.background="rgba(124,58,237,.1)"; e.currentTarget.style.color="#a78bfa"; e.currentTarget.style.borderColor="rgba(124,58,237,.3)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,.04)"; e.currentTarget.style.color="rgba(100,116,139,.6)"; e.currentTarget.style.borderColor="rgba(255,255,255,.07)"; }}
+
+            {s.statut === "COMPLETED" && (
+              <button
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                style={{
+                  background: "rgba(255,255,255,.04)",
+                  border:
+                    "1px solid rgba(255,255,255,.07)",
+                  color: "rgba(100,116,139,.6)",
+                }}
               >
                 📄 Facture
               </button>
@@ -395,7 +605,7 @@ export default function MesSejours() {
               <EmptyState />
             ) : (
               filtered?.map((s, i) => (
-                <SejourCard key={s.id} s={s} setOpen={setOpen}
+                <SejourCard key={s._id} s={s} setOpen={setOpen}
                   onPay={() => {}}
                   onCancel={(sej) => setCancelTarget(sej)}
                   style={{ animation: `fadeUp .4s ${i * .07}s ease both` }}

@@ -58,7 +58,7 @@ useEffect(() => {
         const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
           withCredentials : true
         })
-        console.log(data);
+        console.log(data.reservations);
         setSejours(data.reservations)
       }catch(e){
         console.error("Error fetching chambres:", err);
@@ -75,6 +75,8 @@ useEffect(() => {
     setUser,
     getUserData,
     user,
+    setSejours,
+    sejours
   };
 
   return (
