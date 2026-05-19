@@ -502,22 +502,30 @@ export default function MesSejours() {
   const [notification, setNotification] = useState(null);
   
  const [open, setOpen] = useState(false);
-  const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
+const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
-  const handleCancel = (id) => {
-    setSejours(prev => prev.map(s => s._id === id ? { ...s, status: "CANCELLED"} : s));
-    console.log(sejours, 'seeeeeeeeeeejoooooooooours')
-    try{
-        const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
-          withCredentials : true
-        })
-        console.log(data.reservations);
-        setSejours(data.reservations)
-      }catch(e){
-        console.error("Error fetching chambres:", err);
+
+  const handleCancel  = async (id) => {
+    try {
+      const { data } = await axios.patch(
+        `http://localhost:3000/api/reservations/cancel/${id}`,
+        {},
+        { withCredentials: true }
+      );
+
+      console.log(data);
+
+      // update UI (optimistic ou refetch)
+      setSejours(prev =>
+        prev.map(s =>
+          s._id === id
+            ? { ...s, status: "CANCELLED", cancelledAt: new Date() }
+            : s
+        )
+      );
+    } catch (e) {
+      alert(e.response?.data?.message || e.message);
     }
-    setCancelTarget(null);
-    showNotif("Réservation annulée avec succès.");
   };
 
   const showNotif = (msg) => {
