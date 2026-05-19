@@ -111,6 +111,22 @@ const reservationActiveSchema = new Schema(
         default: "UNPAID",
       },
 
+    status: {
+      type: String,
+      enum: ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"],
+      default: "PENDING",
+    },
+
+    cancelledAt: {
+      type: Date,
+      default: null,
+    },
+
+    cancelledBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     montant: {
       type: Number,
       min: 0,
