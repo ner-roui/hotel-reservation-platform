@@ -79,85 +79,52 @@ const createReservation = async (req, res) => {
     });
   }
 };
-// const createReservation = async (req, res) => {
-//   try {
-//     // const { userId } = req.user;
-//     const { roomId } = req.params;
-//     const { arrivee, depart, prixParNuit } = req.body;
-//     const room = await RoomModel.findById(roomId) 
-                
-//     console.log(room)
-
-   
-//     const start = new Date(arrivee);
-//     const end = new Date(depart);
 
 
-// if (room.reservation_active) {
-//     const active = room.reservation_active;
 
-//     const checkout = new Date(active.date_checkout);
-//     const checkin = new Date(active.date_checkin);
 
-//     // Vérifier overlap
-//     const isOverlap = start < checkout && end > checkin;
 
-//     if (isOverlap) {
-//       return res.status(400).json({
-//         message: "Chambre déjà réservée pour cette période",
-//       });
-//     }
-//   }
+export const cancelReservation = async (req, res) => {
+  try {
+    const userId = req.user.userId; // middleware auth
+    const { id } = req.params;
 
-//     const nuits = Math.ceil(
-//       (end - start) / (1000 * 60 * 60 * 24)
-//     );
+    const reservation = await Reservation.findById(id);
 
-//     if (nuits <= 0) {
-//       return res.status(400).json({
-//         message: "Dates invalides",
-//       });
-//     }
+    if (!reservation) {
+      return res.status(404).json({ message: "Réservation introuvable" });
+    }
 
-//     const total = nuits * prixParNuit;
+    // sécurité : vérifier propriétaire
+    if (reservation.user.toString() !== userId) {
+      return res.status(403).json({ message: "Non autorisé" });
+    }
 
-//     const reservation = await Reservation.create({
-//       // user: userId,
-//       chambre: roomId,
-//       arrivee: start,
-//       depart: end,
-//       nuits,
-//       prixParNuit,
-//       total,
-//       status: "PENDING",
-//       paymentStatus: "UNPAID",
-//     });
+    // empêcher annulation si déjà annulée ou terminée
+    if (reservation.status === "CANCELLED") {
+      return res.status(400).json({ message: "Déjà annulée" });
+    }
 
-//     const chambre = await RoomModel.findByIdAndUpdate(roomId,
-//       {
-//         reservation_active: {
-//           reservation_id: reservation._id,
-//           date_checkin: reservation.arrivee,
-//           date_checkout: reservation.depart,
-//           montant: reservation.total,
-// },
-      
-//     },{
-//       new : true
-//     }
-//     )
+    if (reservation.status === "COMPLETED") {
+      return res.status(400).json({ message: "Réservation terminée, impossible d'annuler" });
+    }
 
-//     res.status(201).json({
-//       message: "Réservation créée avec succès",
-//       reservation,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       message: "Erreur serveur",
-//       error: error.message,
-//     });
-//   }
-// };
+    reservation.status = "CANCELLED";
+    reservation.cancelledAt = new Date();
+    reservation.cancelledBy = userId ;
+
+    await reservation.save();
+
+    return res.status(200).json({
+      message: "Réservation annulée avec succès",
+      reservation,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
 
 const getAllReservations = async (req, res) => {
   try {
@@ -317,5 +284,6 @@ module.exports = { createReservation,
   getUserReservations,
   getReservationById,
   updateReservation,
-  deleteReservation
+  deleteReservation,
+  cancelReservation
  };

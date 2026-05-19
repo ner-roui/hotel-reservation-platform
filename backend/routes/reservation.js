@@ -12,8 +12,10 @@ const {
   getUserReservations,
   getReservationById,
   updateReservation,
-  deleteReservation
+  deleteReservation,
+  cancelReservation
 } = require("../controllers/reservation");
+
 
 router.post("/:roomId", auth,createReservation);
 router.get("/getallreservations", auth, getAllReservations);
@@ -21,6 +23,7 @@ router.get("/myreservation", auth, getUserReservations);
 router.get("/reservationbyid/:id", auth, getReservationById);
 router.put("/updatereservation/:id", auth, updateReservation);
 router.delete("/deletereservation/:id", auth, deleteReservation);
+router.patch("/cancel/:id", auth, cancelReservation);
 
 
 

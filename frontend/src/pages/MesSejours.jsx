@@ -361,22 +361,26 @@ function SejourCard({ s, onPay, onCancel, style, setOpen }) {
                 color: "rgba(100,116,139,.6)",
               }}
             >
-              {s.paymentStatus === "PAID" ? (
-                <span className="text-emerald-400 font-medium">
-                  ✓ Payé
-                </span>
-              ) : (
-                <span style={{ color: "#fbbf24" }}>
-                  En attente
-                </span>
-              )}
+            {s.status === "CANCELLED" ? (
+              <span className="text-red-400 font-medium">
+                ❌ Annulée
+              </span>
+            ) : s.paymentStatus === "PAID" ? (
+              <span className="text-emerald-400 font-medium">
+                ✓ Payé
+              </span>
+            ) : (
+              <span style={{ color: "#fbbf24" }}>
+                En attente
+              </span>
+            )}
             </p>
           </div>
 
           {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
 
-            {s.paymentStatus === "UNPAID" && (
+            {s.paymentStatus === "UNPAID"  && s.status !== "CANCELLED" && (
               <button
                 onClick={() => onPay(s)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
@@ -503,15 +507,15 @@ export default function MesSejours() {
   const handleCancel = (id) => {
     setSejours(prev => prev.map(s => s._id === id ? { ...s, status: "CANCELLED"} : s));
     console.log(sejours, 'seeeeeeeeeeejoooooooooours')
-    // try{
-    //     const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
-    //       withCredentials : true
-    //     })
-    //     console.log(data.reservations);
-    //     setSejours(data.reservations)
-    //   }catch(e){
-    //     console.error("Error fetching chambres:", err);
-    // }
+    try{
+        const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
+          withCredentials : true
+        })
+        console.log(data.reservations);
+        setSejours(data.reservations)
+      }catch(e){
+        console.error("Error fetching chambres:", err);
+    }
     setCancelTarget(null);
     showNotif("Réservation annulée avec succès.");
   };
