@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import ModifierModal from "../components/ModifierModal";
 import { AppContext } from "../context/Context";
+import axios from "axios"
 
 
 const useFont = () => {
@@ -506,6 +507,7 @@ const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
 
   const handleCancel  = async (id) => {
+    console.log('id de reservation', id);
     try {
       const { data } = await axios.patch(
         `http://localhost:3000/api/reservations/cancel/${id}`,

@@ -82,7 +82,7 @@ const createReservation = async (req, res) => {
 
 
 
-export const cancelReservation = async (req, res) => {
+const cancelReservation = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { id } = req.params;
@@ -92,9 +92,10 @@ export const cancelReservation = async (req, res) => {
     if (!reservation) {
       return res.status(404).json({ message: "Réservation introuvable" });
     }
+    console.log('user===>', reservation.user ,  userId)
 
-    if (reservation.user.toString() !== userId) {
-      return res.status(403).json({ message: "Non autorisé" });
+    if (reservation.user.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Non autorisé alm3alm" });
     }
 
     if (reservation.status === "CANCELLED") {
@@ -113,7 +114,7 @@ export const cancelReservation = async (req, res) => {
     await reservation.save();
 
     // 2. update reservationActive (snapshot chambre)
-    await Chambre.updateOne(
+    await RoomModel.updateOne(
       { "reservation_active.reservation_id": reservation._id },
       {
         $set: {
