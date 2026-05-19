@@ -12,7 +12,7 @@ export default function ContextProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [sejours, setSejours] = useState([]);
-
+  
     console.log(user, 'user')
     
 const getUserData = async () => {

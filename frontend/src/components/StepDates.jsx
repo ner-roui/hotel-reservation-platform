@@ -16,6 +16,7 @@ function formatDate(d) {
 
 
 export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange }) {
+  console.log('dateIN', dateIn,'dateOut', dateOut);
   const nights = diffDays(dateIn, dateOut);
   return (
     <div style={{ animation: "fadeUp .4s ease both" }}>

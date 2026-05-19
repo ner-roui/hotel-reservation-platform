@@ -21,8 +21,8 @@ const createReservation = async (req, res) => {
       user: userId,
       chambre: roomId,
       status: { $ne: "CANCELLED" },
-      arrivee: { $lt: end },
-      depart: { $gt: start },
+      arrivee: { $lt: end },  //  $lt mean less than
+      depart: { $gt: start }, // $gt mean greater than
     });
 
     if (isReserved) {

@@ -1,10 +1,11 @@
 /* ── Modal ──────────────────────────────────────────── */
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Steps from "./Steps";
 import StepDates from "./StepDates";
 import StepChambre from "./StepChambre";
 import StepRecap from "./StepRecap";
+import { AppContext } from "../context/Context";
 
 const RESERVATION = {
   id: "RES-2842",
@@ -36,29 +37,80 @@ function formatDate(d) {
   return dt.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-export default function ModifierModal({ onClose }) {
+export default function ModifierModal({sejour, onClose }) {
   const [step, setStep] = useState(0);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const {setSejours} = useContext(AppContext)
+  console.log('iwwaa sejouuurrr', sejour);
+    const [form, setForm] = useState({
+      arrivee: new Date(sejour.arrivee),
+      depart: new Date(sejour.depart),
+      voyageurs: sejour.voyageurs || 1,
+      notes: "",
+      chambre: sejour.chambre,
+    });
 
-  const [form, setForm] = useState({
-    dateIn:    RESERVATION.dateIn,
-    dateOut:   RESERVATION.dateOut,
-    voyageurs: RESERVATION.voyageurs,
-    notes:     RESERVATION.notes,
-    chambre:   CHAMBRES_DISPO.find(c => c.numero === RESERVATION.numero) || CHAMBRES_DISPO[2],
-  });
-
-  const handleChange = (key, val) => setForm(f => ({ ...f, [key]: val }));
-
-  const handleSave = () => {
-    setSaving(true);
-    setTimeout(() => { setSaving(false); setSaved(true); }, 1600);
+  
+  const handleChange = (key, val) => {
+    setForm(prev => ({
+      ...prev,
+      [key]: val,
+    }));
   };
 
-  const nights = diffDays(form.dateIn, form.dateOut);
-  const total = form.chambre.prixNuit * nights + Math.round(form.chambre.prixNuit * nights * 0.1);
 
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+
+      const { data } = await axios.patch(
+        `http://localhost:3000/api/reservations/${sejour._id}`,
+        {
+          arrivee: form.arrivee,
+          depart: form.depart,
+          voyageurs: form.voyageurs,
+        },
+        { withCredentials: true }
+      );
+
+      setSejours(prev =>
+        prev.map(s =>
+          s._id === sejour._id
+            ? {
+                ...s,
+                arrivee: form.arrivee,
+                depart: form.depart,
+                voyageurs: form.voyageurs,
+              }
+            : s
+        )
+      );
+
+      setSaved(true);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const nights = Math.max(
+    0,
+    Math.ceil((form.depart - form.arrivee) / (1000 * 60 * 60 * 24))
+  );
+
+  const total =
+    (form.chambre?.prix_nuit || 0) * nights +
+    Math.round((form.chambre?.prix_nuit || 0) * nights * 0.1);
+
+
+  // const handleSave = () => {
+  //   setSaving(true);
+  //   setTimeout(() => { setSaving(false); setSaved(true); }, 1600);
+  // };
+
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md" />
@@ -104,7 +156,7 @@ export default function ModifierModal({ onClose }) {
                 <span style={{ color: "#a78bfa", fontWeight: 600 }}>{RESERVATION.id}</span> a été mis à jour avec succès.
               </p>
               <p className="text-xs mb-6" style={{ color: "rgba(100,116,139,.6)" }}>
-                {form.chambre.type} {form.chambre.numero} · {formatDate(form.dateIn)} → {formatDate(form.dateOut)} · {nights} nuits
+                {form.chambre.type} {form.chambre.numero} · {formatDate(form.arrivee)} → {formatDate(form.depart)} · {nights} nuits
               </p>
               <div className="flex gap-3">
                 <button onClick={onClose}
@@ -123,9 +175,9 @@ export default function ModifierModal({ onClose }) {
             <>
         
               <Steps current={step} />
-              {step === 0 && <StepDates dateIn={form.dateIn} dateOut={form.dateOut} voyageurs={form.voyageurs} notes={form.notes} onChange={handleChange} />}
+              {step === 0 && <StepDates dateIn={form.arrivee} dateOut={form.depart} voyageurs={form.voyageurs} notes={form.notes} onChange={handleChange} />}
               {step === 1 && <StepChambre selected={form.chambre} onSelect={c => handleChange("chambre", c)} voyageurs={form.voyageurs} />}
-              {step === 2 && <StepRecap res={RESERVATION} chambre={form.chambre} dateIn={form.dateIn} dateOut={form.dateOut} voyageurs={form.voyageurs} notes={form.notes} />}
+              {step === 2 && <StepRecap res={sejour} chambre={form.chambre} dateIn={form.arrivee} dateOut={form.depart} voyageurs={form.voyageurs} notes={form.notes} />}
             </>
           )}
         </div>

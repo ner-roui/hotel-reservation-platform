@@ -127,7 +127,7 @@ function CancelModal({ sejour, onConfirm, onClose }) {
           <p className="text-xs mb-6" style={{ color: "rgba(100,116,139,.6)" }}>Cette action est irréversible.</p>
           <div className="flex gap-3">
             <button onClick={onClose} className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all" style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.8)" }}>Garder</button>
-            <button onClick={() => onConfirm(sejour._id)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", boxShadow: "0 4px 14px rgba(220,38,38,.3)" }}>Oui, annuler</button>
+            <button onClick={() => {onConfirm(sejour._id) ; onClose(false)}} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", boxShadow: "0 4px 14px rgba(220,38,38,.3)" }}>Oui, annuler</button>
           </div>
         </div>
       </div>
@@ -498,11 +498,12 @@ export default function MesSejours() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("Tous");
   const {sejours, setSejours} = useContext(AppContext);
+  const [selectedSejour, setSelectedSejour] = useState(null);
   // const [sejours, setSejours] = useState(SEJOURS);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [notification, setNotification] = useState(null);
   
- const [open, setOpen] = useState(false);
+ 
 const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
 
@@ -629,7 +630,7 @@ const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
               <EmptyState />
             ) : (
               filtered?.map((s, i) => (
-                <SejourCard key={s._id} s={s} setOpen={setOpen}
+                <SejourCard key={s._id} s={s}  setOpen={() => setSelectedSejour(s)}
                   onPay={() => {}}
                   onCancel={(sej) => setCancelTarget(sej)}
                   style={{ animation: `fadeUp .4s ${i * .07}s ease both` }}
@@ -653,7 +654,11 @@ const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
           ✓ {notification}
         </div>
       )}
-        {open && <ModifierModal onClose={() => setOpen(false)} />}
+        {selectedSejour && ( <ModifierModal
+              sejour={selectedSejour}
+              onClose={() => setSelectedSejour(null)}
+            />
+          )}
       <style>{`
         @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         input::placeholder { color:rgba(100,116,139,.45); }
