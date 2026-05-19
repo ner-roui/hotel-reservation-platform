@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios"
+import { AppContext } from "../context/Context";
 
 
 /* ── Stars ──────────────────────────────── */
@@ -21,7 +22,8 @@ function Stars({ note }) {
 export default function ModalReservation({ chambre, onClose }) {
   const [step, setStep] = useState(1);
   const [done, setDone] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const {setSejours} = useContext(AppContext)
 
     const [arrivee, setArrivee] = useState(new Date());
 
@@ -35,29 +37,7 @@ export default function ModalReservation({ chambre, onClose }) {
   if (!chambre) return null;
 
   
-const reserver = async (c) => {
-  try {
-    const { data } = await axios.post(
-      `http://localhost:3000/api/reservations/${c._id}`,
-      {
-        arrivee,
-        depart,
-        prixParNuit: c.prix_nuit,
-      },
-      {
-        withCredentials: true,
-      }
-    );
 
-    console.log(data);
-
-    navigate("/payementpage");
-  } catch (e) {
-    console.log(e);
-
-    alert(e.response?.data?.message || e.message);
-  }
-};
 
   /* ── Calcul nuits ── */
   const nights =
@@ -80,6 +60,44 @@ const reserver = async (c) => {
       year: "numeric",
     });
   };
+
+
+  const reserver = async (c) => {
+  try {
+    const { data } = await axios.post(
+      `http://localhost:3000/api/reservations/${c._id}`,
+      {
+        arrivee,
+        depart,
+        prixParNuit: c.prix_nuit,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    
+    setSejours(prev => ([...prev, {
+      chambre : c, 
+      arrivee, 
+      depart, 
+      nuits: nights,
+      prixParNuit : c.prix_nuit,
+      total: c.prix_nuit * nights,
+      status: "PENDING",
+      paymentStatus : "UNPAID",
+      paymentMethod: "CARD",
+    } ]))
+
+    console.log(data);
+
+    navigate("/payementpage");
+  } catch (e) {
+    console.log(e);
+
+    alert(e.response?.data?.message || e.message);
+  }
+};
+
 
   console.log('arriverrrr=>', arrivee, formatDate(arrivee), 'asasassa', new Date())
   return (

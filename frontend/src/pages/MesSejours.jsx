@@ -77,16 +77,31 @@ const SEJOURS = [
   },
 ];
 
+// const STATUT_CFG = {
+//   "En attente": { badge: "bg-amber-400/12 text-amber-400 border-amber-400/25",  dot: "bg-amber-400",   glow: "rgba(245,158,11,.3)" },
+//   "Confirmée":  { badge: "bg-violet-400/12 text-violet-400 border-violet-400/25",dot: "bg-violet-400", glow: "rgba(167,139,250,.3)" },
+//   "Terminée":   { badge: "bg-slate-400/12 text-slate-400 border-slate-400/20",   dot: "bg-slate-500",  glow: "rgba(100,116,139,.2)" },
+//   "Annulée":    { badge: "bg-red-400/12 text-red-400 border-red-400/25",          dot: "bg-red-400",    glow: "rgba(239,68,68,.2)" },
+// };
+
+
+// const PAIE_CFG = {
+//   "Paiement requis": "bg-red-400/10 text-red-400 border-red-400/20",
+//   "Payé":            "bg-emerald-400/10 text-emerald-400 border-emerald-400/20",
+// };
+
 const STATUT_CFG = {
-  "En attente": { badge: "bg-amber-400/12 text-amber-400 border-amber-400/25",  dot: "bg-amber-400",   glow: "rgba(245,158,11,.3)" },
-  "Confirmée":  { badge: "bg-violet-400/12 text-violet-400 border-violet-400/25",dot: "bg-violet-400", glow: "rgba(167,139,250,.3)" },
+  "PENDING": { badge: "bg-amber-400/12 text-amber-400 border-amber-400/25",  dot: "bg-amber-400",   glow: "rgba(245,158,11,.3)" },
+  "CONFIRMED":  { badge: "bg-violet-400/12 text-violet-400 border-violet-400/25",dot: "bg-violet-400", glow: "rgba(167,139,250,.3)" },
   "Terminée":   { badge: "bg-slate-400/12 text-slate-400 border-slate-400/20",   dot: "bg-slate-500",  glow: "rgba(100,116,139,.2)" },
-  "Annulée":    { badge: "bg-red-400/12 text-red-400 border-red-400/25",          dot: "bg-red-400",    glow: "rgba(239,68,68,.2)" },
+  "CANCELLED":    { badge: "bg-red-400/12 text-red-400 border-red-400/25",          dot: "bg-red-400",    glow: "rgba(239,68,68,.2)" },
 };
 
+
+
 const PAIE_CFG = {
-  "Paiement requis": "bg-red-400/10 text-red-400 border-red-400/20",
-  "Payé":            "bg-emerald-400/10 text-emerald-400 border-emerald-400/20",
+  "UNPAID": "bg-red-400/10 text-red-400 border-red-400/20",
+  "PAID": "bg-emerald-400/10 text-emerald-400 border-emerald-400/20",
 };
 
 const NAV = [
