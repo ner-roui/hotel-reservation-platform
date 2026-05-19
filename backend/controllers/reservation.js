@@ -82,11 +82,9 @@ const createReservation = async (req, res) => {
 
 
 
-
-
 export const cancelReservation = async (req, res) => {
   try {
-    const userId = req.user.userId; // middleware auth
+    const userId = req.user.userId;
     const { id } = req.params;
 
     const reservation = await Reservation.findById(id);
@@ -95,12 +93,10 @@ export const cancelReservation = async (req, res) => {
       return res.status(404).json({ message: "Réservation introuvable" });
     }
 
-    // sécurité : vérifier propriétaire
     if (reservation.user.toString() !== userId) {
       return res.status(403).json({ message: "Non autorisé" });
     }
 
-    // empêcher annulation si déjà annulée ou terminée
     if (reservation.status === "CANCELLED") {
       return res.status(400).json({ message: "Déjà annulée" });
     }
@@ -109,16 +105,30 @@ export const cancelReservation = async (req, res) => {
       return res.status(400).json({ message: "Réservation terminée, impossible d'annuler" });
     }
 
+    // 1. update reservation principale
     reservation.status = "CANCELLED";
     reservation.cancelledAt = new Date();
-    reservation.cancelledBy = userId ;
+    reservation.cancelledBy = userId;
 
     await reservation.save();
+
+    // 2. update reservationActive (snapshot chambre)
+    await Chambre.updateOne(
+      { "reservation_active.reservation_id": reservation._id },
+      {
+        $set: {
+          "reservation_active.$.status": "CANCELLED",
+          "reservation_active.$.cancelledAt": reservation.cancelledAt,
+          "reservation_active.$.cancelledBy": userId,
+        },
+      }
+    );
 
     return res.status(200).json({
       message: "Réservation annulée avec succès",
       reservation,
     });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Erreur serveur" });
