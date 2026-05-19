@@ -5,7 +5,7 @@ const reservationSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      // required: true,
+      required: true,
     },
 
     chambre: {
@@ -39,12 +39,23 @@ const reservationSchema = new mongoose.Schema(
       required: true,
     },
 
+
     status: {
       type: String,
-      enum: ["PENDING", "CONFIRMED", "CANCELLED"],
+      enum: ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"],
       default: "PENDING",
     },
 
+    cancelledAt: {
+      type: Date,
+      default: null,
+    },
+
+    cancelledBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     paymentStatus: {
       type: String,
       enum: ["UNPAID", "PAID"],

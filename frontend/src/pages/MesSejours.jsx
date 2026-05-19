@@ -126,7 +126,7 @@ function CancelModal({ sejour, onConfirm, onClose }) {
           <p className="text-xs mb-6" style={{ color: "rgba(100,116,139,.6)" }}>Cette action est irréversible.</p>
           <div className="flex gap-3">
             <button onClick={onClose} className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all" style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", color: "rgba(148,163,184,.8)" }}>Garder</button>
-            <button onClick={() => onConfirm(sejour.id)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", boxShadow: "0 4px 14px rgba(220,38,38,.3)" }}>Oui, annuler</button>
+            <button onClick={() => onConfirm(sejour._id)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", boxShadow: "0 4px 14px rgba(220,38,38,.3)" }}>Oui, annuler</button>
           </div>
         </div>
       </div>
@@ -154,10 +154,10 @@ function SejourCard({ s, onPay, onCancel, style, setOpen }) {
   console.log('sssss', s)
   const chambre = s.chambre;
 
-  const sc = STATUT_CFG[s.statut] || STATUT_CFG["PENDING"];
+  const sc = STATUT_CFG[s.status] || STATUT_CFG["PENDING"];
   const pc = PAIE_CFG[s.paymentStatus ] || PAIE_CFG["UNPAID"];
 
-  const isActive = s.paymentStatus === "PENDING" || s.statut === "CONFIRMED";
+  const isActive = s.status === "PENDING" ||  s.status  === "CONFIRMED";
 
   const nights = Math.max(
     1,
@@ -399,7 +399,7 @@ function SejourCard({ s, onPay, onCancel, style, setOpen }) {
               </button>
             )}
 
-            {!isActive && (
+            {isActive && (
               <button
                 onClick={() => setOpen(true)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
@@ -453,7 +453,7 @@ function SejourCard({ s, onPay, onCancel, style, setOpen }) {
               </button>
             )}
 
-            {s.statut === "COMPLETED" && (
+            {s.status === "COMPLETED" && (
               <button
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{
@@ -492,7 +492,7 @@ export default function MesSejours() {
   const [activeRole, setActiveRole] = useState("Client");
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("Tous");
-  const {sejours} = useContext(AppContext);
+  const {sejours, setSejours} = useContext(AppContext);
   // const [sejours, setSejours] = useState(SEJOURS);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [notification, setNotification] = useState(null);
@@ -501,7 +501,17 @@ export default function MesSejours() {
   const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
   const handleCancel = (id) => {
-    setSejours(prev => prev.map(s => s.id === id ? { ...s, statut: "Annulée"} : s));
+    setSejours(prev => prev.map(s => s._id === id ? { ...s, status: "CANCELLED"} : s));
+    console.log(sejours, 'seeeeeeeeeeejoooooooooours')
+    // try{
+    //     const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
+    //       withCredentials : true
+    //     })
+    //     console.log(data.reservations);
+    //     setSejours(data.reservations)
+    //   }catch(e){
+    //     console.error("Error fetching chambres:", err);
+    // }
     setCancelTarget(null);
     showNotif("Réservation annulée avec succès.");
   };
