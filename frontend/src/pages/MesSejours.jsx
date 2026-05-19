@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ModifierModal from "../components/ModifierModal";
+import { AppContext } from "../context/Context";
 
 
 const useFont = () => {
@@ -266,7 +267,8 @@ export default function MesSejours() {
   const [activeRole, setActiveRole] = useState("Client");
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("Tous");
-  const [sejours, setSejours] = useState(SEJOURS);
+  const {sejours} = useContext(AppContext);
+  // const [sejours, setSejours] = useState(SEJOURS);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [notification, setNotification] = useState(null);
   
@@ -284,17 +286,17 @@ export default function MesSejours() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const filtered = sejours.filter(s => {
+  const filtered = sejours?.filter(s => {
     const mTab = activeTab === "Tous" || s.statut === activeTab;
     const mSearch = !search || s.type.toLowerCase().includes(search.toLowerCase()) || s.id.includes(search) || s.numero.includes(search);
     return mTab && mSearch;
   });
 
   const stats = {
-    total:      sejours.length,
-    actives:    sejours.filter(s => s.statut === "En attente" || s.statut === "Confirmée").length,
-    terminees:  sejours.filter(s => s.statut === "Terminée").length,
-    totalSpent: sejours.filter(s => s.paiement === "Payé").reduce((a, s) => a + s.prix, 0),
+    total:      sejours?.length || 0,
+    actives:    sejours?.filter(s => s.statut === "En attente" || s.statut === "Confirmée").length || 0,
+    terminees:  sejours?.filter(s => s.statut === "Terminée").length || 0,
+    totalSpent: sejours?.filter(s => s.paiement === "Payé").reduce((a, s) => a + s.prix, 0),
   };
 
   return (
@@ -337,7 +339,7 @@ export default function MesSejours() {
               { label: "Réservations",  val: stats.total,      icon: "📋", color: "#a78bfa" },
               { label: "En cours",      val: stats.actives,    icon: "🟢", color: "#34d399" },
               { label: "Terminées",     val: stats.terminees,  icon: "✅", color: "#60a5fa" },
-              { label: "Total dépensé", val: `€${stats.totalSpent.toLocaleString()}`, icon: "💳", color: "#fbbf24" },
+              { label: "Total dépensé", val: `€${(stats.totalSpent || 0).toLocaleString()}`, icon: "💳", color: "#fbbf24" },
             ].map((s, i) => (
               <div key={i} className="rounded-2xl p-4 flex items-center gap-3"
                 style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.07)", animation: `fadeUp .5s ${.05 + i*.06}s ease both` }}>
@@ -365,7 +367,7 @@ export default function MesSejours() {
                 {tab !== "Tous" && (
                   <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
                     style={{ background: "rgba(255,255,255,.07)", color: "rgba(148,163,184,.5)" }}>
-                    {sejours.filter(s => s.statut === tab).length}
+                    {sejours?.filter(s => s.statut === tab).length || 0}
                   </span>
                 )}
               </button>
@@ -374,10 +376,10 @@ export default function MesSejours() {
 
           {/* Cards */}
           <div className="space-y-3" style={{ animation: "fadeUp .5s .15s ease both" }}>
-            {filtered.length === 0 ? (
+            {filtered?.length === 0 ? (
               <EmptyState />
             ) : (
-              filtered.map((s, i) => (
+              filtered?.map((s, i) => (
                 <SejourCard key={s.id} s={s} setOpen={setOpen}
                   onPay={() => {}}
                   onCancel={(sej) => setCancelTarget(sej)}
