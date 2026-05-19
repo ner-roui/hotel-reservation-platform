@@ -13,9 +13,24 @@ const createReservation = async (req, res) => {
 
     const room = await RoomModel.findById(roomId);
 
+
     const start = new Date(arrivee);
     const end = new Date(depart);
 
+    const isReserved = await Reservation.findOne({
+      user: userId,
+      chambre: roomId,
+      status: { $ne: "CANCELLED" },
+      arrivee: { $lt: end },
+      depart: { $gt: start },
+    });
+
+    if (isReserved) {
+      return res.status(400).json({
+        message: "Vous avez déjà réservé cette chambre pour ces dates",
+      });
+    }
+    console.log('----> all reservation', getAllReservations)
     // 1. CHECK OVERLAP DANS ARRAY
     const isOverlap = room.reservation_active?.some((r) => {
       const checkin = new Date(r.date_checkin);
