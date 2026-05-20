@@ -219,7 +219,7 @@ export default function ResEmployePage() {
   });
 
   const counts = {
-    all: reservations.length,
+    all: reservations?.length,
     pending: reservations?.filter((r) => r.status === "pending").length,
     confirmed: reservations?.filter((r) => r.status === "confirmed").length,
     checkin: reservations?.filter((r) => r.status === "checkin").length,
@@ -290,7 +290,7 @@ export default function ResEmployePage() {
 
           {/* Reservation list */}
           <div className="flex flex-col gap-2.5">
-            {filtered.length === 0 ? (
+            {filtered?.length === 0 ? (
               <div className="text-center py-16 text-gray-400 text-sm">
                 Aucune réservation trouvée.
               </div>

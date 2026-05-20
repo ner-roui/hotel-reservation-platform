@@ -8,6 +8,7 @@ const auth = require("../middleware/auth");
 
 const {
   createReservation, 
+   checkInReservation,
   getAllReservations,
   getUserReservations,
   getReservationById,
@@ -24,7 +25,7 @@ router.get("/reservationbyid/:id", auth, getReservationById);
 router.put("/updatereservation/:id", auth, updateReservation);
 router.delete("/deletereservation/:id", auth, deleteReservation);
 router.patch("/cancel/:id", auth, cancelReservation);
-
+router.patch("/checkin/:id", auth, checkInReservation);
 
 
 module.exports = router;
