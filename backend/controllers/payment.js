@@ -5,8 +5,8 @@ const ChambreModel = require("../models/RoomModels");
 
 const createPayment = async (req, res) => {
   try {
+    const id = req.params
     const {
-      reservation,
       methode,
       montant_paye,
       taxe = 0,
@@ -18,7 +18,7 @@ const createPayment = async (req, res) => {
     } = req.body;
 
     // Vérifier réservation
-    const reservationData = await ReservationModel.findById(reservation)
+    const reservationData = await ReservationModel.findById(id)
       .populate("user")
       .populate("chambre");
 
@@ -136,6 +136,32 @@ const createPayment = async (req, res) => {
   }
 };
 
+
+
+
+// GET ALL PAYMENTS
+const getPayments = async (req, res) => {
+  try {
+    const payments = await PaymentModel.find()
+      .populate("user")
+      .populate("reservation")
+      .populate("chambre")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Liste des paiements récupérée avec succès",
+      count: payments.length,
+      payments,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
 
 // ─────────────────────────────────────
 // GET PAYMENT BY ID

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const useFont = () => {
   useEffect(() => {
@@ -211,10 +213,53 @@ export default function PaiementPage() {
 
   const total = RESERVATION.prixNuit * RESERVATION.nights + RESERVATION.taxes;
 
-  const handlePay = () => {
+  // const handlePay = () => {
+  //   setPaying(true);
+  //   setTimeout(() => { setPaying(false); setPaid(true); }, 1800);
+  // };
+
+  const { id } = useParams(); // reservation id depuis URL
+
+const handlePay = async () => {
+  try {
     setPaying(true);
-    setTimeout(() => { setPaying(false); setPaid(true); }, 1800);
-  };
+
+    // const token = localStorage.getItem("token"); // si auth
+
+    const res = await axios.post(
+      `http://localhost:3000/api/payments/createpayment/${id}`,
+      {
+
+        methode:
+          method === "carte"
+            ? "Carte bancaire"
+            : method === "paypal"
+            ? "PayPal"
+            : "Espèces",
+
+        montant_paye: total,
+        taxe: 0,
+        reduction: 0,
+        transaction_id: `TXN-${Date.now()}`,
+        notes: "Paiement depuis frontend",
+      },
+      {
+       withCredentials : true
+      }
+    );
+
+    console.log("Paiement success:", res.data);
+
+    setTimeout(() => {
+      setPaying(false);
+      setPaid(true);
+    }, 800);
+  } catch (error) {
+    console.log("Erreur paiement:", error.response?.data || error.message);
+
+    setPaying(false);
+  }
+};
 
   const formatCard = v => v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
   const formatExpiry = v => { const d = v.replace(/\D/g, "").slice(0, 4); return d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d; };

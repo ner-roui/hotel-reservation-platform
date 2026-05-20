@@ -8,6 +8,6 @@ const {
 } = require("../controllers/payment");
 
 // CREATE PAYMENT
-router.post("/createpayment", auth, createPayment);
+router.post("/createpayment/:id", auth, createPayment);
 
 module.exports = router;

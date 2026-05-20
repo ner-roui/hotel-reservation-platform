@@ -11,7 +11,8 @@ dns.setDefaultResultOrder("ipv4first");
 const chambreRoutes = require("./routes/chambreRoutes");
 
 const authRoutes = require("./routes/userRoutes");
-const reservationRoute = require("./routes/reservation")
+const reservationRoute = require("./routes/reservation");
+const paymentRoute = require("./routes/paymentRoutes")
 
 
 
@@ -35,7 +36,8 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/chambres", chambreRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/reservations", reservationRoute)
+app.use("/api/reservations", reservationRoute);
+app.use("/api/payment", paymentRoute);
 // ─────────────────────────────────────────────
 // Static uploads
 // ─────────────────────────────────────────────
