@@ -44,23 +44,10 @@ const paymentSchema = new Schema(
       required: true,
     },
 
-    // Informations client
-    client_nom: {
-      type: String,
-      trim: true,
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
-    },
-
-    client_prenom: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-
-    client_email: {
-      type: String,
-      trim: true,
-      lowercase: true,
     },
 
     // Montants
@@ -106,6 +93,7 @@ const paymentSchema = new Schema(
       ],
       required: true,
     },
+
 
     // Statut paiement
     statut: {
