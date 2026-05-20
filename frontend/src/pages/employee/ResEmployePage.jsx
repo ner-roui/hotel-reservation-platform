@@ -127,26 +127,44 @@ const RoleButton = ({ label, icon, active, onClick }) => (
 );
 
 const ReservationCard = ({ res, onCheckin, onCheckout }) => {
+  const start = new Date(res.arrivee).toLocaleDateString(
+  "fr-FR",
+  {
+    day: "numeric",
+    month: "long",
+  }
+);
+
+const end = new Date(res.depart).toLocaleDateString(
+  "fr-FR",
+  {
+    day: "numeric",
+    month: "long",
+  }
+);
+
+console.log(`${start} -> ${end}`);
+
   return (
     <div className="bg-white border border-gray-100 rounded-xl px-4 py-3.5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition-all cursor-pointer">
       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${res.avatarColor}`}>
-        {res.initials}
+        {res.user.name[0].toUpperCase()}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-800">{res.name}</span>
-          <span className="text-xs text-gray-400 font-normal">{res.id}</span>
+          <span className="text-sm font-semibold text-gray-800">{res.user.name}</span>
+          <span className="text-xs text-gray-400 font-normal">{`RES-${res._id.toString().slice(-4).toUpperCase()}`}</span>
         </div>
         <div className="flex items-center gap-1.5 mt-0.5 text-xs text-gray-400">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
           </svg>
-          {res.room}
+          {res.chambre.type}
           <span className="text-gray-300">·</span>
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" />
           </svg>
-          {res.from} → {res.to}
+          {start} → {end}
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
@@ -195,6 +213,7 @@ export default function ResEmployePage() {
   const [search, setSearch] = useState("");
   const {reservations} = useContext(AppContext)
 
+  console.log('resss=>', reservations);
 
   const handleCheckin = async (id) => {
       try {
@@ -326,7 +345,7 @@ const handleCheckout = async (id) => {
             ) : (
               filtered?.map((res) => (
                 <ReservationCard
-                  key={res.id}
+                  key={res._id}
                   res={res}
                   onCheckin={handleCheckin}
                   onCheckout={handleCheckout}

@@ -12,7 +12,7 @@ export default function ContextProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [sejours, setSejours] = useState([]);
-    const [reservation, setReservation] = useState([])
+    const [reservations, setReservations] = useState([])
   
     console.log(user, 'user')
     
@@ -99,8 +99,8 @@ useEffect(() => {
     user,
     setSejours,
     sejours,
-    reservation, 
-    setReservation
+    reservations, 
+    setReservations
   };
 
   return (

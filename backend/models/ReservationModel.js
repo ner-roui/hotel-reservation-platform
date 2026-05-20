@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const reservationSchema = new mongoose.Schema(
   {
+    name:{
+      type: String,
+      default: null,
+
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
