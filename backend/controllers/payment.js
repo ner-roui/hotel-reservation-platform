@@ -2,9 +2,6 @@ const PaymentModel = require("../models/PaymentModel");
 const ReservationModel = require("../models/ReservationModel");
 const ChambreModel = require("../models/RoomModels");
 
-const PaymentModel = require("../models/payment.model");
-const ReservationModel = require("../models/reservation.model");
-const ChambreModel = require("../models/chambre.model");
 
 const createPayment = async (req, res) => {
   try {
