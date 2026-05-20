@@ -223,7 +223,7 @@ const updateReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { arrivee, depart, prixParNuit } = req.body;
+    const { arrivee, depart, prixParNuit, chambre, voyageurs} = req.body;
 
     const reservation = await Reservation.findById(id);
 
@@ -256,6 +256,7 @@ const updateReservation = async (req, res) => {
     reservation.arrivee = start;
     reservation.depart = end;
     reservation.nuits = nuits;
+    reservation.chambre = chambre;
     reservation.prixParNuit = price;
     reservation.total = total;
 

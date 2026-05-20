@@ -60,7 +60,7 @@ function App() {
       />
 
       <Route
-        path="/payementpage"
+        path="/payementpage/:id"
         element={
           <>
             <Navbar />

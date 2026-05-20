@@ -31,7 +31,7 @@ function formatDate(d) {
 
 export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, notes }) {
   const nights = diffDays(dateIn, dateOut);
-  const prixBase = chambre.prixNuit * nights;
+  const prixBase = chambre.prix_nuit * nights;
   const taxes = Math.round(prixBase * 0.1);
   const total = prixBase + taxes;
   const hasChanged = chambre.numero !== RESERVATION.numero || dateIn !== RESERVATION.dateIn || dateOut !== RESERVATION.dateOut || voyageurs !== RESERVATION.voyageurs;
@@ -80,7 +80,7 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
 
       {/* Room card */}
       <div className="flex gap-4 rounded-2xl overflow-hidden mb-5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}>
-        <img src={chambre.img} className="w-28 h-24 object-cover shrink-0" alt="" />
+        <img src={`http://localhost:3000${chambre.images[0]}`} className="w-28 h-24 object-cover shrink-0" alt="" />
         <div className="py-3 pr-3 flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-semibold text-white text-sm" style={{ fontFamily: "'Playfair Display',serif" }}>{chambre.type} · Chambre {chambre.numero}</span>

@@ -1,5 +1,6 @@
 /* ── Step 2: Choose room ────────────────────────────── */
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AppContext } from "../context/Context";
 const CHAMBRES_DISPO = [
   { type: "Standard",       numero: "101", prixNuit: 120, superficie: 22,  lit: "1 lit double",        img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80" },
   { type: "Standard",       numero: "103", prixNuit: 120, superficie: 22,  lit: "1 lit double",        img: "https://images.unsplash.com/photo-1505693314120-0d443867891c?w=400&q=80" },
@@ -18,12 +19,13 @@ const TYPE_COLORS = {
 
 export default function StepChambre({ selected, onSelect, voyageurs }) {
   const [hov, setHov] = useState(null);
+  const {chambres} = useContext(AppContext)
   return (
     <div style={{ animation: "fadeUp .4s ease both" }}>
       <h2 className="text-lg font-semibold text-white mb-1" style={{ fontFamily: "'Playfair Display',serif" }}>Choisir une chambre</h2>
       <p className="text-sm mb-6" style={{ color: "rgba(100,116,139,.7)" }}>Sélectionnez la chambre souhaitée pour votre séjour.</p>
       <div className="space-y-3 max-h-96 overflow-y-auto pr-1" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(124,58,237,.3) transparent" }}>
-        {CHAMBRES_DISPO.map((c, i) => {
+        {chambres.map((c, i) => {
           const tc = TYPE_COLORS[c.type] || TYPE_COLORS["Standard"];
           const isSelected = selected?.numero === c.numero;
           return (
@@ -39,7 +41,7 @@ export default function StepChambre({ selected, onSelect, voyageurs }) {
             >
               {/* Image */}
               <div className="w-20 h-16 shrink-0 overflow-hidden">
-                <img src={c.img} alt={c.type} className="w-full h-full object-cover transition-transform duration-300"
+                <img src={`http://localhost:3000${c.images[0]}`} alt={c.type} className="w-full h-full object-cover transition-transform duration-300"
                   style={{ transform: hov === i ? "scale(1.08)" : "scale(1)" }} />
               </div>
               {/* Info */}
@@ -55,7 +57,7 @@ export default function StepChambre({ selected, onSelect, voyageurs }) {
               </div>
               {/* Price */}
               <div className="pr-4 text-right">
-                <p className="font-bold text-white" style={{ fontFamily: "'Playfair Display',serif" }}>€{c.prixNuit}</p>
+                <p className="font-bold text-white" style={{ fontFamily: "'Playfair Display',serif" }}>€{c.prix_nuit}</p>
                 <p className="text-xs" style={{ color: "rgba(100,116,139,.5)" }}>/nuit</p>
               </div>
               {/* Radio */}

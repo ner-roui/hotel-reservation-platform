@@ -6,6 +6,7 @@ import StepDates from "./StepDates";
 import StepChambre from "./StepChambre";
 import StepRecap from "./StepRecap";
 import { AppContext } from "../context/Context";
+import axios from "axios"
 
 const RESERVATION = {
   id: "RES-2842",
@@ -64,11 +65,13 @@ export default function ModifierModal({sejour, onClose }) {
     try {
       setSaving(true);
 
-      const { data } = await axios.patch(
-        `http://localhost:3000/api/reservations/${sejour._id}`,
+      const { data } = await axios.put(
+        `http://localhost:3000/api/reservations/updatereservation/${sejour._id}`,
         {
           arrivee: form.arrivee,
           depart: form.depart,
+          prixParNuit : form.chambre.prix_nuit,
+          chambre : form.chambre._id,
           voyageurs: form.voyageurs,
         },
         { withCredentials: true }

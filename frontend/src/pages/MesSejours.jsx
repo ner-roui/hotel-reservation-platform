@@ -149,8 +149,9 @@ function CancelModal({ sejour, onConfirm, onClose }) {
   };
 
   /* ── Sejour Card ────────────────────────────────────── */
-function SejourCard({ s, onPay, onCancel, style, setOpen }) {
+function SejourCard({ s, onCancel, style, setOpen }) {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate()
 
   console.log('sssss', s)
   const chambre = s.chambre;
@@ -176,6 +177,10 @@ function SejourCard({ s, onPay, onCancel, style, setOpen }) {
       month: "short",
       year: "numeric",
     });
+  };
+
+  const onPay = (id) => {
+    navigate(`/payementpage/${id}`);
   };
 
   return (
@@ -383,7 +388,7 @@ function SejourCard({ s, onPay, onCancel, style, setOpen }) {
 
             {s.paymentStatus === "UNPAID"  && s.status !== "CANCELLED" && (
               <button
-                onClick={() => onPay(s)}
+                onClick={() => onPay(s._id)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
                 style={{
                   background:
@@ -631,7 +636,6 @@ const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
             ) : (
               filtered?.map((s, i) => (
                 <SejourCard key={s._id} s={s}  setOpen={() => setSelectedSejour(s)}
-                  onPay={() => {}}
                   onCancel={(sej) => setCancelTarget(sej)}
                   style={{ animation: `fadeUp .4s ${i * .07}s ease both` }}
                 />
