@@ -31,14 +31,14 @@ const factureSchema = new Schema(
 const paymentSchema = new Schema(
   {
     // Relation réservation
-    reservation_id: {
+    reservation: {
       type: Schema.Types.ObjectId,
       ref: "Reservation",
       required: true,
     },
 
     // Relation chambre
-    chambre_id: {
+    chambre: {
       type: Schema.Types.ObjectId,
       ref: "Chambre",
       required: true,

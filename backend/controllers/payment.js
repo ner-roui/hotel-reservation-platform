@@ -2,53 +2,39 @@ const PaymentModel = require("../models/PaymentModel");
 const ReservationModel = require("../models/ReservationModel");
 const ChambreModel = require("../models/RoomModels");
 
+const PaymentModel = require("../models/payment.model");
+const ReservationModel = require("../models/reservation.model");
+const ChambreModel = require("../models/chambre.model");
+
 const createPayment = async (req, res) => {
   try {
     const {
-      reservation_id,
-      chambre_id,
-      client_nom,
-      client_prenom,
-      client_email,
-      montant_total,
-      montant_paye,
-      taxe,
-      reduction,
+      reservation,
       methode,
+      montant_paye,
+      taxe = 0,
+      reduction = 0,
       transaction_id,
-      date_limite,
       notes,
       valide_par,
+      date_limite,
     } = req.body;
 
-    // ─────────────────────────────────────
-    // Vérifications
-    // ─────────────────────────────────────
-
-    if (
-      !reservation_id ||
-      !chambre_id ||
-      !client_nom ||
-      !client_prenom ||
-      !montant_total ||
-      !methode
-    ) {
-      return res.status(400).json({
-        message: "Tous les champs obligatoires sont requis",
-      });
-    }
-
     // Vérifier réservation
-    const reservation = await ReservationModel.findById(reservation_id);
+    const reservationData = await ReservationModel.findById(reservation)
+      .populate("user")
+      .populate("chambre");
 
-    if (!reservation) {
+    if (!reservationData) {
       return res.status(404).json({
         message: "Réservation introuvable",
       });
     }
 
     // Vérifier chambre
-    const chambre = await ChambreModel.findById(chambre_id);
+    const chambre = await ChambreModel.findById(
+      reservationData.chambre._id
+    );
 
     if (!chambre) {
       return res.status(404).json({
@@ -56,56 +42,44 @@ const createPayment = async (req, res) => {
       });
     }
 
-    // ─────────────────────────────────────
     // Calculs
-    // ─────────────────────────────────────
+    const montant_total =
+      reservationData.total + taxe - reduction;
 
-    const totalPaye = montant_paye || 0;
+    const montant_restant =
+      montant_total - montant_paye;
 
-    const totalTaxe = taxe || 0;
-
-    const totalReduction = reduction || 0;
-
-    const montantFinal =
-      montant_total + totalTaxe - totalReduction;
-
-    const montantRestant =
-      montantFinal - totalPaye;
-
-    // ─────────────────────────────────────
-    // Statut automatique
-    // ─────────────────────────────────────
-
+    // Statut paiement
     let statut = "En attente";
 
-    if (totalPaye > 0 && totalPaye < montantFinal) {
+    if (montant_paye === 0) {
+      statut = "En attente";
+    } else if (montant_paye < montant_total) {
       statut = "Partiellement payé";
-    }
-
-    if (totalPaye >= montantFinal) {
+    } else if (montant_paye >= montant_total) {
       statut = "Payé";
     }
 
-    // ─────────────────────────────────────
-    // Création payment
-    // ─────────────────────────────────────
-
+    // Création paiement
     const payment = await PaymentModel.create({
-      reservation_id,
-      chambre_id,
+      reservation: reservationData._id,
 
-      client_nom,
-      client_prenom,
-      client_email,
+      chambre: chambre._id,
 
-      montant_total: montantFinal,
-      montant_paye: totalPaye,
-      montant_restant: montantRestant,
+      user: reservationData.user._id,
 
-      taxe: totalTaxe,
-      reduction: totalReduction,
+      montant_total,
+
+      montant_paye,
+
+      montant_restant,
+
+      taxe,
+
+      reduction,
 
       methode,
+
       statut,
 
       transaction_id,
@@ -113,64 +87,58 @@ const createPayment = async (req, res) => {
       date_limite,
 
       notes,
+
       valide_par,
+
+      date_paiement: new Date(),
     });
 
-    // ─────────────────────────────────────
     // Mise à jour réservation
-    // ─────────────────────────────────────
-
     if (statut === "Payé") {
-      reservation.paymentStatus = "PAID";
+      reservationData.paymentStatus = "PAID";
     } else {
-      reservation.paymentStatus = "UNPAID";
+      reservationData.paymentStatus = "UNPAID";
     }
 
-    await reservation.save();
+    reservationData.paymentMethod = methode;
 
-    // ─────────────────────────────────────
-    // Response
-    // ─────────────────────────────────────
+    await reservationData.save();
 
-    return res.status(201).json({
-      success: true,
+    // Mise à jour chambre
+    chambre.reservation_active =
+      chambre.reservation_active.map((item) => {
+        if (
+          item.reservation_id.toString() ===
+          reservationData._id.toString()
+        ) {
+          return {
+            ...item.toObject(),
+            paymentStatus:
+              statut === "Payé"
+                ? "PAID"
+                : "UNPAID",
+          };
+        }
+
+        return item;
+      });
+
+    await chambre.save();
+
+    res.status(201).json({
       message: "Paiement créé avec succès",
       payment,
     });
   } catch (error) {
     console.log(error);
 
-    return res.status(500).json({
-      success: false,
+    res.status(500).json({
       message: "Erreur serveur",
       error: error.message,
     });
   }
 };
 
-
-const getPayments = async (req, res) => {
-  try {
-    const payments = await PaymentModel.find()
-      .populate("reservation_id")
-      .populate("chambre_id")
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json({
-      success: true,
-      count: payments.length,
-      payments,
-    });
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur",
-      error: error.message,
-    });
-  }
-};
 
 // ─────────────────────────────────────
 // GET PAYMENT BY ID
