@@ -64,7 +64,13 @@ const reservationSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["CARD", "CASH", "ONLINE"],
+      enum: [
+        "Espèces",
+        "Carte bancaire",
+        "PayPal",
+        "Virement bancaire",
+        "Stripe",
+      ],
       default: "CARD",
     },
   },

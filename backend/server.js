@@ -37,7 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/chambres", chambreRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/reservations", reservationRoute);
-app.use("/api/payment", paymentRoute);
+app.use("/api/payments", paymentRoute);
 // ─────────────────────────────────────────────
 // Static uploads
 // ─────────────────────────────────────────────

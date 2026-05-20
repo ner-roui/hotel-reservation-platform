@@ -63,11 +63,11 @@ const paymentSchema = new Schema(
       min: 0,
     },
 
-    montant_restant: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
+    // montant_restant: {
+    //   type: Number,
+    //   default: 0,
+    //   min: 0,
+    // },
 
     taxe: {
       type: Number,

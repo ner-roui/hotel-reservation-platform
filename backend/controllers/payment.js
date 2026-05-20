@@ -5,7 +5,12 @@ const ChambreModel = require("../models/RoomModels");
 
 const createPayment = async (req, res) => {
   try {
-    const id = req.params
+    const {id} = req.params;
+    if (!id) {
+      return res.status(400).json({
+        message: "ID réservation manquant",
+      });
+    }
     const {
       methode,
       montant_paye,
@@ -21,6 +26,8 @@ const createPayment = async (req, res) => {
     const reservationData = await ReservationModel.findById(id)
       .populate("user")
       .populate("chambre");
+
+    console.log('reservationdata', reservationData )
 
     if (!reservationData) {
       return res.status(404).json({
@@ -43,8 +50,8 @@ const createPayment = async (req, res) => {
     const montant_total =
       reservationData.total + taxe - reduction;
 
-    const montant_restant =
-      montant_total - montant_paye;
+    // const montant_restant =
+    //   montant_total - montant_paye;
 
     // Statut paiement
     let statut = "En attente";
@@ -61,15 +68,13 @@ const createPayment = async (req, res) => {
     const payment = await PaymentModel.create({
       reservation: reservationData._id,
 
-      chambre: chambre._id,
+      chambre: reservationData.chambre._id,
 
       user: reservationData.user._id,
 
       montant_total,
 
       montant_paye,
-
-      montant_restant,
 
       taxe,
 
