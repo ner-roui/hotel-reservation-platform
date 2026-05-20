@@ -121,10 +121,39 @@ const checkInReservation = async (req, res) => {
       });
     }
 
-    // Update status
-    reservation.status = "CHECKIN";
+    const chambre = await RoomModel.findById(reservation.chambre._id);
 
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    const now = new Date();
+
+    // 1. update reservation
+    reservation.status = "CHECKIN";
+    // reservation.date_checkout = now;
+
+    // 2. update chambre status
+    chambre.statut = "Occupée";
+
+    // 3. update reservation_active array
+    chambre.reservation_active = chambre.reservation_active.map((r) => {
+      if (r.reservation_id.toString() === reservation._id.toString()) {
+        return {
+          ...r,
+          status: "CHECKIN",
+          date_checkin: now
+        };
+      }
+      return r;
+    });
+
+    await chambre.save();
     await reservation.save();
+
+
 
     res.status(200).json({
       message: "Check-in effectué avec succès",
@@ -166,7 +195,7 @@ const checkOutReservation = async (req, res) => {
       });
     }
     
-  const chambre = await ChambreModel.findById(reservation.chambre._id);
+  const chambre = await RoomModel.findById(reservation.chambre._id);
 
     if (!chambre) {
       return res.status(404).json({
@@ -187,7 +216,7 @@ const checkOutReservation = async (req, res) => {
     chambre.reservation_active = chambre.reservation_active.map((r) => {
       if (r.reservation_id.toString() === reservation._id.toString()) {
         return {
-          ...r.toObject?.() || r,
+          ...r,
           status: "CHECKOUT",
           date_checkout: now,
         };
