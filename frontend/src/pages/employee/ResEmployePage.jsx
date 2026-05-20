@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { useState } from "react";
 import { AppContext } from "../../context/Context";
+import { useMemo } from "react";
+
 
 const initialReservations = [
   {
@@ -228,18 +230,22 @@ const handleCheckout = async (id) => {
 };
  
 
-  const filtered = reservations?.filter((r) => {
-    const matchFilter =
-      activeFilter === "all" ||
-      (activeFilter === "pending" && r.status === "pending") ||
-      (activeFilter === "confirmed" && r.status === "confirmed") ||
-      (activeFilter === "checkin" && r.status === "checkin");
-    const matchSearch =
-      !search ||
-      r.name.toLowerCase().includes(search.toLowerCase()) ||
-      r.id.toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  });
+    const filtered = useMemo(() => {
+      return reservations?.filter((r) => {
+        const matchFilter =
+          activeFilter === "all" ||
+          (activeFilter === "pending" && r.status === "pending") ||
+          (activeFilter === "confirmed" && r.status === "confirmed") ||
+          (activeFilter === "checkin" && r.status === "checkin");
+
+        const matchSearch =
+          !search ||
+          r.name.toLowerCase().includes(search.toLowerCase()) ||
+          r.id.toLowerCase().includes(search.toLowerCase());
+
+        return matchFilter && matchSearch;
+      });
+    }, [reservations, activeFilter, search]);
 
   const counts = {
     all: reservations?.length,
