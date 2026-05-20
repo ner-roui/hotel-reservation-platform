@@ -324,7 +324,7 @@ const handleCheckout = async (id) => {
                 Aucune réservation trouvée.
               </div>
             ) : (
-              filtered.map((res) => (
+              filtered?.map((res) => (
                 <ReservationCard
                   key={res.id}
                   res={res}

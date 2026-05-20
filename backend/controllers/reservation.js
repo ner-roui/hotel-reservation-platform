@@ -147,6 +147,7 @@ const checkOutReservation = async (req, res) => {
 
     const reservation = await ReservationModel.findById(id);
 
+
     if (!reservation) {
       return res.status(404).json({
         message: "Réservation introuvable",
@@ -164,10 +165,39 @@ const checkOutReservation = async (req, res) => {
         message: "Réservation annulée",
       });
     }
+    
+  const chambre = await ChambreModel.findById(reservation.chambre._id);
 
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    const now = new Date();
+
+    // 1. update reservation
     reservation.status = "CHECKOUT";
+    // reservation.date_checkout = now;
 
+    // 2. update chambre status
+    chambre.statut = "À nettoyer";
+
+    // 3. update reservation_active array
+    chambre.reservation_active = chambre.reservation_active.map((r) => {
+      if (r.reservation_id.toString() === reservation._id.toString()) {
+        return {
+          ...r.toObject?.() || r,
+          status: "CHECKOUT",
+          date_checkout: now,
+        };
+      }
+      return r;
+    });
+
+    await chambre.save();
     await reservation.save();
+
 
     res.status(200).json({
       message: "Check-out effectué avec succès",
@@ -182,6 +212,8 @@ const checkOutReservation = async (req, res) => {
     });
   }
 };
+
+
 
 
 const cancelReservation = async (req, res) => {
