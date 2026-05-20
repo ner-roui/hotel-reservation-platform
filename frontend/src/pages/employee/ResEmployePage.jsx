@@ -203,7 +203,7 @@ export default function ResEmployePage() {
         );
 
         setReservations((prev) =>
-          prev.map((r) => (r.id === id ? { ...r, status: "CHECKIN" } : r))
+          prev.map((r) => (r._id === id ? { ...r, status: "CHECKIN" } : r))
         );
       } catch (err) {
         console.error("Checkin error:", err);
@@ -211,12 +211,22 @@ export default function ResEmployePage() {
     };
 
 
-
-  const handleCheckout = (id) => {
-    setReservations((prev) =>
-      prev.map((r) => (r._id === id ? { ...r, status: "CHECKOUT" } : r))
+const handleCheckout = async (id) => {
+  try {
+    const { data } = await axios.patch(
+      `http://localhost:3000/api/reservations/checkout/${id}`,
+      {},
+      { withCredentials: true }
     );
-  };
+
+  setReservations((prev) =>
+        prev.map((r) => (r._id === id ? { ...r, status: "CHECKOUT" } : r))
+      );
+  } catch (err) {
+    console.error("Checkout error:", err);
+  }
+};
+ 
 
   const filtered = reservations?.filter((r) => {
     const matchFilter =
