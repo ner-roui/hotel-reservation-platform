@@ -85,12 +85,12 @@ export default function ModalReservation({ chambre, onClose }) {
       total: c.prix_nuit * nights,
       status: "PENDING",
       paymentStatus : "UNPAID",
-      paymentMethod: "CARD",
+      paymentMethod: "Carte bancaire",
     } ]))
 
-    console.log(data);
+    console.log(data.reservation);
 
-    navigate("/payementpage");
+    navigate(`/payementpage/${data.reservation._id}`);
   } catch (e) {
     console.log(e);
 

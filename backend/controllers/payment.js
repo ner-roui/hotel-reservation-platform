@@ -5,6 +5,7 @@ const ChambreModel = require("../models/RoomModels");
 
 const createPayment = async (req, res) => {
   try {
+    
     const {id} = req.params;
     if (!id) {
       return res.status(400).json({
@@ -26,6 +27,7 @@ const createPayment = async (req, res) => {
     const reservationData = await ReservationModel.findById(id)
       .populate("user")
       .populate("chambre");
+      reservationData.status = "CONFIRMED";
 
     console.log('reservationdata', reservationData )
 

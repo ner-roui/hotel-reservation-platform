@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useState } from "react";
 import { AppContext } from "../../context/Context";
 import { useMemo } from "react";
-
+import axios from "axios"
 
 const initialReservations = [
   {
@@ -50,8 +50,8 @@ const initialReservations = [
 const STATUS_LABELS = {
   PENDING: "En attente",
   CONFIRMED: "Confirmée",
-  CHECKIN: "Check-in",
-  CHECKOUT: "Check-out",
+  CHECKIN: "Checkin",
+  CHECKOUT: "Checkout",
   CANCELLED: "Annulée",
 };
 
@@ -185,23 +185,24 @@ const RoleButton = ({ label, icon, active, onClick }) => (
 );
 
 const ReservationCard = ({ res, onCheckin, onCheckout }) => {
-  const start = new Date(res.arrivee).toLocaleDateString(
-  "fr-FR",
-  {
-    day: "numeric",
-    month: "long",
-  }
-);
+  console.log('reservationnnnn----', res)
+    const start = new Date(res.arrivee).toLocaleDateString(
+    "fr-FR",
+    {
+      day: "numeric",
+      month: "long",
+    }
+  );
 
-const end = new Date(res.depart).toLocaleDateString(
-  "fr-FR",
-  {
-    day: "numeric",
-    month: "long",
-  }
-);
+  const end = new Date(res.depart).toLocaleDateString(
+    "fr-FR",
+    {
+      day: "numeric",
+      month: "long",
+    }
+  );
 
-console.log(`${start} -> ${end}`);
+
 
   return (
     <div className="bg-white border border-gray-100 rounded-xl px-4 py-3.5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition-all cursor-pointer">
@@ -227,12 +228,12 @@ console.log(`${start} -> ${end}`);
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[res.status]}`}>
-          {STATUS_ICONS[res.status] || STATUS_ICONS.confirmed}
+          {STATUS_ICONS[res.status] || STATUS_ICONS.CONFIRMED}
           {STATUS_LABELS[res.status]}
         </span>
-        {res.status === "confirmed" && (
+        {res.status === "CONFIRMED" && (
           <button
-            onClick={(e) => { e.stopPropagation(); onCheckin(res.id); }}
+            onClick={(e) => { e.stopPropagation(); onCheckin(res._id); }}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors active:scale-95"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -241,9 +242,9 @@ console.log(`${start} -> ${end}`);
             Check-in
           </button>
         )}
-        {res.status === "checkin" && (
+        {res.status === "CHECKIN" && (
           <button
-            onClick={(e) => { e.stopPropagation(); onCheckout(res.id); }}
+            onClick={(e) => { e.stopPropagation(); onCheckout(res._id); }}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg transition-colors active:scale-95"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -269,7 +270,7 @@ export default function ResEmployePage() {
   const [activeRole, setActiveRole] = useState("reception");
   const [activeNav, setActiveNav] = useState("reservations");
   const [search, setSearch] = useState("");
-  const {reservations} = useContext(AppContext)
+  const {reservations, setReservations} = useContext(AppContext)
 
   console.log('resss=>', reservations);
 
@@ -311,9 +312,9 @@ const handleCheckout = async (id) => {
       return reservations?.filter((r) => {
         const matchFilter =
           activeFilter === "all" ||
-          (activeFilter === "pending" && r.status === "pending") ||
-          (activeFilter === "confirmed" && r.status === "confirmed") ||
-          (activeFilter === "checkin" && r.status === "checkin");
+          (activeFilter === "pending" && r.status === "PENDING") ||
+          (activeFilter === "confirmed" && r.status === "CONFIRMED") ||
+          (activeFilter === "checkin" && r.status === "CHECKIN");
 
         const matchSearch =
           !search ||

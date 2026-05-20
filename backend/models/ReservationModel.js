@@ -76,7 +76,7 @@ const reservationSchema = new mongoose.Schema(
         "Virement bancaire",
         "Stripe",
       ],
-      default: "CARD",
+      default: "Carte bancaire",
     },
   },
   { timestamps: true }

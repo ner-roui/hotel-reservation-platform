@@ -7,10 +7,11 @@ const RoomModel = require("../models/RoomModels");
 
 const createReservation = async (req, res) => {
   try {
+ 
     const { userId } = req.user;
     const { roomId } = req.params;
     const { arrivee, depart, prixParNuit } = req.body;
-
+    console.log('rrrrrr', roomId)
     const room = await RoomModel.findById(roomId);
 
 
@@ -30,7 +31,7 @@ const createReservation = async (req, res) => {
         message: "Vous avez déjà réservé cette chambre pour ces dates",
       });
     }
-    console.log('----> all reservation', getAllReservations)
+
     // 1. CHECK OVERLAP DANS ARRAY
     const isOverlap = room.reservation_active?.some((r) => {
       const checkin = new Date(r.date_checkin);
@@ -88,9 +89,11 @@ const createReservation = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error.message)
     return res.status(500).json({
       message: "Erreur serveur",
       error: error.message,
+      
     });
   }
 };
@@ -100,7 +103,7 @@ const checkInReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const reservation = await ReservationModel.findById(id);
+    const reservation = await Reservation.findById(id);
 
     if (!reservation) {
       return res.status(404).json({
@@ -174,7 +177,7 @@ const checkOutReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const reservation = await ReservationModel.findById(id);
+    const reservation = await Reservation.findById(id);
 
 
     if (!reservation) {
