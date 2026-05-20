@@ -141,6 +141,49 @@ const checkInReservation = async (req, res) => {
 };
 
 
+const checkOutReservation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const reservation = await ReservationModel.findById(id);
+
+    if (!reservation) {
+      return res.status(404).json({
+        message: "Réservation introuvable",
+      });
+    }
+
+    if (reservation.status === "CHECKOUT") {
+      return res.status(400).json({
+        message: "Déjà en check-out",
+      });
+    }
+
+    if (reservation.status === "CANCELLED") {
+      return res.status(400).json({
+        message: "Réservation annulée",
+      });
+    }
+
+    reservation.status = "CHECKOUT";
+
+    await reservation.save();
+
+    res.status(200).json({
+      message: "Check-out effectué avec succès",
+      reservation,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
+
 const cancelReservation = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -357,5 +400,7 @@ module.exports = { createReservation,
   getReservationById,
   updateReservation,
   deleteReservation,
-  cancelReservation
+  cancelReservation, 
+  checkOutReservation,
+  
  };

@@ -195,23 +195,26 @@ export default function ResEmployePage() {
 
 
   const handleCheckin = async (id) => {
-  try {
-    const { data } = await axios.patch(
-      `http://localhost:3000/api/reservations/checkin/${id}`,
-      {},
-      { withCredentials: true }
-    );
+      try {
+        const { data } = await axios.patch(
+          `http://localhost:3000/api/reservations/checkin/${id}`,
+          {},
+          { withCredentials: true }
+        );
 
-    setReservations((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "CHECKIN" } : r))
-    );
-  } catch (err) {
-    console.error("Checkin error:", err);
-  }
-};
+        setReservations((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, status: "CHECKIN" } : r))
+        );
+      } catch (err) {
+        console.error("Checkin error:", err);
+      }
+    };
+
+
+
   const handleCheckout = (id) => {
     setReservations((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "CHECKOUT" } : r))
+      prev.map((r) => (r._id === id ? { ...r, status: "CHECKOUT" } : r))
     );
   };
 

@@ -14,7 +14,8 @@ const {
   getReservationById,
   updateReservation,
   deleteReservation,
-  cancelReservation
+  cancelReservation,
+  checkOutReservation
 } = require("../controllers/reservation");
 
 
@@ -26,6 +27,6 @@ router.put("/updatereservation/:id", auth, updateReservation);
 router.delete("/deletereservation/:id", auth, deleteReservation);
 router.patch("/cancel/:id", auth, cancelReservation);
 router.patch("/checkin/:id", auth, checkInReservation);
-
+router.patch("/checkout/:id", auth, checkOutReservation);
 
 module.exports = router;
