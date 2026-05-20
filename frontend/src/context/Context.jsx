@@ -12,6 +12,7 @@ export default function ContextProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [sejours, setSejours] = useState([]);
+    const [reservation, setReservation] = useState([])
   
     console.log(user, 'user')
     
@@ -64,9 +65,30 @@ useEffect(() => {
         console.error("Error fetching chambres:", err);
       }
     }
+    const fetchAllReservations = async () => {
+        try {
+          setLoading(true);
+
+          const { data } = await axios.get(
+            "http://localhost:3000/api/reservations/getallreservations",
+            {
+              withCredentials: true,
+            }
+          );
+
+          console.log(data.reservations);
+          setReservations(data.reservations);
+        } catch (err) {
+          console.error("Error fetching all reservations:", err);
+          setReservations([]);
+        } finally {
+          setLoading(false);
+        }
+      };
 
     fetchChambres();
     fetchSejours();
+    fetchAllReservations();
     }, []);
 
   const value = {
@@ -76,7 +98,9 @@ useEffect(() => {
     getUserData,
     user,
     setSejours,
-    sejours
+    sejours,
+    reservation, 
+    setReservation
   };
 
   return (

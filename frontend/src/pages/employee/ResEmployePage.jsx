@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import { useState } from "react";
+import { AppContext } from "../../context/Context";
 
 const initialReservations = [
   {
@@ -44,11 +46,19 @@ const initialReservations = [
 ];
 
 const STATUS_LABELS = {
-  confirmed: "Confirmée",
-  checkin: "Check-in",
-  pending: "En attente",
-  checkout: "Check-out",
+  PENDING: "En attente",
+  CONFIRMED: "Confirmée",
+  CHECKIN: "Check-in",
+  CHECKOUT: "Check-out",
+  CANCELLED: "Annulée",
 };
+
+// const STATUS_LABELS = {
+//   confirmed: "Confirmée",
+//   checkin: "Check-in",
+//   pending: "En attente",
+//   checkout: "Check-out",
+// };
 
 const STATUS_STYLES = {
   confirmed: "bg-blue-50 text-blue-700 border border-blue-100",
@@ -176,25 +186,26 @@ const ReservationCard = ({ res, onCheckin, onCheckout }) => {
 };
 
 export default function ResEmployePage() {
-  const [reservations, setReservations] = useState(initialReservations);
+  // const [reservations, setReservations] = useState(initialReservations);
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeRole, setActiveRole] = useState("reception");
   const [activeNav, setActiveNav] = useState("reservations");
   const [search, setSearch] = useState("");
+  const {reservations} = useContext(AppContext)
 
   const handleCheckin = (id) => {
     setReservations((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "checkin" } : r))
+      prev.map((r) => (r.id === id ? { ...r, status: "CHECKIN" } : r))
     );
   };
 
   const handleCheckout = (id) => {
     setReservations((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "checkout" } : r))
+      prev.map((r) => (r.id === id ? { ...r, status: "CHECKOUT" } : r))
     );
   };
 
-  const filtered = reservations.filter((r) => {
+  const filtered = reservations?.filter((r) => {
     const matchFilter =
       activeFilter === "all" ||
       (activeFilter === "pending" && r.status === "pending") ||
@@ -209,9 +220,9 @@ export default function ResEmployePage() {
 
   const counts = {
     all: reservations.length,
-    pending: reservations.filter((r) => r.status === "pending").length,
-    confirmed: reservations.filter((r) => r.status === "confirmed").length,
-    checkin: reservations.filter((r) => r.status === "checkin").length,
+    pending: reservations?.filter((r) => r.status === "pending").length,
+    confirmed: reservations?.filter((r) => r.status === "confirmed").length,
+    checkin: reservations?.filter((r) => r.status === "checkin").length,
   };
 
   return (

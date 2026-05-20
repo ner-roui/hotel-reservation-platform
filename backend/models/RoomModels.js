@@ -113,7 +113,7 @@ const reservationActiveSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"],
+      enum: ["PENDING", "CONFIRMED", "CHECKIN", "CHECKOUT", "CANCELLED"],
       default: "PENDING",
     },
 
