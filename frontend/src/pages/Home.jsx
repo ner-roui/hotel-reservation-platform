@@ -254,14 +254,17 @@ export default function HomePage() {
             />
           </div>
         </div>
-
-        <div className="grid gap-7 md:grid-cols-3 xl:grid-cols-3">
-          {filtered.map((c, i) => (
-             <div key={c._id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
-                <ChambreCard c={c} onReserver={setSelected} />
-            </div>
-          ))}
-        </div>
+      <div className="grid gap-7 md:grid-cols-3 xl:grid-cols-3 items-stretch">
+        {filtered.map((c, i) => (
+          <div
+            key={c._id}
+            className="h-full"
+            style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}
+          >
+            <ChambreCard c={c} onReserver={setSelected} />
+          </div>
+        ))}
+      </div>
       </section>
         {/* Modal */}
             {selected && <ModalReservation chambre={selected} onClose={() => setSelected(null)} />}

@@ -107,7 +107,6 @@ export default function ChambreCard({ c, onReserver }) {
             </div>
             <p className="text-emerald-400 text-xs font-medium mt-0.5">✓ Annulation gratuite</p>
           </div>
-          {dispo ? (
             <button
               onClick={() => handleReservation(c)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
@@ -118,12 +117,6 @@ export default function ChambreCard({ c, onReserver }) {
             >
               Réserver <span className="text-xs">›</span>
             </button>
-          ) : (
-            <button disabled className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-500 cursor-not-allowed"
-              style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.06)" }}>
-              Indisponible
-            </button>
-          )}
         </div>
       </div>
     </div>
