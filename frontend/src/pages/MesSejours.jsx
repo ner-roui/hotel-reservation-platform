@@ -114,6 +114,7 @@ const NAV = [
 
 /* ── Cancel Modal ───────────────────────────────────── */
 function CancelModal({ sejour, onConfirm, onClose }) {
+  console.log('when you want cancel', sejour);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
@@ -122,7 +123,7 @@ function CancelModal({ sejour, onConfirm, onClose }) {
           <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-4" style={{ background: "rgba(239,68,68,.1)", border: "1px solid rgba(239,68,68,.25)" }}>✕</div>
           <h3 className="text-lg font-semibold text-white mb-2" style={{ fontFamily: "'Playfair Display',serif" }}>Annuler la réservation ?</h3>
           <p className="text-sm mb-1" style={{ color: "rgba(148,163,184,.7)" }}>
-            <span style={{ color: "#a78bfa", fontWeight: 600 }}>{sejour.id}</span> — {sejour.type} {sejour.numero}
+            <span style={{ color: "#a78bfa", fontWeight: 600 }}>{sejour._id}</span> — {sejour.type} {sejour.numero}
           </p>
           <p className="text-xs mb-6" style={{ color: "rgba(100,116,139,.6)" }}>Cette action est irréversible.</p>
           <div className="flex gap-3">
@@ -153,7 +154,7 @@ function SejourCard({ s, onCancel, style, setOpen }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate()
 
-  console.log('sssss', s)
+  // console.log('sssss', s)
   const chambre = s.chambre;
 
   const sc = STATUT_CFG[s.status] || STATUT_CFG["PENDING"];
@@ -213,7 +214,7 @@ function SejourCard({ s, onCancel, style, setOpen }) {
           style={{ width: 140 }}
         >
           <img
-            src={`http://localhost:3000${chambre?.images?.[0]}`}
+            src={`http://10.12.1.3:3000${chambre?.images?.[0]}`}
             alt={chambre?.type}
             className="w-full h-full object-cover transition-transform duration-500"
             style={{
@@ -511,26 +512,29 @@ export default function MesSejours() {
  
 const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
-
+console.log('canceleleltarget===>', cancelTarget)
   const handleCancel  = async (id) => {
     console.log('id de reservation', id);
     try {
-      const { data } = await axios.patch(
-        `http://localhost:3000/api/reservations/cancel/${id}`,
+
+      // setSejours(prev =>
+      //   prev.map(s =>
+      //     s._id === id
+      //       ? { ...s, status: "CANCELLED", cancelledAt: new Date() }
+      //       : s
+      //   )
+      // );
+      const {data} = await axios.patch(
+        `http://10.12.1.3:3000/api/reservations/cancel/${id}`,
         {},
         { withCredentials: true }
       );
 
-      console.log(data);
+      console.log('ladata de reservation',data, );
+      setSejours(data.reservation)
 
       // update UI (optimistic ou refetch)
-      setSejours(prev =>
-        prev.map(s =>
-          s._id === id
-            ? { ...s, status: "CANCELLED", cancelledAt: new Date() }
-            : s
-        )
-      );
+
     } catch (e) {
       alert(e.response?.data?.message || e.message);
     }
@@ -549,7 +553,7 @@ const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
 
   const stats = {
     total:      sejours?.length || 0,
-    actives:    sejours?.filter(s => s.statut === "En attente" || s.statut === "Confirmée").length || 0,
+    actives:    sejours?.filter(s => s.statut === "PENDING" || s.statut === "Confirmée").length || 0,
     terminees:  sejours?.filter(s => s.statut === "Terminée").length || 0,
     totalSpent: sejours?.filter(s => s.paiement === "Payé").reduce((a, s) => a + s.prix, 0),
   };
@@ -636,7 +640,7 @@ const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
             ) : (
               filtered?.map((s, i) => (
                 <SejourCard key={s._id} s={s}  setOpen={() => setSelectedSejour(s)}
-                  onCancel={(sej) => setCancelTarget(sej)}
+                  onCancel={() => setCancelTarget(s)}
                   style={{ animation: `fadeUp .4s ${i * .07}s ease both` }}
                 />
               ))

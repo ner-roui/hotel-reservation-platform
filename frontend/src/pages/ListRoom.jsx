@@ -63,7 +63,7 @@ function ChambreCard({ chambre, onSelect }) {
     >
       {/* Top gradient band */}
       <div className="h-40 relative overflow-hidden">
-      < img src={`http://localhost:3000${chambre.images[0]}`} />
+      < img src={`http://10.12.1.3:3000${chambre.images[0]}`} />
         <div className="absolute top-3 left-3">
           <span className={`text-xs font-bold text-white bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full`}>
             Ch. {chambre.numero}
@@ -148,7 +148,7 @@ function DetailPanel({ chambre, onClose }) {
         {/* Header image */}
         <div className="h-40 relative overflow-hidden">
          <img className="w-full h-full object-cover block"
-         src={`http://localhost:3000${chambre.images[0]}`} />
+         src={`http://10.12.1.3:3000${chambre.images[0]}`} />
           <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">✕</button>
           <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
             <div>

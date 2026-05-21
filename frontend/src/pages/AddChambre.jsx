@@ -195,7 +195,7 @@ if (!form.priceWE) missingFields.push("Prix week-end");
     });
     if(id){
 
-    const res = await axios.post("http://localhost:3000/api/chambres/update-room",
+    const res = await axios.post("http://10.12.1.3:3000/api/chambres/update-room",
       formData
     )
 
@@ -205,7 +205,7 @@ if (!form.priceWE) missingFields.push("Prix week-end");
 
     alert("✅ Chambre modifiée");
     }else{
-      const res = await axios.post("http://localhost:3000/api/chambres/add-room",
+      const res = await axios.post("http://10.12.1.3:3000/api/chambres/add-room",
       formData
     )
 

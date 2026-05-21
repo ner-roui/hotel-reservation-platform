@@ -277,7 +277,7 @@ export default function ResEmployePage() {
   const handleCheckin = async (id) => {
       try {
         const { data } = await axios.patch(
-          `http://localhost:3000/api/reservations/checkin/${id}`,
+          `http://10.12.1.3:3000/api/reservations/checkin/${id}`,
           {},
           { withCredentials: true }
         );
@@ -294,7 +294,7 @@ export default function ResEmployePage() {
 const handleCheckout = async (id) => {
   try {
     const { data } = await axios.patch(
-      `http://localhost:3000/api/reservations/checkout/${id}`,
+      `http://10.12.1.3:3000/api/reservations/checkout/${id}`,
       {},
       { withCredentials: true }
     );

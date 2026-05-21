@@ -19,7 +19,7 @@ export default function ContextProvider({ children }) {
 const getUserData = async () => {
   try {
     const { data } = await axios.get(
-      "http://localhost:3000/api/auth/getuserdata",
+      "http://10.12.1.3:3000/api/auth/getuserdata",
       {
         withCredentials: true,
       }
@@ -41,7 +41,7 @@ useEffect(() => {
         setLoading(true);
 
         const { data } = await axios.get(
-            "http://localhost:3000/api/chambres/get-room"
+            "http://10.12.1.3:3000/api/chambres/get-room"
         );
 
         setChambres(data.chambres);
@@ -56,7 +56,7 @@ useEffect(() => {
 
     const fetchSejours = async() =>{
       try{
-        const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
+        const {data} = await axios.get("http://10.12.1.3:3000/api/reservations/myreservation",{
           withCredentials : true
         })
         console.log(data.reservations);
@@ -70,7 +70,7 @@ useEffect(() => {
           setLoading(true);
 
           const { data } = await axios.get(
-            "http://localhost:3000/api/reservations/getallreservations",
+            "http://10.12.1.3:3000/api/reservations/getallreservations",
             {
               withCredentials: true,
             }

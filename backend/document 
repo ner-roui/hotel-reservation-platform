@@ -4,7 +4,7 @@ Voici l erreur :
 
 
 
-home:1 Access to XMLHttpRequest at 'http://localhost:3000/api/auth/getuserdata' from origin 'http://127.0.0.1:5173' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'. The credentials mode of requests initiated by the XMLHttpRequest is controlled by the withCredentials attribute.
+home:1 Access to XMLHttpRequest at 'http://10.12.1.3:3000/api/auth/getuserdata' from origin 'http://127.0.0.1:5173' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'. The credentials mode of requests initiated by the XMLHttpRequest is controlled by the withCredentials attribute.
 
 
 --------------------------------------------------

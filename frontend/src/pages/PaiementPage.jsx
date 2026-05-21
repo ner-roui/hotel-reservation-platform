@@ -227,7 +227,7 @@ const handlePay = async () => {
     // const token = localStorage.getItem("token"); // si auth
 
     const res = await axios.post(
-      `http://localhost:3000/api/payments/createpayment/${id}`,
+      `http://10.12.1.3:3000/api/payments/createpayment/${id}`,
       {
 
         methode:

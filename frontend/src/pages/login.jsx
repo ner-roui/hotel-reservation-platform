@@ -54,8 +54,8 @@ const handleSubmit = async (e) => {
 
     const url =
       mode === "login"
-        ? "http://localhost:3000/api/auth/login"
-        : "http://localhost:3000/api/auth/register";
+        ? "http://10.12.1.3:3000/api/auth/login"
+        : "http://10.12.1.3:3000/api/auth/register";
 
     const payload =
       mode === "login"
