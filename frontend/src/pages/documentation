@@ -91,3 +91,94 @@
 // reader.readAsDataURL(file);
 // ne retourne pas directement le résultat.
 // Il faut attendre onload.
+
+
+
+
+
+
+
+🧠 Problème rencontré
+
+Au départ, dans mon frontend React, je créais une réservation directement côté client après l’appel API :
+
+setSejours(prev => ([...prev, { ...data manuelle }]))
+
+👉 Le problème est que cette approche ne garantissait pas une cohérence avec le backend.
+
+❌ Problème 1 : données incohérentes
+
+Le frontend fabriquait lui-même l’objet réservation :
+
+id manquant ou différent
+structure différente du backend
+champ chambre, status, paymentStatus parfois incomplets
+
+👉 Résultat :
+
+bugs d’affichage
+impossibilité de faire des actions (cancel/update) correctement
+❌ Problème 2 : id undefined
+
+Certaines actions comme :
+
+cancelReservation(id)
+
+échouaient car :
+👉 l’objet créé côté frontend n’avait pas toujours _id
+
+Donc :
+
+id undefined
+impossible d’appeler les endpoints backend
+❌ Problème 3 : désynchronisation frontend/backend
+
+Le frontend et backend n’avaient pas la même source de vérité :
+
+frontend : objet “simulé”
+backend : vraie réservation MongoDB
+🧩 Solution mise en place
+
+J’ai corrigé l’architecture en changeant la logique :
+
+✅ 1. Backend devient source de vérité
+
+Je ne construis plus l’objet côté frontend.
+
+Je fais :
+
+const { data } = await axios.post(...);
+✅ 2. J’utilise directement la réponse backend
+setSejours(prev => [...prev, data.reservation]);
+
+👉 maintenant :
+
+_id est toujours présent
+structure identique à la base de données
+cohérence totale
+✅ 3. Suppression de la logique dupliquée frontend
+
+Avant :
+
+// création manuelle côté frontend
+
+Après :
+
+// backend gère tout
+🚀 Résultat obtenu
+
+✔ plus de id undefined
+✔ actions (cancel / update) fonctionnent correctement
+✔ données fiables et synchronisées
+✔ une seule source de vérité (backend MongoDB)
+
+💬 Version courte pour recruteur
+
+J’avais un problème de désynchronisation entre le frontend et le backend : je créais les réservations côté frontend, ce qui entraînait des id undefined et des incohérences de données.
+J’ai corrigé ça en supprimant la création locale et en utilisant uniquement la réponse du backend comme source de vérité, ce qui garantit des objets complets et cohérents avec MongoDB.
+
+🔥 Si tu veux aller encore plus loin (bonus entretien)
+
+Tu peux dire :
+
+J’ai aussi renforcé la fiabilité en évitant les mutations locales et en laissant le backend gérer l’état des réservations.

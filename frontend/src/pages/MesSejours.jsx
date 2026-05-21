@@ -154,7 +154,7 @@ function SejourCard({ s, onCancel, style, setOpen }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate()
 
-  // console.log('sssss', s)
+  console.log('sssss', s)
   const chambre = s.chambre;
 
   const sc = STATUT_CFG[s.status] || STATUT_CFG["PENDING"];
@@ -516,24 +516,26 @@ console.log('canceleleltarget===>', cancelTarget)
   const handleCancel  = async (id) => {
     console.log('id de reservation', id);
     try {
-
-      // setSejours(prev =>
-      //   prev.map(s =>
-      //     s._id === id
-      //       ? { ...s, status: "CANCELLED", cancelledAt: new Date() }
-      //       : s
-      //   )
-      // );
-      const {data} = await axios.patch(
-        `http://10.12.1.3:3000/api/reservations/cancel/${id}`,
-        {},
-        { withCredentials: true }
-      );
-
-      console.log('ladata de reservation',data, );
-      setSejours(data.reservation)
-
-      // update UI (optimistic ou refetch)
+      const { data } = await axios.patch(
+          `http://10.12.1.3:3000/api/reservations/cancel/${id}`,
+          {},
+          { withCredentials: true }
+        );
+      
+        console.log("data API:", data);
+      
+        // ⚠️ sécurisation
+        const updatedReservation = data.reservation;
+      
+        setSejours(prev =>
+          Array.isArray(prev)
+            ? prev.map(s =>
+                s._id === id
+                  ? updatedReservation
+                  : s
+              )
+            : []
+        );
 
     } catch (e) {
       alert(e.response?.data?.message || e.message);
@@ -550,6 +552,7 @@ console.log('canceleleltarget===>', cancelTarget)
     const mSearch = !search || s.type.toLowerCase().includes(search.toLowerCase()) || s.id.includes(search) || s.numero.includes(search);
     return mTab && mSearch;
   });
+  console.log("filtered====", filtered)
 
   const stats = {
     total:      sejours?.length || 0,

@@ -75,18 +75,20 @@ export default function ModalReservation({ chambre, onClose }) {
         withCredentials: true,
       }
     );
-    
-    setSejours(prev => ([...prev, {
-      chambre : c, 
-      arrivee, 
-      depart, 
-      nuits: nights,
-      prixParNuit : c.prix_nuit,
-      total: c.prix_nuit * nights,
-      status: "PENDING",
-      paymentStatus : "UNPAID",
-      paymentMethod: "Carte bancaire",
-    } ]))
+    console.log('[[[[[[[]]]]]]]', data.reservation)
+    // setSejours(prev => ([...prev, {
+    //   chambre : c, 
+    //   arrivee, 
+    //   depart, 
+    //   nuits: nights,
+    //   prixParNuit : c.prix_nuit,
+    //   total: c.prix_nuit * nights,
+    //   status: "PENDING",
+    //   paymentStatus : "UNPAID",
+    //   paymentMethod: "Carte bancaire",
+    // } ]))
+
+    setSejours(prev => ([...prev, data.reservation]))
 
     console.log(data.reservation);
 
