@@ -102,7 +102,7 @@ export default function Nettoyage() {
     setMarking(item._id);
     await new Promise((r) => setTimeout(r, 600));
     const res = await fetch(
-      `http://localhost:5000/api/rooms/${item._id}/clean`,
+      `http://localhost:3000/api/chambres/clean/${item._id}`,
       {
         method: "PUT",
       }

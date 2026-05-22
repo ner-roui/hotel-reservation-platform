@@ -268,7 +268,9 @@ const chambreSchema = new Schema(
       default: true,
     },
     
-    cleanedAt: String,
+    cleanedAt: {
+      type: String,
+    }
   },
     // reservation_active: {
 //   reservation_id,

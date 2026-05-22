@@ -206,6 +206,51 @@ getCleanedRooms = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────
+//  CLEAN ROOM
+// ─────────────────────────────────────────────
+
+
+cleanRoom = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // check room
+    const chambre = await ChambreModel.findById(id);
+
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    // update clean room state
+    const cleanedRoom = await ChambreModel.findByIdAndUpdate(
+      id,
+      {
+        statut: "Disponible",
+        cleanedAt: new Date(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.status(200).json({
+      message: "Chambre nettoyée avec succès",
+      chambre: cleanedRoom,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+// ─────────────────────────────────────────────
 // UPDATE ROOM
 // ─────────────────────────────────────────────
 
@@ -325,4 +370,4 @@ deleteRoom = async (req, res) => {
 
 
 
-module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean ,getCleanedRooms , updateRoom  ,deleteRoom }
+module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , cleanRoom,getCleanedRooms , updateRoom  ,deleteRoom }
