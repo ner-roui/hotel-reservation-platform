@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import { useEffect } from "react";
+import axios from "axios";
 const initialPending = [
   {
     id: 1,
@@ -88,6 +89,27 @@ export default function Nettoyage() {
   const [done, setDone] = useState(initialDone);
   const [activeNav, setActiveNav] = useState("cleaning");
   const [marking, setMarking] = useState(null);
+
+  
+  
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        // Chambres à nettoyer
+        const resPending = await axios.get("http://localhost:3000/api/rooms/to-clean");
+        setPending(resPending.data.chambres);
+  
+        // Chambres nettoyées
+        const resDone = await axios.get("http://localhost:3000/api/rooms/cleaned");
+        setDone(resDone.data.chambres);
+  
+      } catch (error) {
+        console.error("Erreur lors de la récupération des chambres :", error);
+      }
+    };
+  
+    fetchRooms();
+  }, []);
 
   const handleMark = async (item) => {
     setMarking(item.id);
