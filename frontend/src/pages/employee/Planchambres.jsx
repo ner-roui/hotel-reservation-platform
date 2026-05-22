@@ -225,14 +225,30 @@ export default function PlanChambres() {
   }));
 };
 
-  const handleStatusChange = (roomId, newStatus) => {
+const handleStatusChange = async (roomId, newStatus) => {
+  try {
+
+    await axios.patch(
+      `http://localhost:3000/api/chambres/status/${roomId}`,
+      { statut: newStatus },
+      { withCredentials: true }
+    );
+
     setFloors((prev) =>
       prev.map((f) => ({
         ...f,
-        rooms: f.rooms.map((r) => r.id === roomId ? { ...r, statut: newStatus } : r),
+        rooms: f.rooms.map((r) =>
+          r._id === roomId
+            ? { ...r, status: newStatus }
+            : r
+        ),
       }))
     );
-  };
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
   const totalRooms = floors.reduce((acc, f) => acc + f.rooms.length, 0);
