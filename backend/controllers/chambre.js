@@ -187,6 +187,23 @@ getRoomsToClean = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────
+// GET CLEANING ROOMS
+// ─────────────────────────────────────────────
+
+getCleanedRooms = async (req, res) => {
+  try {
+    const chambres = await ChambreModel.find({
+      statut: "Disponible",
+    }).sort({ updatedAt: -1 });
+
+    res.json(chambres);
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
 
 // ─────────────────────────────────────────────
 // UPDATE ROOM
@@ -308,4 +325,4 @@ deleteRoom = async (req, res) => {
 
 
 
-module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , updateRoom  ,deleteRoom }
+module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean ,getCleanedRooms , updateRoom  ,deleteRoom }

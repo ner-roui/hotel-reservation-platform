@@ -8,7 +8,9 @@ const {addRoom ,
         getAllRooms,
         getRoomById,
         getAvailableRooms,
-        updateRoom  ,deleteRoom 
+        getRoomsToClean,
+        getCleanedRooms,
+        updateRoom  ,deleteRoom
 } = require("../controllers/chambre");
 
 // ADD ROOM
@@ -17,10 +19,14 @@ router.post("/add-room",upload.array("images", 10),addRoom);
 // GET all
 router.get("/get-room", getAllRooms);
 
-
 // GET available
 router.get("/available", getAvailableRooms);
 
+// GET to-clean
+router.get("/to-clean", getRoomsToClean);
+
+// GET cleaned
+router.get("/cleaned", getCleanedRooms);
 
 // GET by id
 router.get("/:id", getRoomById);
