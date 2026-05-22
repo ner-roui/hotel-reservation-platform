@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useContext, useState , useEffect} from "react";
+import { AppContext } from "../../context/Context";
 
 /* ── data ── */
 const floorsData = [
@@ -38,7 +39,7 @@ const floorsData = [
 
 /* ── status config ── */
 const STATUS = {
-  available: {
+  "Disponible": {
     label: "Disponible",
     short: "DISP",
     dot: "bg-emerald-400",
@@ -47,7 +48,7 @@ const STATUS = {
     sub: "text-emerald-500",
     badge: "bg-emerald-100 text-emerald-700",
   },
-  occupied: {
+  "Occupée": {
     label: "Occupée",
     short: "OCC",
     dot: "bg-blue-400",
@@ -56,7 +57,7 @@ const STATUS = {
     sub: "text-blue-400",
     badge: "bg-blue-100 text-blue-700",
   },
-  cleaning: {
+    "À nettoyer" : {
     label: "À nettoyer",
     short: "NETT",
     dot: "bg-amber-400",
@@ -116,7 +117,8 @@ const RolePill = ({ label, icon, active, onClick }) => (
 
 /* ── Room card ── */
 const RoomCard = ({ room, onClick }) => {
-  const s = STATUS[room.status];
+  console.log('roommaa', room);
+  const s = STATUS[room.statut];
   return (
     <button onClick={() => onClick(room)}
       className={`relative w-24 h-24 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all active:scale-95 shadow-sm hover:shadow-md ${s.card}`}>
@@ -129,7 +131,7 @@ const RoomCard = ({ room, onClick }) => {
 /* ── Detail modal ── */
 const RoomModal = ({ room, onClose, onStatusChange }) => {
   if (!room) return null;
-  const s = STATUS[room.status];
+  const s = STATUS[room.statut];
   const otherStatuses = Object.keys(STATUS).filter((k) => k !== room.status);
 
   return (
@@ -181,11 +183,47 @@ const RoomModal = ({ room, onClose, onStatusChange }) => {
 
 /* ══════════════════════════════════════════════ */
 export default function PlanChambres() {
-  const [floors, setFloors] = useState(floorsData);
+  // const [floors, setFloors] = useState(floorsData);
+  const [floors, setFloors] = useState([]);
+  const {chambres} = useContext(AppContext)
   const [activeNav, setActiveNav] = useState("rooms");
   const [activeRole, setActiveRole] = useState("reception");
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
+
+  console.log('les chambres', chambres)
+
+  useEffect(() => {
+    if (chambres?.length) {
+      const grouped = groupRoomsByFloor(chambres);
+      setFloors(grouped);
+    }
+  }, [chambres]);
+
+  const groupRoomsByFloor = (rooms) => {
+    const grouped = rooms.reduce((acc, room) => {
+      const floor = room.etage;
+
+      if (!acc[floor]) {
+        acc[floor] = [];
+      }
+
+      acc[floor].push({
+        id: room.numero,
+        type: room.type,
+        size: room.superficie,
+        statut: room.statut,
+        _id: room._id,
+      });
+
+      return acc;
+    }, {});
+
+  return Object.keys(grouped).map((floor) => ({
+    floor: Number(floor),
+    rooms: grouped[floor],
+  }));
+};
 
   const handleStatusChange = (roomId, newStatus) => {
     setFloors((prev) =>
@@ -196,11 +234,12 @@ export default function PlanChambres() {
     );
   };
 
+
   const totalRooms = floors.reduce((acc, f) => acc + f.rooms.length, 0);
   const counts = {
-    available: floors.flatMap((f) => f.rooms).filter((r) => r.status === "available").length,
-    occupied: floors.flatMap((f) => f.rooms).filter((r) => r.status === "occupied").length,
-    cleaning: floors.flatMap((f) => f.rooms).filter((r) => r.status === "cleaning").length,
+    available: floors?.flatMap((f) => f.rooms).filter((r) => r.status === "available").length,
+    occupied: floors?.flatMap((f) => f.rooms).filter((r) => r.status === "occupied").length,
+    cleaning: floors?.flatMap((f) => f.rooms).filter((r) => r.status === "cleaning").length,
   };
 
   const navIcon = (d) => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d={d} /></svg>;
