@@ -108,13 +108,16 @@ export default function Nettoyage() {
       }
     );
   
-    const updatedRoom = await res.json();
+    const data = await res.json();
+   
+    console.log(data, 'UpdateRoom');
+    alert(data.message);
   
     setPending((p) =>
       p.filter((x) => x._id !== item._id)
     );
   
-    setDone((d) => [updatedRoom, ...d]);
+    setDone((d) => [data.chambre, ...d]);
   
     setMarking(null);
   };
