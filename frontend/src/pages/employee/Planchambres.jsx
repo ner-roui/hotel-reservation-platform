@@ -132,7 +132,7 @@ const RoomCard = ({ room, onClick }) => {
 const RoomModal = ({ room, onClose, onStatusChange }) => {
   if (!room) return null;
   const s = STATUS[room.statut];
-  const otherStatuses = Object.keys(STATUS).filter((k) => k !== room.status);
+  const otherStatuses = Object.keys(STATUS).filter((k) => k !== room.statut);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onClick={onClose}>
@@ -229,7 +229,7 @@ export default function PlanChambres() {
     setFloors((prev) =>
       prev.map((f) => ({
         ...f,
-        rooms: f.rooms.map((r) => r.id === roomId ? { ...r, status: newStatus } : r),
+        rooms: f.rooms.map((r) => r.id === roomId ? { ...r, statut: newStatus } : r),
       }))
     );
   };
@@ -237,9 +237,9 @@ export default function PlanChambres() {
 
   const totalRooms = floors.reduce((acc, f) => acc + f.rooms.length, 0);
   const counts = {
-    available: floors?.flatMap((f) => f.rooms).filter((r) => r.status === "available").length,
-    occupied: floors?.flatMap((f) => f.rooms).filter((r) => r.status === "occupied").length,
-    cleaning: floors?.flatMap((f) => f.rooms).filter((r) => r.status === "cleaning").length,
+    available: floors?.flatMap((f) => f.rooms).filter((r) => r.statut === "Disponible").length,
+    occupied: floors?.flatMap((f) => f.rooms).filter((r) => r.statut === "Occupée").length,
+    cleaning: floors?.flatMap((f) => f.rooms).filter((r) => r.statut === "À nettoyer").length,
   };
 
   const navIcon = (d) => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d={d} /></svg>;
@@ -293,7 +293,7 @@ export default function PlanChambres() {
           <div className="space-y-4">
             {floors.map((f) => {
               const visibleRooms = filterStatus
-                ? f.rooms.filter((r) => r.status === filterStatus)
+                ? f.rooms.filter((r) => r.statut === filterStatus)
                 : f.rooms;
               if (visibleRooms.length === 0) return null;
 
@@ -310,7 +310,7 @@ export default function PlanChambres() {
                   </div>
                   <div className="flex flex-wrap gap-3">
                     {visibleRooms.map((room) => (
-                      <RoomCard key={room.id} room={room} onClick={setSelectedRoom} />
+                      <RoomCard key={room._id} room={room} onClick={setSelectedRoom} />
                     ))}
                   </div>
                 </div>

@@ -11,6 +11,7 @@ const {addRoom ,
         getRoomsToClean,
         getCleanedRooms,
         cleanRoom,
+        updateRoomStatus,
         updateRoom  ,deleteRoom
 } = require("../controllers/chambre");
 
@@ -38,6 +39,8 @@ router.get("/:id", getRoomById);
 // UPDATE ROOM
 router.put("/update-room/:id",upload.array("images", 10),updateRoom);
 
+// UPDATE STATUS ROOM
+router.patch("/status/:id", updateRoomStatus);
 
 // DELETE ROOM
 router.delete("/delete/:id", deleteRoom);

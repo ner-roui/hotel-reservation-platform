@@ -251,6 +251,42 @@ cleanRoom = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────
+// UPDATE STATUS ROOM
+// ─────────────────────────────────────────────
+const updateRoomStatus = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const { statut } = req.body;
+
+    const chambre = await Chambre.findByIdAndUpdate(
+      id,
+      { statut },
+      { new: true }
+    );
+
+    if (!chambre) {
+      return res.status(404).json({
+        message: "Chambre introuvable",
+      });
+    }
+
+    res.status(200).json({
+      message: "Statut mis à jour",
+      chambre,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
+// ─────────────────────────────────────────────
 // UPDATE ROOM
 // ─────────────────────────────────────────────
 
@@ -370,4 +406,4 @@ deleteRoom = async (req, res) => {
 
 
 
-module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , cleanRoom,getCleanedRooms , updateRoom  ,deleteRoom }
+module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , cleanRoom,getCleanedRooms , updateRoom ,updateRoomStatus ,deleteRoom }
