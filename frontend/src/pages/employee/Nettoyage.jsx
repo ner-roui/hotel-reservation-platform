@@ -85,23 +85,48 @@ const RolePill = ({ label, icon, active, onClick }) => (
 
 /* ══════════════════════════════════════════════ */
 export default function Nettoyage() {
-  const [pending, setPending] = useState(initialPending);
-  const [done, setDone] = useState(initialDone);
+  const [pending, setPending] = useState([]);
+  const [done, setDone] = useState([]);
   const [activeNav, setActiveNav] = useState("cleaning");
   const [marking, setMarking] = useState(null);
+
+  const handleMark = async (item) => {
+
+    setMarking(item._id);
+    await new Promise((r) => setTimeout(r, 600));
+    const res = await fetch(
+      `http://localhost:5000/api/rooms/${item._id}/clean`,
+      {
+        method: "PUT",
+      }
+    );
+  
+    const updatedRoom = await res.json();
+  
+    setPending((p) =>
+      p.filter((x) => x._id !== item._id)
+    );
+  
+    setDone((d) => [updatedRoom, ...d]);
+  
+    setMarking(null);
+  };
 
   
   
   useEffect(() => {
     const fetchRooms = async () => {
       try {
+        
         // Chambres à nettoyer
-        const resPending = await axios.get("http://localhost:3000/api/rooms/to-clean");
+        const resPending = await axios.get("http://localhost:3000/api/chambres/to-clean");
         setPending(resPending.data.chambres);
-  
+        
         // Chambres nettoyées
-        const resDone = await axios.get("http://localhost:3000/api/rooms/cleaned");
-        setDone(resDone.data.chambres);
+        const resDone = await axios.get("http://localhost:3000/api/chambres/cleaned");
+        setDone(resDone.data);
+ 
+        console.log('Pending==>', resPending.data.chambres, "resDone", resDone)
   
       } catch (error) {
         console.error("Erreur lors de la récupération des chambres :", error);
@@ -111,15 +136,15 @@ export default function Nettoyage() {
     fetchRooms();
   }, []);
 
-  const handleMark = async (item) => {
-    setMarking(item.id);
-    await new Promise((r) => setTimeout(r, 600));
-    setPending((p) => p.filter((x) => x.id !== item.id));
-    const now = new Date();
-    const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    setDone((d) => [{ id: item.id, room: item.room, type: item.type, status: "Disponible", time }, ...d]);
-    setMarking(null);
-  };
+  // const handleMark = async (item) => {
+  //   setMarking(item.id);
+  //   await new Promise((r) => setTimeout(r, 600));
+  //   setPending((p) => p.filter((x) => x.id !== item.id));
+  //   const now = new Date();
+  //   const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  //   setDone((d) => [{ id: item.id, room: item.room, type: item.type, status: "Disponible", time }, ...d]);
+  //   setMarking(null);
+  // };
 
   const toClean = pending.length;
   const available = done.length;

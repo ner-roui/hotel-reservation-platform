@@ -195,7 +195,7 @@ getCleanedRooms = async (req, res) => {
   try {
     const chambres = await ChambreModel.find({
       statut: "Disponible",
-    }).sort({ updatedAt: -1 });
+    }).sort({ updatedAt: -1 }).limit(10);
 
     res.json(chambres);
   } catch (error) {
