@@ -548,7 +548,7 @@ console.log('canceleleltarget===>', cancelTarget)
   };
 
   const filtered = sejours?.filter(s => {
-    const mTab = activeTab === "Tous" || s.statut === activeTab;
+    const mTab = activeTab === "Tous" || s.status === activeTab;
     const mSearch = !search || s.type.toLowerCase().includes(search.toLowerCase()) || s.id.includes(search) || s.numero.includes(search);
     return mTab && mSearch;
   });
@@ -556,9 +556,9 @@ console.log('canceleleltarget===>', cancelTarget)
 
   const stats = {
     total:      sejours?.length || 0,
-    actives:    sejours?.filter(s => s.statut === "PENDING" || s.statut === "Confirmée").length || 0,
-    terminees:  sejours?.filter(s => s.statut === "Terminée").length || 0,
-    totalSpent: sejours?.filter(s => s.paiement === "Payé").reduce((a, s) => a + s.prix, 0),
+    actives:    sejours?.filter(s => s.status === "PENDING" || s.status === "CONFIRMED").length || 0,
+    terminees:  sejours?.filter(s => s.status === "CHECKOUT").length || 0,
+    totalSpent: sejours?.filter(s => s.paymentStatus === "PAID").reduce((a, s) => a + s.prixParNuit, 0),
   };
 
   return (
