@@ -203,7 +203,7 @@ export default function Nettoyage() {
           {pending.length > 0 && (
             <div className="space-y-3">
               {pending.map((item) => (
-                <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+                <div key={item._id} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
                   <div className="flex items-start gap-4 mb-4">
                     {/* icon */}
                     <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -211,16 +211,15 @@ export default function Nettoyage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-base font-semibold text-gray-800">{item.room}</span>
-                        <span className="text-xs text-gray-400 bg-gray-100 rounded-md px-2 py-0.5">{item.floor}</span>
+                        <span className="text-base font-semibold text-gray-800"> Chambre {item.numero}</span>
+                        <span className="text-xs text-gray-400 bg-gray-100 rounded-md px-2 py-0.5"> Étage {item.etage}</span>
                       </div>
-                      <p className="text-sm text-gray-400 mt-0.5">{item.type} · {item.size}</p>
-                      {item.priority && (
+                      <p className="text-sm text-gray-400 mt-0.5">{item.type} · {item.superficie} m² </p>
                         <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-orange-600 bg-orange-50 border border-orange-100 px-2.5 py-1 rounded-full">
                           <IconAlert className="w-3.5 h-3.5" />
-                          {item.priority}
+                          Priorité après check-out
                         </span>
-                      )}
+                    
                     </div>
                   </div>
 
