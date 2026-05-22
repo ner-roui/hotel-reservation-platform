@@ -90,6 +90,13 @@ export default function Nettoyage() {
   const [activeNav, setActiveNav] = useState("cleaning");
   const [marking, setMarking] = useState(null);
 
+  function formatTime(dateString) {
+    const date = new Date(dateString);
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
   const handleMark = async (item) => {
 
     setMarking(item._id);
@@ -226,14 +233,14 @@ export default function Nettoyage() {
                   {/* CTA button */}
                   <button
                     onClick={() => handleMark(item)}
-                    disabled={marking === item.id}
+                    disabled={marking === item._id}
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${
-                      marking === item.id
+                      marking === item._id
                         ? "bg-emerald-400 text-white cursor-wait"
                         : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-200"
                     }`}
                   >
-                    {marking === item.id ? (
+                    {marking === item._id ? (
                       <>
                         <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -259,17 +266,17 @@ export default function Nettoyage() {
               <p className="text-sm font-semibold text-gray-500 mb-2.5 px-1">Récemment terminées</p>
               <div className="bg-white border border-gray-100 rounded-2xl divide-y divide-gray-50 shadow-sm overflow-hidden">
                 {done.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 px-4 py-3.5 hover:bg-gray-50/60 transition-colors">
+                  <div key={item._id} className="flex items-center gap-4 px-4 py-3.5 hover:bg-gray-50/60 transition-colors">
                     <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
                       <IconCheck className="w-4 h-4 text-emerald-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-700">{item.room}</p>
-                      <p className="text-xs text-gray-400">{item.status} · {item.type}</p>
+                      <p className="text-sm font-semibold text-gray-700"> Chambre {item.numero}</p>
+                      <p className="text-xs text-gray-400">{item.statut} · {item.type}</p>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-300">
                       <IconClock className="w-3.5 h-3.5" />
-                      {item.time}
+                      {formatTime(item.updatedAt)}
                     </div>
                   </div>
                 ))}
