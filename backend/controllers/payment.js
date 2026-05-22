@@ -126,7 +126,8 @@ const createPayment = async (req, res) => {
 
         return item;
       });
-
+    
+    chambre.statut = "Occupée";
     await chambre.save();
 
     res.status(201).json({

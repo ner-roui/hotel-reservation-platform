@@ -66,7 +66,7 @@ export default function ModifierModal({sejour, onClose }) {
       setSaving(true);
 
       const { data } = await axios.put(
-        `http://10.12.1.3:3000/api/reservations/updatereservation/${sejour._id}`,
+        `http://localhost:3000/api/reservations/updatereservation/${sejour._id}`,
         {
           arrivee: form.arrivee,
           depart: form.depart,

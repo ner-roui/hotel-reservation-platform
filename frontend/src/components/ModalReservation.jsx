@@ -65,7 +65,7 @@ export default function ModalReservation({ chambre, onClose }) {
   const reserver = async (c) => {
   try {
     const { data } = await axios.post(
-      `http://10.12.1.3:3000/api/reservations/${c._id}`,
+      `http://localhost:3000/api/reservations/${c._id}`,
       {
         arrivee,
         depart,
@@ -163,7 +163,7 @@ export default function ModalReservation({ chambre, onClose }) {
               }}
             >
               <img
-                src={`http://10.12.1.3:3000${chambre.images[0]}`}
+                src={`http://localhost:3000${chambre.images[0]}`}
                 className="w-28 h-24 object-cover flex-shrink-0"
                 alt=""
               />

@@ -41,7 +41,7 @@ export default function StepChambre({ selected, onSelect, voyageurs }) {
             >
               {/* Image */}
               <div className="w-20 h-16 shrink-0 overflow-hidden">
-                <img src={`http://10.12.1.3:3000${c.images[0]}`} alt={c.type} className="w-full h-full object-cover transition-transform duration-300"
+                <img src={`http://localhost:3000${c.images[0]}`} alt={c.type} className="w-full h-full object-cover transition-transform duration-300"
                   style={{ transform: hov === i ? "scale(1.08)" : "scale(1)" }} />
               </div>
               {/* Info */}

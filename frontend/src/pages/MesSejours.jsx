@@ -214,7 +214,7 @@ function SejourCard({ s, onCancel, style, setOpen }) {
           style={{ width: 140 }}
         >
           <img
-            src={`http://10.12.1.3:3000${chambre?.images?.[0]}`}
+            src={`http://localhost:3000${chambre?.images?.[0]}`}
             alt={chambre?.type}
             className="w-full h-full object-cover transition-transform duration-500"
             style={{
@@ -517,7 +517,7 @@ console.log('canceleleltarget===>', cancelTarget)
     console.log('id de reservation', id);
     try {
       const { data } = await axios.patch(
-          `http://10.12.1.3:3000/api/reservations/cancel/${id}`,
+          `http://localhost:3000/api/reservations/cancel/${id}`,
           {},
           { withCredentials: true }
         );
