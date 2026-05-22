@@ -161,6 +161,33 @@ getAvailableRooms = async (req, res) => {
   }
 };
 
+
+// ─────────────────────────────────────────────
+// GET NOT CLEANING ROOMS
+// ─────────────────────────────────────────────
+
+getRoomsToClean = async (req, res) => {
+  try {
+    const chambres = await ChambreModel.find({
+      statut: "À nettoyer",
+      disponible_reservation: true,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      message: "Chambres disponibles",
+      count: chambres.length,
+      chambres,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Erreur serveur",
+    });
+  }
+};
+
+
 // ─────────────────────────────────────────────
 // UPDATE ROOM
 // ─────────────────────────────────────────────
@@ -281,4 +308,4 @@ deleteRoom = async (req, res) => {
 
 
 
-module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , updateRoom  ,deleteRoom }
+module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , updateRoom  ,deleteRoom }
