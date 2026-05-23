@@ -102,7 +102,7 @@ login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-    // console.log("waaaatoken", token)/
+    
     // 5. cookie
     res.cookie("token", token, {
       httpOnly: true,
@@ -129,6 +129,68 @@ login = async (req, res) => {
   }
 };
 
+
+const createUser = async (req, res) => {
+  try {
+
+    const {
+      prenom,
+      nom,
+      email,
+      // password,
+      role,
+      status
+    } = req.body;
+
+    // validation
+    if (!prenom || !nom || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Tous les champs sont requis"
+      });
+    }
+
+    // check email
+    const existingUser = await UserModel.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email déjà utilisé"
+      });
+    }
+
+    // hash password
+    // const hashedPassword = await bcrypt.hash(password, 10);
+
+    // create user
+    const user = await UserModel.create({
+      prenom,
+      nom,
+      email,
+      password: hashedPassword,
+      role: role || "Client",
+      status: status || "Actif"
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Utilisateur créé avec succès",
+      user
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
+
+
 const getuserData = async (req, res) => {
   try {
     const { userId } = req.user;
@@ -142,10 +204,17 @@ const getuserData = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      message: "Utilisateur récupéré avec succès",
-      user,
+    //  ICI tu transformes le user
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
+    //  puis tu retournes la réponse SANS password
+    return res.status(201).json({
+      success: true,
+      message: "Utilisateur créé avec succès",
+      user: userWithoutPassword
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "Erreur serveur",
@@ -202,4 +271,4 @@ logout = async (req, res) => {
 };
 
 
-module.exports = {register, login , logout, getuserData, getUsers}
+module.exports = {register, login , logout, getuserData, getUsers, createUser}
