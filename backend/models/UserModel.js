@@ -43,6 +43,18 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+    status: {
+      type: String,
+      enum: ["Actif", "Inactif"],
+      default: "Actif"
+    },
+    
+    reservations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Reservation"
+      }
+    ]
   },
   {
     timestamps: true,
