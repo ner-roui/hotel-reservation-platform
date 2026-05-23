@@ -243,6 +243,37 @@ const getTotalPayments = async (req, res) => {
 };
 
 // ─────────────────────────────────────
+// GET Pending PAYMENT
+// ─────────────────────────────────────
+
+
+const getPendingPayments = async (req, res) => {
+  try {
+
+    const payments = await Payment.find({
+      statut: "En attente"
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: payments.length,
+      payments
+    });
+
+  } catch (error) {
+
+    console.log(error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
+
+// ─────────────────────────────────────
 // UPDATE PAYMENT
 // ─────────────────────────────────────
 
@@ -323,6 +354,7 @@ module.exports = {
     updatePayment,
     deletePayment,
     getTotalPayments ,
+    getPendingPayments,
 };
 
 
