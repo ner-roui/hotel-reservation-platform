@@ -1,5 +1,6 @@
 const Reservation = require("../models/ReservationModel");
 const RoomModel = require("../models/RoomModels");
+const UserModel = require("../models/UserModel");
 
 /**
  * CREATE RESERVATION
@@ -14,7 +15,8 @@ const createReservation = async (req, res) => {
     console.log('rrrrrr', roomId)
     const room = await RoomModel.findById(roomId);
 
-
+   
+    
     const start = new Date(arrivee);
     const end = new Date(depart);
 
@@ -83,6 +85,12 @@ const createReservation = async (req, res) => {
     }
   });
 
+  // 5. push reservation dans user
+  await UserModel.findByIdAndUpdate(userId, {
+    $push: {
+      reservations: reservation._id
+    }
+});
     return res.status(201).json({
       message: "Réservation créée avec succès",
       reservation,
