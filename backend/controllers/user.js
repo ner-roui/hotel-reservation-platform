@@ -141,7 +141,7 @@ const createUser = async (req, res) => {
       role,
       status
     } = req.body;
-
+    console.log(req.body)
     // validation
     if (!prenom || !name || !email ) {
       return res.status(400).json({
@@ -179,7 +179,7 @@ const createUser = async (req, res) => {
     });
 
   } catch (error) {
-
+    console.log(error.message)
     return res.status(500).json({
       success: false,
       message: "Erreur serveur",
@@ -259,15 +259,14 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-
+    console.log('id update', id);
     const {
-      name,
       prenom,
+      name,
       email,
       role,
       statut,
-      avatar,
-      isActive,
+ 
     } = req.body;
 
     // 1. vérifier si user existe
@@ -298,8 +297,7 @@ const updateUser = async (req, res) => {
     user.email = email ?? user.email;
     user.role = role ?? user.role;
     user.statut = statut ?? user.statut;
-    user.avatar = avatar ?? user.avatar;
-    user.isActive = isActive ?? user.isActive;
+  
 
     // 4. save
     const updatedUser = await user.save();
