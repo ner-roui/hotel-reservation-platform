@@ -343,6 +343,32 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getClients = async (req, res) => {
+  try {
+
+    const clients = await User
+      .find({ role: "Client" })
+      .select("-password")
+      .populate("reservations");
+
+    return res.status(200).json({
+      success: true,
+      count: clients.length,
+      users: clients
+    });
+
+  } catch (error) {
+
+    console.log(error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
 
 logout = async (req, res) => {
   try {
@@ -365,4 +391,4 @@ logout = async (req, res) => {
 };
 
 
-module.exports = {register, login , logout, getuserData, getUsers, createUser, deleteUser, updateUser }
+module.exports = {register, login , logout, getuserData, getUsers, createUser, deleteUser, updateUser, getClients }
