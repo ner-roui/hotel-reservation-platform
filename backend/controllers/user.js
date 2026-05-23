@@ -154,6 +154,33 @@ const getuserData = async (req, res) => {
   }
 };
 
+
+const getUsers = async (req, res) => {
+  try {
+
+    const users = await UserModel
+      .find()
+      .select("-password")
+      .populate("reservations");
+
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      users
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
+
+
 logout = async (req, res) => {
   try {
     res.clearCookie("token", {
@@ -175,4 +202,4 @@ logout = async (req, res) => {
 };
 
 
-module.exports = {register, login , logout, getuserData}
+module.exports = {register, login , logout, getuserData, getUsers}
