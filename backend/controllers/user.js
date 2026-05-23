@@ -143,7 +143,7 @@ const createUser = async (req, res) => {
     } = req.body;
 
     // validation
-    if (!prenom || !nom || !email || !password) {
+    if (!prenom || !nom || !email ) {
       return res.status(400).json({
         success: false,
         message: "Tous les champs sont requis"
@@ -151,7 +151,7 @@ const createUser = async (req, res) => {
     }
 
     // check email
-    const existingUser = await UserModel.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
@@ -164,11 +164,10 @@ const createUser = async (req, res) => {
     // const hashedPassword = await bcrypt.hash(password, 10);
 
     // create user
-    const user = await UserModel.create({
+    const user = await User.create({
       prenom,
-      nom,
+      name ,
       email,
-      password: hashedPassword,
       role: role || "Client",
       status: status || "Actif"
     });
@@ -262,7 +261,7 @@ const deleteUser = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
 
-    const users = await UserModel
+    const users = await User
       .find()
       .select("-password")
       .populate("reservations");
@@ -274,7 +273,7 @@ const getUsers = async (req, res) => {
     });
 
   } catch (error) {
-
+    console.log(error.message)
     return res.status(500).json({
       success: false,
       message: "Erreur serveur",
