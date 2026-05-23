@@ -243,6 +243,59 @@ const getTotalPayments = async (req, res) => {
 };
 
 // ─────────────────────────────────────
+// GET SUM  PAYMENT FOR THIS MONTH
+// ─────────────────────────────────────
+const getTotalPaymentsThisMonth = async (req, res) => {
+  try {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date();
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+    endOfMonth.setDate(0);
+    endOfMonth.setHours(23, 59, 59, 999);
+
+    const result = await Payment.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startOfMonth,
+            $lte: endOfMonth
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalMontantPaye: {
+            $sum: "$montant_paye"
+          }
+        }
+      }
+    ]);
+
+    const total = result[0]?.totalMontantPaye || 0;
+
+    return res.status(200).json({
+      success: true,
+      totalMontantPaye: total
+    });
+
+  } catch (error) {
+
+    console.log(error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
+
+// ─────────────────────────────────────
 // GET Pending PAYMENT
 // ─────────────────────────────────────
 
@@ -355,6 +408,7 @@ module.exports = {
     deletePayment,
     getTotalPayments ,
     getPendingPayments,
+    getTotalPaymentsThisMonth,
 };
 
 
