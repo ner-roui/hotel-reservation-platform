@@ -135,7 +135,7 @@ const createUser = async (req, res) => {
 
     const {
       prenom,
-      nom,
+      name,
       email,
       // password,
       role,
@@ -143,7 +143,7 @@ const createUser = async (req, res) => {
     } = req.body;
 
     // validation
-    if (!prenom || !nom || !email ) {
+    if (!prenom || !name || !email ) {
       return res.status(400).json({
         success: false,
         message: "Tous les champs sont requis"
@@ -227,9 +227,8 @@ const deleteUser = async (req, res) => {
   try {
 
     const { id } = req.params;
-
     // check if user exists
-    const user = await UserModel.findById(id);
+    const user = await User.findById(id);
 
     if (!user) {
       return res.status(404).json({
@@ -239,7 +238,7 @@ const deleteUser = async (req, res) => {
     }
 
     // delete user
-    await UserModel.findByIdAndDelete(id);
+    await User.findByIdAndDelete(id);
 
     return res.status(200).json({
       success: true,
@@ -257,6 +256,69 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      name,
+      prenom,
+      email,
+      role,
+      statut,
+      avatar,
+      isActive,
+    } = req.body;
+
+    // 1. vérifier si user existe
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Utilisateur introuvable",
+      });
+    }
+
+    // 2. vérifier email unique si modifié
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ email });
+
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: "Email déjà utilisé",
+        });
+      }
+    }
+
+    // 3. update champs
+    user.name = name ?? user.name;
+    user.prenom = prenom ?? user.prenom;
+    user.email = email ?? user.email;
+    user.role = role ?? user.role;
+    user.statut = statut ?? user.statut;
+    user.avatar = avatar ?? user.avatar;
+    user.isActive = isActive ?? user.isActive;
+
+    // 4. save
+    const updatedUser = await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Utilisateur mis à jour avec succès",
+      user: updatedUser,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
 
 const getUsers = async (req, res) => {
   try {
@@ -305,4 +367,4 @@ logout = async (req, res) => {
 };
 
 
-module.exports = {register, login , logout, getuserData, getUsers, createUser, deleteUser}
+module.exports = {register, login , logout, getuserData, getUsers, createUser, deleteUser, updateUser }
