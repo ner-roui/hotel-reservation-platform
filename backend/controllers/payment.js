@@ -203,6 +203,44 @@ const getPaymentById = async (req, res) => {
     });
   }
 };
+// ─────────────────────────────────────
+// GET SUM PAYMENT
+// ─────────────────────────────────────
+
+
+const getTotalPayments = async (req, res) => {
+  try {
+
+    const result = await Payment.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalMontantPaye: {
+            $sum: "$montant_paye"
+          }
+        }
+      }
+    ]);
+
+    const total = result[0]?.totalMontantPaye || 0;
+
+    return res.status(200).json({
+      success: true,
+      totalMontantPaye: total
+    });
+
+  } catch (error) {
+
+    console.log(error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
 
 // ─────────────────────────────────────
 // UPDATE PAYMENT
@@ -284,6 +322,7 @@ module.exports = {
     getPaymentById,
     updatePayment,
     deletePayment,
+    getTotalPayments ,
 };
 
 
