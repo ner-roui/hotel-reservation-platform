@@ -224,6 +224,41 @@ const getuserData = async (req, res) => {
 };
 
 
+const deleteUser = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    // check if user exists
+    const user = await UserModel.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Utilisateur introuvable"
+      });
+    }
+
+    // delete user
+    await UserModel.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Utilisateur supprimé avec succès"
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
+
+  }
+};
+
+
 const getUsers = async (req, res) => {
   try {
 
@@ -271,4 +306,4 @@ logout = async (req, res) => {
 };
 
 
-module.exports = {register, login , logout, getuserData, getUsers, createUser}
+module.exports = {register, login , logout, getuserData, getUsers, createUser, deleteUser}
