@@ -6,7 +6,7 @@ const auth = require('../middleware/auth')
 const {
   createPayment,
   getTotalPayments,
-  getPendingPayments,
+  getPendingPaymentsThisMonth,
   getTotalPaymentsThisMonth
 } = require("../controllers/payment");
 
@@ -14,13 +14,13 @@ const {
 router.post("/createpayment/:id", auth, createPayment);
 
 // CALCUL SUM  PAYMENT
-router.get("/payments/total", getTotalPayments);
+router.get("/total", getTotalPayments);
 
 // CALCUL SUM  PAYMENT FOR THIS MONTH
-router.get("/payments/total-month", getTotalPaymentsThisMonth);
+router.get("/total-month", getTotalPaymentsThisMonth);
 
 // PENDING  PAYMENT
-router.get("/payments/pending", getPendingPayments);
+router.get("/pending", getPendingPaymentsThisMonth);
 
 
 module.exports = router;

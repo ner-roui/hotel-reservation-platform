@@ -431,7 +431,7 @@ module.exports = {
     updatePayment,
     deletePayment,
     getTotalPayments ,
-    getPendingPayments,
+    getPendingPaymentsThisMonth,
     getTotalPaymentsThisMonth,
 };
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import axios from "axios"
 
 const useFont = () => {
   useEffect(() => {
@@ -211,15 +212,46 @@ export default function PaiementsPage() {
   const [search, setSearch] = useState("");
   const [filterStatut, setFilterStatut] = useState("Tous");
 
+  const [total, setTotal] = useState(0);
+  const [pending, setPending] = useState(0);
+  const [refunds, setRefunds] = useState(0);
+  
+
+  const fetchTotalPayments = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/payments/total-month");
+      setTotal(data.totalMontantPaye);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchPendingPayments = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/payments/pending");
+    
+      setPending(data.totalPending);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  //   useEffect(() => {
+  //     fetchTotalPayments();
+  //     fetchPendingPayments();
+  //     fetchRefunds();
+  //   }, []);
+
   const filtered = TRANSACTIONS.filter(t => {
     const mSearch = !search || t.client.toLowerCase().includes(search.toLowerCase()) || t.id.includes(search) || t.methode.toLowerCase().includes(search.toLowerCase());
     const mStatut = filterStatut === "Tous" || t.statut === filterStatut;
     return mSearch && mStatut;
   });
 
-  const total   = TRANSACTIONS.reduce((s, t) => t.statut === "Payé" ? s + t.montant : s, 0);
-  const pending = TRANSACTIONS.reduce((s, t) => t.statut === "En attente" ? s + t.montant : s, 0);
-  const refunds = TRANSACTIONS.reduce((s, t) => t.statut === "Remboursé" ? s + t.montant : s, 0);
+  // const total   = TRANSACTIONS.reduce((s, t) => t.statut === "Payé" ? s + t.montant : s, 0);
+  // const pending = TRANSACTIONS.reduce((s, t) => t.statut === "En attente" ? s + t.montant : s, 0);
+  // const refunds = TRANSACTIONS.reduce((s, t) => t.statut === "Remboursé" ? s + t.montant : s, 0);
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#f4f6f9", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>
