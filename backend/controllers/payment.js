@@ -296,21 +296,45 @@ const getTotalPaymentsThisMonth = async (req, res) => {
 };
 
 // ─────────────────────────────────────
-// GET Pending PAYMENT
+// GET PENDING PAYMENTS THIS MONTH
 // ─────────────────────────────────────
-
-
-const getPendingPayments = async (req, res) => {
+const getPendingPaymentsThisMonth = async (req, res) => {
   try {
 
-    const payments = await Payment.find({
-      statut: "En attente"
-    });
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date();
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+    endOfMonth.setDate(0);
+    endOfMonth.setHours(23, 59, 59, 999);
+
+    const result = await Payment.aggregate([
+      {
+        $match: {
+          status: "pending", // adapte selon ton champ
+          createdAt: {
+            $gte: startOfMonth,
+            $lte: endOfMonth
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalPending: {
+            $sum: "$montant_paye"
+          }
+        }
+      }
+    ]);
+
+    const total = result[0]?.totalPending || 0;
 
     return res.status(200).json({
       success: true,
-      count: payments.length,
-      payments
+      totalPending: total
     });
 
   } catch (error) {
