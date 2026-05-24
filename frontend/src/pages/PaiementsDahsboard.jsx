@@ -126,6 +126,22 @@ function KpiCard({ title, value, prefix, badge, badgeColor, sparkData, sparkColo
 function TxRow({ tx, idx }) {
   const [hov, setHov] = useState(false);
   const sc = STATUT_CFG[tx.statut] || STATUT_CFG["Payé"];
+
+  const generatePaymentRef = (id) => {
+    const shortId = id.slice(-4).toUpperCase();
+  
+    return `PAY-${shortId}`;
+  };
+  
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+ 
   return (
     <tr
       className="transition-all duration-150"
@@ -141,7 +157,7 @@ function TxRow({ tx, idx }) {
       {/* ID */}
       <td className="px-5 py-3.5">
         <span className="text-xs font-mono font-semibold px-2 py-1 rounded-lg"
-          style={{ background: "#f1f5f9", color: "#64748b" }}>{tx.id}</span>
+          style={{ background: "#f1f5f9", color: "#64748b" }}>{generatePaymentRef(tx._id)}</span>
       </td>
 
       {/* Client */}
@@ -149,9 +165,9 @@ function TxRow({ tx, idx }) {
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
             style={{ background: tx.color }}>
-            {tx.initials}
+           {tx.user?.prenom?.[0]} {tx.user?.name?.[0] } 
           </div>
-          <span className="text-sm font-semibold" style={{ color: "#0f172a" }}>{tx.client}</span>
+          <span className="text-sm font-semibold" style={{ color: "#0f172a" }}> {tx.user?.prenom} {tx.user?.name } </span>
         </div>
       </td>
 
@@ -165,13 +181,13 @@ function TxRow({ tx, idx }) {
 
       {/* Date */}
       <td className="px-4 py-3.5">
-        <span className="text-sm" style={{ color: "#94a3b8" }}>{tx.date}</span>
+        <span className="text-sm" style={{ color: "#94a3b8" }}>{formatDate(tx.date_paiement)}</span>
       </td>
 
       {/* Montant */}
       <td className="px-4 py-3.5">
         <span className="text-sm font-bold" style={{ color: "#0f172a", fontFamily: "'Instrument Serif',serif", fontSize: 16 }}>
-          € {tx.montant.toLocaleString("fr-FR")}
+          € {tx.montant_paye.toLocaleString("fr-FR")}
         </span>
       </td>
 
@@ -211,15 +227,17 @@ export default function PaiementsPage() {
   const [activeRole, setActiveRole] = useState("Admin");
   const [search, setSearch] = useState("");
   const [filterStatut, setFilterStatut] = useState("Tous");
+  const [payments, setPayments] = useState([])
 
   const [total, setTotal] = useState(0);
   const [pending, setPending] = useState(0);
-  const [refunds, setRefunds] = useState(0);
+  // const [refunds, setRefunds] = useState(0);
   
 
   const fetchTotalPayments = async () => {
     try {
       const {data} = await axios.get("http://localhost:3000/api/payments/total-month");
+      console.log('payments-total', data.totalMontantPaye )
       setTotal(data.totalMontantPaye);
     } catch (error) {
       console.log(error);
@@ -236,14 +254,32 @@ export default function PaiementsPage() {
     }
   };
 
+  const fetchPayments = async () => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:3000/api/payments/getpayments"
+      );
+  
+      console.log(data);
+  
+      // liste des paiements
+      setPayments(data.payments);
+  
+      // nombre total
+      setCount(data.count);
+  
+    } catch (error) {
+      console.log(error);
+    }
+  };
+    useEffect(() => {
+      fetchTotalPayments();
+      fetchPendingPayments();
+      fetchPayments();
+      // fetchRefunds();
+    }, []);
 
-  //   useEffect(() => {
-  //     fetchTotalPayments();
-  //     fetchPendingPayments();
-  //     fetchRefunds();
-  //   }, []);
-
-  const filtered = TRANSACTIONS.filter(t => {
+  const filtered = payments.filter(t => {
     const mSearch = !search || t.client.toLowerCase().includes(search.toLowerCase()) || t.id.includes(search) || t.methode.toLowerCase().includes(search.toLowerCase());
     const mStatut = filterStatut === "Tous" || t.statut === filterStatut;
     return mSearch && mStatut;
@@ -251,7 +287,7 @@ export default function PaiementsPage() {
 
   // const total   = TRANSACTIONS.reduce((s, t) => t.statut === "Payé" ? s + t.montant : s, 0);
   // const pending = TRANSACTIONS.reduce((s, t) => t.statut === "En attente" ? s + t.montant : s, 0);
-  // const refunds = TRANSACTIONS.reduce((s, t) => t.statut === "Remboursé" ? s + t.montant : s, 0);
+  const refunds = TRANSACTIONS?.reduce((s, t) => t.statut === "Remboursé" ? s + t.montant : s, 0);
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#f4f6f9", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>
@@ -364,7 +400,7 @@ export default function PaiementsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((tx, i) => <TxRow key={tx.id} tx={tx} idx={i} />)
+                  filtered.map((tx, i) => <TxRow key={tx._id} tx={tx} idx={i} />)
                 )}
               </tbody>
             </table>

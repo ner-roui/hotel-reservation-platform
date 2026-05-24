@@ -211,7 +211,7 @@ const getPaymentById = async (req, res) => {
 const getTotalPayments = async (req, res) => {
   try {
 
-    const result = await Payment.aggregate([
+    const result = await PaymentModel.aggregate([
       {
         $group: {
           _id: null,
@@ -246,6 +246,7 @@ const getTotalPayments = async (req, res) => {
 // GET SUM  PAYMENT FOR THIS MONTH
 // ─────────────────────────────────────
 const getTotalPaymentsThisMonth = async (req, res) => {
+  console.log('getTotalPaymentsThisMonth')
   try {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
@@ -256,7 +257,7 @@ const getTotalPaymentsThisMonth = async (req, res) => {
     endOfMonth.setDate(0);
     endOfMonth.setHours(23, 59, 59, 999);
 
-    const result = await Payment.aggregate([
+    const result = await PaymentModel.aggregate([
       {
         $match: {
           createdAt: {
@@ -310,7 +311,7 @@ const getPendingPaymentsThisMonth = async (req, res) => {
     endOfMonth.setDate(0);
     endOfMonth.setHours(23, 59, 59, 999);
 
-    const result = await Payment.aggregate([
+    const result = await PaymentModel.aggregate([
       {
         $match: {
           status: "pending", // adapte selon ton champ

@@ -7,11 +7,15 @@ const {
   createPayment,
   getTotalPayments,
   getPendingPaymentsThisMonth,
-  getTotalPaymentsThisMonth
+  getTotalPaymentsThisMonth,
+  getPayments
 } = require("../controllers/payment");
 
 // CREATE PAYMENT
 router.post("/createpayment/:id", auth, createPayment);
+
+// GET  PAYMENT
+router.get("/getpayments", getPayments);
 
 // CALCUL SUM  PAYMENT
 router.get("/total", getTotalPayments);
