@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell
 } from "recharts";
+import { AppContext } from "../context/Context";
+import { useEffect } from "react";
+import axios from "axios"
 
 const revenueData = [
   { month: "Jan", value: 2800 },
@@ -25,6 +28,8 @@ const roomData = [
   { name: "À nettoyer", value: 1, color: "#FB923C" },
 ];
 
+
+
 const reservations = [
   { id: "RES-2841", client: "Émile Rousseau", initials: "ÉR", color: "#6366f1", chambre: "Chambre 402", dates: "12 Avr → 15 Avr", montant: "€ 1 560", statut: "Confirmée", statutColor: "bg-emerald-100 text-emerald-700" },
   { id: "RES-2840", client: "Léa Bernard", initials: "LB", color: "#ec4899", chambre: "Chambre 202", dates: "13 Avr → 14 Avr", montant: "€ 220", statut: "Check-in", statutColor: "bg-blue-100 text-blue-700" },
@@ -32,7 +37,103 @@ const reservations = [
   { id: "RES-2838", client: "Camille Petit", initials: "CP", color: "#10b981", chambre: "Chambre 501", dates: "14 Avr → 18 Avr", montant: "€ 3 920", statut: "Confirmée", statutColor: "bg-emerald-100 text-emerald-700" },
 ];
 
+const STATUS_LABELS = {
+  PENDING: "En attente",
+  CONFIRMED: "Confirmée",
+  CHECKIN: "Checkin",
+  CHECKOUT: "Checkout",
+  CANCELLED: "Annulée",
+};
 
+const STATUS_STYLES = {
+  PENDING: "bg-orange-50 text-orange-600 border border-orange-100",
+  CONFIRMED: "bg-blue-50 text-blue-700 border border-blue-100",
+  CHECKIN: "bg-green-50 text-green-700 border border-green-100",
+  CHECKOUT: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+  CANCELLED: "bg-red-50 text-red-700 border border-red-100",
+};
+
+const STATUS_ICONS = {
+  CONFIRMED: (
+    <svg
+      className="w-3 h-3"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
+
+  CHECKIN: (
+    <svg
+      className="w-3 h-3"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-9A2.25 2.25 0 002.25 5.25v13.5A2.25 2.25 0 004.5 21h9a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+      />
+    </svg>
+  ),
+
+  PENDING: (
+    <svg
+      className="w-3 h-3"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
+
+  CHECKOUT: (
+    <svg
+      className="w-3 h-3"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.25 9l3-3m0 0l3 3m-3-3v12.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
+
+  CANCELLED: (
+    <svg
+      className="w-3 h-3"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  ),
+};
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -47,7 +148,87 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function LumiereHotelsDashboard() {
- 
+const {reservations, chambres} = useContext(AppContext);
+const [avaibaleRoms, setAvaibaleRoms] = useState([]);
+const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
+ const [roomsToClean, setRoomsToClean] = useState([])
+
+ const generateColor = (text = "") => {
+  let hash = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const hue = Math.abs(hash % 360);
+
+  return `hsl(${hue}, 70%, 55%)`;
+};
+
+
+
+ function generateReservationCode(id) {
+  // garder uniquement les chiffres hexadécimaux
+  const hex = id.replace(/[^a-fA-F0-9]/g, "");
+
+  // convertir une partie de l'id en nombre
+  const number = parseInt(hex.slice(-6), 16);
+
+  // limiter à 4 chiffres
+  const code = (number % 10000).toString().padStart(4, "0");
+
+  return `RES-${code}`;
+}
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      
+    });
+  };
+
+  const fetchAvailableRooms = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/chambres/available");
+      console.log('chambres-->', data);
+      setAvaibaleRoms(data.chambres);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchRoomsToClean  = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/chambres/to-clean");
+      console.log('chambres-->', data);
+      setRoomsToClean(data.chambres);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const fetchOccupiedRooms  = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/chambres/not-available");
+      console.log('chambres-->', data);
+      setNotAvaibaleRoms(data.chambres);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  useEffect(() =>{
+    console.log('hnnnaaa use effect')
+    fetchAvailableRooms();
+    fetchRoomsToClean();
+    fetchOccupiedRooms();
+  }, [])
+
+
+ console.log('reservations ===>', reservations);
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
@@ -194,7 +375,7 @@ export default function LumiereHotelsDashboard() {
                   </Pie>
                 </PieChart>
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <span className="text-2xl font-bold text-slate-800">7</span>
+                  <span className="text-2xl font-bold text-slate-800">{chambres?.length}</span>
                   <span className="text-slate-400 text-xs">chambres</span>
                 </div>
               </div>
@@ -202,17 +383,17 @@ export default function LumiereHotelsDashboard() {
                 <div className="bg-teal-50 rounded-xl p-2.5 text-center">
                   <div className="text-teal-500 text-base mb-1">🛋️</div>
                   <p className="text-xs text-slate-500">Disponibles</p>
-                  <p className="text-lg font-bold text-teal-600">4</p>
+                  <p className="text-lg font-bold text-teal-600">{avaibaleRoms?.length}</p>
                 </div>
                 <div className="bg-violet-50 rounded-xl p-2.5 text-center">
                   <div className="text-violet-500 text-base mb-1">📋</div>
                   <p className="text-xs text-slate-500">Occupées</p>
-                  <p className="text-lg font-bold text-violet-600">2</p>
+                  <p className="text-lg font-bold text-violet-600">{notavaibaleRoms?.length}</p>
                 </div>
                 <div className="bg-orange-50 rounded-xl p-2.5 text-center">
                   <div className="text-orange-500 text-base mb-1">✨</div>
                   <p className="text-xs text-slate-500">À nettoyer</p>
-                  <p className="text-lg font-bold text-orange-500">1</p>
+                  <p className="text-lg font-bold text-orange-500">{roomsToClean?.length}</p>
                 </div>
               </div>
             </div>
@@ -236,30 +417,38 @@ export default function LumiereHotelsDashboard() {
               </thead>
               <tbody>
                 {reservations.map((r, i) => (
-                  <tr key={r.id} className={`hover:bg-slate-50 transition-colors ${i !== reservations.length - 1 ? 'border-b border-slate-50' : ''}`}>
-                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{r.id}</td>
+                  <tr key={r._id} className={`hover:bg-slate-50 transition-colors ${i !== reservations.length - 1 ? 'border-b border-slate-50' : ''}`}>
+                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{generateReservationCode(r._id)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style={{ backgroundColor: r.color }}>
-                          {r.initials}
-                        </div>
-                        <span className="text-sm font-medium text-slate-800">{r.client}</span>
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+                        style={{
+                          backgroundColor: generateColor(
+                            `${r.user?.prenom || ""}${r.user?.name || ""}`
+                          ),
+                        }}
+                      >
+                        {r.user?.prenom?.[0]}
+                        {r.user?.name?.[0]}
+                      </div>
+                        <span className="text-sm font-medium text-slate-800">{r.user?.prenom} {r.user?.name} </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <span>🛏</span> {r.chambre}
+                        <span>🛏</span> Chambre {r.chambre.numero}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <span>📅</span> {r.dates}
+                        <span>📅</span> {formatDate(r.arrivee)} → {formatDate(r.depart)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-800">{r.montant}</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-slate-800"> €{r.total}</td>
                     <td className="px-6 py-4">
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${r.statutColor}`}>
-                        {r.statut}
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${ STATUS_STYLES[r.status]}`}>
+                        {STATUS_LABELS[r.status]}
                       </span>
                     </td>
                   </tr>

@@ -185,7 +185,7 @@ const RoleButton = ({ label, icon, active, onClick }) => (
 );
 
 const ReservationCard = ({ res, onCheckin, onCheckout }) => {
-  console.log('reservationnnnn----', res)
+  
     const start = new Date(res.arrivee).toLocaleDateString(
     "fr-FR",
     {

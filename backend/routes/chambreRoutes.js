@@ -12,6 +12,7 @@ const {addRoom ,
         getCleanedRooms,
         cleanRoom,
         updateRoomStatus,
+        getOccupiedRooms ,
         updateRoom  ,deleteRoom
 } = require("../controllers/chambre");
 
@@ -24,8 +25,13 @@ router.get("/get-room", getAllRooms);
 // GET available
 router.get("/available", getAvailableRooms);
 
+
+// GET not-available
+router.get("/not-available", getOccupiedRooms);
+
 // GET to-clean
 router.get("/to-clean", getRoomsToClean);
+
 
 // GET cleaned
 router.get("/cleaned", getCleanedRooms);
