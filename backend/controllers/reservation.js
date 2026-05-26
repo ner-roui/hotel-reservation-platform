@@ -393,6 +393,45 @@ const getReservationById = async (req, res) => {
 };
 
 
+const getMonthlyRevenue = async (req, res) => {
+  try {
+    const reservations = await Reservation.find({
+      payment: "PAID",
+    });
+
+    const months = [
+      "Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
+      "Juil", "Août", "Sep", "Oct", "Nov", "Déc"
+    ];
+
+    const revenueData = months.map((month) => ({
+      month,
+      value: 0,
+    }));
+
+    reservations.forEach((reservation) => {
+      const date = new Date(reservation.arrivee);
+
+      const monthIndex = date.getMonth();
+
+      revenueData[monthIndex].value += reservation.total || 0;
+    });
+
+    res.json({
+      success: true,
+      revenueData,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+    });
+  }
+};
+
 /**
  * UPDATE RESERVATION
  */
@@ -492,5 +531,6 @@ module.exports = { createReservation,
   deleteReservation,
   cancelReservation, 
   checkOutReservation,
-  getReservationsAnnule
+  getReservationsAnnule,
+  getMonthlyRevenue
  };

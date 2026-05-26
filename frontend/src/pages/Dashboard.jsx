@@ -7,20 +7,20 @@ import { AppContext } from "../context/Context";
 import { useEffect } from "react";
 import axios from "axios"
 
-const revenueData = [
-  { month: "Jan", value: 2800 },
-  { month: "Fév", value: 2200 },
-  { month: "Mar", value: 3100 },
-  { month: "Avr", value: 5700 },
-  { month: "Mai", value: 4900 },
-  { month: "Juin", value: 3800 },
-  { month: "Juil", value: 4200 },
-  { month: "Août", value: 3600 },
-  { month: "Sep", value: 3000 },
-  { month: "Oct", value: 2700 },
-  { month: "Nov", value: 2400 },
-  { month: "Déc", value: 2100 },
-];
+// const revenueData = [
+//   { month: "Jan", value: 2800 },
+//   { month: "Fév", value: 2200 },
+//   { month: "Mar", value: 3100 },
+//   { month: "Avr", value: 5700 },
+//   { month: "Mai", value: 4900 },
+//   { month: "Juin", value: 3800 },
+//   { month: "Juil", value: 4200 },
+//   { month: "Août", value: 3600 },
+//   { month: "Sep", value: 3000 },
+//   { month: "Oct", value: 2700 },
+//   { month: "Nov", value: 2400 },
+//   { month: "Déc", value: 2100 },
+// ];
 
 const roomData = [
   { name: "Disponibles", value: 4, color: "#2DD4BF" },
@@ -74,6 +74,22 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
  const [roomsToClean, setRoomsToClean] = useState([])
 const [total, setTotal] = useState(0);
 const [resAnnule, setResAnnule] = useState([])
+
+const [revenueData, setRevenueData] = useState([]);
+
+const fetchRevenueData = async () => {
+  try {
+    const { data } = await axios.get(
+      "http://localhost:3000/api/payments/monthly-revenue"
+    );
+
+    setRevenueData(data.revenueData);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
  const generateColor = (text = "") => {
   let hash = 0;
@@ -186,7 +202,9 @@ const [resAnnule, setResAnnule] = useState([])
     fetchOccupiedRooms();
     fetchTotalPayments();
     fetchReservationsAnnule();
+    fetchRevenueData();
   }, [])
+
 
 
  console.log('reservations ===>', reservations);
