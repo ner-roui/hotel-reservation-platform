@@ -15,12 +15,14 @@ const {
   updateReservation,
   deleteReservation,
   cancelReservation,
-  checkOutReservation
+  checkOutReservation,
+  getReservationsAnnule
 } = require("../controllers/reservation");
 
 
 router.post("/:roomId", auth,createReservation);
 router.get("/getallreservations", auth, getAllReservations);
+router.get("/getreservationsannule", getReservationsAnnule);
 router.get("/myreservation", auth, getUserReservations);
 router.get("/reservationbyid/:id", auth, getReservationById);
 router.put("/updatereservation/:id", auth, updateReservation);

@@ -329,6 +329,24 @@ const getAllReservations = async (req, res) => {
   }
 };
 
+const getReservationsAnnule = async (req, res) => {
+  try {
+    const reservations = await Reservation.find({status : "CANCELLED"})
+      .populate("user", "-password")
+      .populate("chambre");
+
+    res.status(200).json({
+      message: "Liste des réservations",
+      reservations,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur serveur",
+      error: error.message,
+    });
+  }
+};
+
 const getUserReservations = async (req, res) => {
   try {
     const { userId } = req.user;
@@ -474,5 +492,5 @@ module.exports = { createReservation,
   deleteReservation,
   cancelReservation, 
   checkOutReservation,
-  
+  getReservationsAnnule
  };

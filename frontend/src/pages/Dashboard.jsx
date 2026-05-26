@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useMemo } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell
@@ -53,87 +53,7 @@ const STATUS_STYLES = {
   CANCELLED: "bg-red-50 text-red-700 border border-red-100",
 };
 
-const STATUS_ICONS = {
-  CONFIRMED: (
-    <svg
-      className="w-3 h-3"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
 
-  CHECKIN: (
-    <svg
-      className="w-3 h-3"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-9A2.25 2.25 0 002.25 5.25v13.5A2.25 2.25 0 004.5 21h9a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
-      />
-    </svg>
-  ),
-
-  PENDING: (
-    <svg
-      className="w-3 h-3"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-
-  CHECKOUT: (
-    <svg
-      className="w-3 h-3"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M8.25 9l3-3m0 0l3 3m-3-3v12.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-
-  CANCELLED: (
-    <svg
-      className="w-3 h-3"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-  ),
-};
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -152,6 +72,8 @@ const {reservations, chambres} = useContext(AppContext);
 const [avaibaleRoms, setAvaibaleRoms] = useState([]);
 const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
  const [roomsToClean, setRoomsToClean] = useState([])
+const [total, setTotal] = useState(0);
+const [resAnnule, setResAnnule] = useState([])
 
  const generateColor = (text = "") => {
   let hash = 0;
@@ -188,6 +110,44 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
     });
   };
 
+  const stats = useMemo(() => {
+  const occupiedRooms = notavaibaleRoms?.length || 0;
+  const totalRooms = chambres?.length || 0;
+
+  const occupationRate =
+    totalRooms > 0
+      ? ((occupiedRooms / totalRooms) * 100).toFixed(1)
+      : 0;
+
+  return {
+    occupiedRooms,
+    totalRooms,
+    occupationRate,
+  };
+}, [notavaibaleRoms, chambres]);
+
+  
+
+    const fetchReservationsAnnule = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/reservations/getreservationsannule");
+      console.log('reservations annulee-->', data);
+      setResAnnule(data.reservations);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchTotalPayments = async () => {
+    try {
+      const {data} = await axios.get("http://localhost:3000/api/payments/total");
+      console.log('total-->', data);
+      setTotal(data.totalMontantPaye);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchAvailableRooms = async () => {
     try {
       const {data} = await axios.get("http://localhost:3000/api/chambres/available");
@@ -221,10 +181,11 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
 
 
   useEffect(() =>{
-    console.log('hnnnaaa use effect')
     fetchAvailableRooms();
     fetchRoomsToClean();
     fetchOccupiedRooms();
+    fetchTotalPayments();
+    fetchReservationsAnnule();
   }, [])
 
 
@@ -281,7 +242,7 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
                 <span className="text-xs bg-emerald-400/20 text-emerald-300 px-2 py-1 rounded-full font-medium">↗ +12.4%</span>
               </div>
               <p className="text-indigo-200 text-sm mb-1">Revenu total</p>
-              <p className="text-3xl font-bold mb-1">€ 5 700</p>
+              <p className="text-3xl font-bold mb-1">€ {total}</p>
               <p className="text-indigo-300 text-xs">vs mois dernier</p>
               <div className="absolute bottom-4 right-4 opacity-40">
                 <svg width="80" height="30" viewBox="0 0 80 30"><polyline points="0,25 15,20 30,22 45,15 60,10 75,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
@@ -294,9 +255,17 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
                 <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 text-lg">📊</div>
                 <span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full font-medium">↗ +4.1%</span>
               </div>
-              <p className="text-slate-500 text-sm mb-1">Taux d'occupation</p>
-              <p className="text-3xl font-bold text-slate-800 mb-1">29%</p>
-              <p className="text-slate-400 text-xs">2 / 7 chambres</p>
+              <p className="text-slate-500 text-sm mb-1">
+                Taux d'occupation
+              </p>
+
+              <p className="text-3xl font-bold text-slate-800 mb-1">
+                {stats.occupationRate}%
+              </p>
+
+              <p className="text-slate-400 text-xs">
+                {stats.occupiedRooms} / {stats.totalRooms} chambres
+              </p>
             </div>
 
             {/* Réservations */}
@@ -306,7 +275,7 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
                 <span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full font-medium">↗ +8.2%</span>
               </div>
               <p className="text-slate-500 text-sm mb-1">Réservations</p>
-              <p className="text-3xl font-bold text-slate-800 mb-1">4</p>
+              <p className="text-3xl font-bold text-slate-800 mb-1">{reservations?.length}</p>
               <p className="text-slate-400 text-xs">actives</p>
             </div>
 
@@ -317,7 +286,7 @@ const [notavaibaleRoms, setNotAvaibaleRoms] = useState([]);
                 <span className="text-xs bg-red-50 text-red-500 px-2 py-1 rounded-full font-medium">↘ -0.6%</span>
               </div>
               <p className="text-slate-500 text-sm mb-1">Annulations</p>
-              <p className="text-3xl font-bold text-slate-800 mb-1">0</p>
+              <p className="text-3xl font-bold text-slate-800 mb-1">{resAnnule?.length}</p>
               <p className="text-slate-400 text-xs">ce mois</p>
             </div>
           </div>
