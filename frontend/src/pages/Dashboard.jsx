@@ -80,8 +80,9 @@ const [revenueData, setRevenueData] = useState([]);
 const fetchRevenueData = async () => {
   try {
     const { data } = await axios.get(
-      "http://localhost:3000/api/payments/monthly-revenue"
+      "http://localhost:3000/api/reservations/monthly-revenue"
     );
+    console.log('revenuee', data)
 
     setRevenueData(data.revenueData);
 

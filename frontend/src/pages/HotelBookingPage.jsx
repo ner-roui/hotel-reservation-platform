@@ -127,11 +127,13 @@ export default function ReservationPage() {
 
       // EQUIPMENTS
       if (filterEquip.length > 0) {
+        console.log('avant->',filterrooms);
         filterrooms = filterrooms.filter(item =>
           (item.equipements || []).some(eq =>
-            filterEquip.includes(eq)
+            filterEquip.includes(eq.nom)
           )
         );
+        console.log('equipement-->', filterEquip, '===',filterrooms);
       }
 
       // TYPES

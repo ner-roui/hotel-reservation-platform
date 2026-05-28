@@ -207,11 +207,11 @@ const ReservationCard = ({ res, onCheckin, onCheckout }) => {
   return (
     <div className="bg-white border border-gray-100 rounded-xl px-4 py-3.5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition-all cursor-pointer">
       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${res.avatarColor}`}>
-        {res.user.name[0].toUpperCase()}
+        {res.user?.name[0].toUpperCase()}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-800">{res.user.name}</span>
+          <span className="text-sm font-semibold text-gray-800">{res.user?.name}</span>
           <span className="text-xs text-gray-400 font-normal">{`RES-${res._id.toString().slice(-4).toUpperCase()}`}</span>
         </div>
         <div className="flex items-center gap-1.5 mt-0.5 text-xs text-gray-400">

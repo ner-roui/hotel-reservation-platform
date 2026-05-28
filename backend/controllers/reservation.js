@@ -396,7 +396,7 @@ const getReservationById = async (req, res) => {
 const getMonthlyRevenue = async (req, res) => {
   try {
     const reservations = await Reservation.find({
-      payment: "PAID",
+      paymentStatus: "PAID",
     });
 
     const months = [

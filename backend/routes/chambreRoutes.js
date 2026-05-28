@@ -2,7 +2,8 @@
 
 const express = require("express");
 const router = express.Router();
-
+const auth = require('../middleware/auth')
+const isAdmin = require('../middleware/isAdmin')
 const upload = require("../middleware/multer");
 const {addRoom ,
         getAllRooms,
@@ -17,7 +18,7 @@ const {addRoom ,
 } = require("../controllers/chambre");
 
 // ADD ROOM
-router.post("/add-room",upload.array("images", 10),addRoom);
+router.post("/add-room",auth, isAdmin, upload.array("images", 10), addRoom);
 
 // GET all
 router.get("/get-room", getAllRooms);

@@ -22,6 +22,8 @@ import Sidebar from "./components/SidebarReservation";
 import SidebarEmp from "./pages/employee/SidebarEmp";
 import EmployeLayout from "./pages/employee/EmployeLayout";
 import PlanChambres from "./pages/employee/Planchambres";
+import AdminRoute from "./utiles/isAdmin";
+import EmployeeRoute from "./utiles/EmployeeRoute";
 
 function App() {
   return (
@@ -30,11 +32,14 @@ function App() {
     // <ResEmployePage/>
     // <Nettoyage/>
     <Routes>
+      <Route element={<EmployeeRoute/>}>
       <Route path="/" element={<EmployeLayout/>}>
         <Route path="resemployepage" element={<ResEmployePage/>} />
         <Route path="nettoyagepage" element={<Nettoyage/>} />
         <Route path="planchambres" element={<PlanChambres/>} />
       </Route>
+      </Route>
+
       {/* LOGIN */}
       <Route path="/login" element={<LoginPage />} />
 
@@ -59,39 +64,30 @@ function App() {
         }
       />
 
-      <Route
-        path="/payementpage/:id"
-        element={
-          <>
-            <Navbar />
-            <PaiementPage/>
-          </>
-        }
-      />
+      <Route path="/payementpage/:id" element={<> <Navbar /> <PaiementPage/></>}/>
+      <Route path="/messejours" element={<><Navbar /> <MesSejours/> </> }/>
+      <Route path="/reservations/:id/edit" element={<EditReservation />}/>
 
-      <Route
-        path="/messejours"
-        element={
-          <>
-            <Navbar />
-            <MesSejours/>
-          </>
-        }
-      />
-      <Route
-        path="/reservations/:id/edit"
-        element={<EditReservation />}
-      />
-      {/* ADMIN LAYOUT */}
-      <Route path="/" element={<Layout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="createroom" element={<CreateRoomPage />} />
-        <Route path="edit-room/:id" element={<CreateRoomPage />} />
-        <Route path="listroom" element={<ChambresAdmin />} />
-        <Route path="Listusers" element={<UtilisateursPage/>}/>
-        <Route path="Paiements" element={<PaiementsPage/>} />
+      <Route element={<AdminRoute/>}>
+
+        {/* ADMIN LAYOUT */}
+        <Route path="/" element={<Layout />}>
+
+          <Route path="dashboard" element={<Dashboard />} />
+
+          <Route path="createroom" element={<CreateRoomPage />} />
+
+          <Route path="edit-room/:id" element={<CreateRoomPage />} />
+
+          <Route path="listroom" element={<ChambresAdmin />} />
+
+          <Route path="Listusers" element={<UtilisateursPage />} />
+
+          <Route path="Paiements" element={<PaiementsPage />} />
+
+        </Route>
+
       </Route>
-
     </Routes>
   );
 }

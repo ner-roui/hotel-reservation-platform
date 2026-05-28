@@ -82,7 +82,11 @@ const handleSubmit = async (e) => {
 
     if (data.user.role === "Admin") {
       navigate("/dashboard");
-    } else {
+    }else if(data.user.role === "Réception"){
+      navigate("/resemployepage");
+      
+    }
+    else {
       navigate("/home");
     }
   } catch (err) {

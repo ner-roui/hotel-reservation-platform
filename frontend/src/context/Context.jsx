@@ -14,7 +14,7 @@ export default function ContextProvider({ children }) {
     const [sejours, setSejours] = useState([]);
     const [reservations, setReservations] = useState([])
   
-    console.log(user, 'user')
+  
     
 const getUserData = async () => {
   try {
@@ -35,8 +35,8 @@ const getUserData = async () => {
   }
 };
 
-useEffect(() => {
-    const fetchChambres = async () => {
+
+const fetchChambres = async () => {
         try {
         setLoading(true);
 
@@ -46,7 +46,7 @@ useEffect(() => {
 
         setChambres(data.chambres);
         setLenChambres(data.count);
-        getUserData()
+        
         } catch (err) {
         console.error("Error fetching chambres:", err);
         } finally {
@@ -54,7 +54,7 @@ useEffect(() => {
         }
     };
 
-    const fetchSejours = async() =>{
+const fetchSejours = async() =>{
       try{
         const {data} = await axios.get("http://localhost:3000/api/reservations/myreservation",{
           withCredentials : true
@@ -86,11 +86,21 @@ useEffect(() => {
         }
       };
 
-    fetchChambres();
-    fetchSejours();
-    fetchAllReservations();
-    }, []);
 
+  useEffect(() => {
+  const init = async () => {
+    setLoading(true);
+
+    await getUserData();
+    await fetchChambres();
+    await fetchSejours();
+    await fetchAllReservations();
+
+    setLoading(false);
+  };
+
+  init();
+}, []);
   const value = {
     chambres,
     loading,

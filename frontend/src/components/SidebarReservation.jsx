@@ -5,11 +5,21 @@ import { useState } from "react";
 export default function Sidebar({ prixMax, setPrixMax, filterTypes, toggleType, filterEquip, toggleEquip }) {
   const types = ["Standard", "Deluxe", "Suite", "Présidentielle"];
   const equips = [
-    { label: "WiFi", icon: "📶" },
-    { label: "Petit-déj inclus", icon: "🥐" },
-    { label: "Spa privé", icon: "🌿" },
-    { label: "TV 4K", icon: "📺" },
-  ];
+  { icon: "📶", label: "Wi-Fi" },
+  { icon: "❄️", label: "Climatisation" },
+  { icon: "🛁", label: "Baignoire" },
+  { icon: "🚿", label: "Douche" },
+  { icon: "📺", label: "TV 4K" },
+  { icon: "☕", label: "Machine café" },
+  { icon: "🧊", label: "Minibar" },
+  { icon: "👔", label: "Dressing" },
+  { icon: "🛋️", label: "Salon" },
+  { icon: "🌅", label: "Balcon" },
+  { icon: "🏊", label: "Piscine" },
+  { icon: "💼", label: "Bureau" },
+  { icon: "🔒", label: "Coffre-fort" },
+  { icon: "♿", label: "Accès PMR" },
+];
 
   return (
     <aside className="w-64 shrink-0 sticky top-28 self-start">
