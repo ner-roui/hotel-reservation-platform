@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import axios from "axios"
 import { useParams } from "react-router-dom";
 // ─── Sidebar nav items ────────────────────────────────────────────────────────
@@ -81,11 +81,65 @@ export default function CreateRoomPage() {
   const [status, setStatus] = useState("Disponible");
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef();
-  const {id} = useParams()
+  const {id} = useParams();
+  const isEdit = !!id;
   console.log(id)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  useEffect(() => {
+    if (!id) return;
+  
+    const fetchRoom = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3000/api/chambres/${id}`
+        );
+  
+        const room = data.chambre;
+        console.log('data', data, 'data-room', room)
+        setForm({
+          num: room.numero || "",
+          type: room.type || "",
+          floor: room.etage    || "",
+          capacity: room.capacity || "",
+          area: room.area || "",
+          view: room.vue  || "",
+          description: room.description || "",
+          checkin: room.checkin || "14h00",
+          checkout: room.checkout || "12h00",
+          pets: room.pets || "Non autorisés",
+          smoking: room.smoking || "Non-fumeur",
+          notes: room.notes || "",
+          bedType: room.bedType || "",
+          beds: room.beds || "",
+          bathroom: room.bathroom || "",
+          priceWeek: room.prix_nuit   || "",
+          priceWE: room.prix_week   || "",
+          discount: room.discount || "",
+        });
+  
+        setAmenities(
+          room.equipements
+            .filter(e => e.disponible)
+            .map(e => e.nom)
+        );
+
+        setImages(
+          room.images.map(img => ({
+            src: `http://localhost:3000${img}`,
+            file: null,
+            name: img
+          }))
+        );
+        setTags(room.tags || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    fetchRoom();
+  }, [id]);
   // const handleFiles = useCallback((files) => {
   //   Array.from(files).forEach(f => {
   //     // FileReader est une API JavaScript du navigateur qui permet de lire des fichiers côté client.
@@ -180,7 +234,7 @@ if (!form.priceWE) missingFields.push("Prix week-end");
     formData.append("prix_nuit", form.priceWeek);
 
     formData.append("prix_week", form.priceWE);
-    console.log('statussssssssss', status);
+  
     formData.append("statut", status);
 
     // Equipements
@@ -193,28 +247,31 @@ if (!form.priceWE) missingFields.push("Prix week-end");
     images.forEach((img) => {
       formData.append("images", img.file);
     });
-    if(id){
-
-    const res = await axios.post("http://localhost:3000/api/chambres/update-room",
-      formData
-    )
-
-   
-    console.log(res);
-
-
-    alert("✅ Chambre modifiée");
-    }else{
-      const res = await axios.post("http://localhost:3000/api/chambres/add-room",
-      formData
-    )
-
-   
-    console.log(res);
-
-
-    alert("✅ Chambre créée");
-    }
+      if (id) {
+        const res = await axios.put(
+          `http://localhost:3000/api/chambres/update-room/${id}`,
+          formData,
+          {
+            withCredentials: true,
+          }
+        );
+      
+        console.log(res);
+      
+        alert("✅ Chambre modifiée");
+      } else {
+        const res = await axios.post(
+          "http://localhost:3000/api/chambres/add-room",
+          formData,
+          {
+            withCredentials: true,
+          }
+        );
+      
+        console.log(res);
+      
+        alert("✅ Chambre ajoutée");
+      }
 
  
 
@@ -231,31 +288,8 @@ if (!form.priceWE) missingFields.push("Prix week-end");
     
 
       <div className="flex-1 flex flex-col overflow-auto">
-        {/* Topbar */}
-        <header className="sticky top-0 z-20 bg-white border-b border-gray-100 flex items-center justify-between px-7 h-16">
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 text-sm text-gray-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Chambres
-            </button>
-            <div>
-              <h1 className="text-base font-semibold text-gray-900">Nouvelle chambre</h1>
-              <p className="text-xs text-gray-400">Remplissez les informations et ajoutez vos photos</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => alert("Brouillon sauvegardé")} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-              💾 Brouillon
-            </button>
-            <button onClick={publish} className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-colors" style={{ background: "#6c63ff" }}
-              onMouseEnter={e => e.currentTarget.style.background = "#5b52ee"}
-              onMouseLeave={e => e.currentTarget.style.background = "#6c63ff"}>
-              ✓ Publier la chambre
-            </button>
-          </div>
-        </header>
+       
+      
 
         {/* Content */}
         <div className="flex-1 p-7 grid gap-5" style={{ gridTemplateColumns: "1fr 320px", alignItems: "start" }}>
@@ -520,7 +554,9 @@ if (!form.priceWE) missingFields.push("Prix week-end");
               <button onClick={publish} className="flex-2 flex-[2] flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors" style={{ background: "#6c63ff" }}
                 onMouseEnter={e => e.currentTarget.style.background = "#5b52ee"}
                 onMouseLeave={e => e.currentTarget.style.background = "#6c63ff"}>
-                ✓ Publier la chambre
+                <h1>
+                  {isEdit ? "Modifier une chambre" : "Ajouter une chambre"}
+                </h1>
               </button>
             </div>
           </div>

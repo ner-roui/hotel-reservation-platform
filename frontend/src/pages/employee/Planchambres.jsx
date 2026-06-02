@@ -1,6 +1,6 @@
 import { useContext, useState , useEffect} from "react";
 import { AppContext } from "../../context/Context";
-
+import  axios from "axios"
 /* ── data ── */
 const floorsData = [
   {
@@ -159,7 +159,7 @@ const RoomModal = ({ room, onClose, onStatusChange }) => {
             <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
             {s.label}
           </span>
-          <span className="text-xs text-gray-400">Étage {Math.floor(room.id / 100)}</span>
+          <span className="text-xs text-gray-400">Étage {room.etage}</span>
         </div>
 
         {/* change status */}
@@ -168,7 +168,7 @@ const RoomModal = ({ room, onClose, onStatusChange }) => {
           {otherStatuses.map((key) => {
             const cfg = STATUS[key];
             return (
-              <button key={key} onClick={() => { onStatusChange(room.id, key); onClose(); }}
+              <button key={key} onClick={() => { onStatusChange(room._id, key); onClose(); }}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:shadow-sm ${cfg.card}`}>
                 <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
                 <span className={cfg.num}>{cfg.label}</span>
@@ -226,6 +226,8 @@ export default function PlanChambres() {
 };
 
 const handleStatusChange = async (roomId, newStatus) => {
+  console.log('roomId----------------------------------->', roomId, 'newStatus---------------------->',newStatus);
+
   try {
 
     await axios.patch(
@@ -239,11 +241,13 @@ const handleStatusChange = async (roomId, newStatus) => {
         ...f,
         rooms: f.rooms.map((r) =>
           r._id === roomId
-            ? { ...r, status: newStatus }
+            ? { ...r, statut: newStatus }
             : r
         ),
       }))
     );
+
+    
 
   } catch (error) {
     console.log(error);
@@ -257,7 +261,7 @@ const handleStatusChange = async (roomId, newStatus) => {
     occupied: floors?.flatMap((f) => f.rooms).filter((r) => r.statut === "Occupée").length,
     cleaning: floors?.flatMap((f) => f.rooms).filter((r) => r.statut === "À nettoyer").length,
   };
-
+ 
   const navIcon = (d) => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d={d} /></svg>;
 
   return (

@@ -101,6 +101,12 @@ const fetchSejours = async() =>{
 
   init();
 }, []);
+
+// useEffect(() => {
+//   fetchSejours();
+//   console.log("SEJOURS CONTEXT", sejours);
+// }, [sejours]);
+
   const value = {
     chambres,
     loading,
@@ -110,7 +116,8 @@ const fetchSejours = async() =>{
     setSejours,
     sejours,
     reservations, 
-    setReservations
+    setReservations,
+    fetchSejours
   };
 
   return (

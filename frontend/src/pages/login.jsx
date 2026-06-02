@@ -17,8 +17,10 @@ export default function LoginPage() {
   
   const [form, setForm] = useState({
     name: "",
+    prenom: "",
     email: "",
     password: "",
+    
   });
 
 
@@ -65,6 +67,7 @@ const handleSubmit = async (e) => {
           }
         : {
             name: form.name,
+            prenom : form.prenom,
             email: form.email,
             password: form.password,
             role,
@@ -213,24 +216,44 @@ const handleSubmit = async (e) => {
 
               {/* NAME (signup only) */}
               {mode === "signup" && (
-                <div>
-                  <label className="text-sm font-semibold text-gray-500 uppercase">
-                    Nom complet
-                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-500 uppercase">
+                        Nom
+                      </label>
 
-                  <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
-                    <User size={20} className="text-gray-400" />
+                      <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
+                        <User size={20} className="text-gray-400" />
 
-                    <input
-                      value={form.name}
-                      onChange={(e) => set("name", e.target.value)}
-                      type="text"
-                      placeholder="Votre nom"
-                      className="w-full h-full px-3 outline-none bg-transparent"
-                    />
+                        <input
+                          value={form.name}
+                          onChange={(e) => set("name", e.target.value)}
+                          type="text"
+                          placeholder="Votre nom"
+                          className="w-full h-full px-3 outline-none bg-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-semibold text-gray-500 uppercase">
+                        Prénom
+                      </label>
+
+                      <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
+                        <User size={20} className="text-gray-400" />
+
+                        <input
+                          value={form.prenom}
+                          onChange={(e) => set("prenom", e.target.value)}
+                          type="text"
+                          placeholder="Votre prénom"
+                          className="w-full h-full px-3 outline-none bg-transparent"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* EMAIL */}
               <div>

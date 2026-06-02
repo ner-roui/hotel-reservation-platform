@@ -282,7 +282,7 @@ const updateRoomStatus = async (req, res) => {
     const { id } = req.params;
     const { statut } = req.body;
 
-    const chambre = await Chambre.findByIdAndUpdate(
+    const chambre = await ChambreModel.findByIdAndUpdate(
       id,
       { statut },
       { new: true }

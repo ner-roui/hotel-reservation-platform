@@ -179,7 +179,7 @@ function SejourCard({ s, onCancel, style, setOpen }) {
       year: "numeric",
     });
   };
-
+ 
   const onPay = (id) => {
     navigate(`/payementpage/${id}`);
   };
@@ -213,8 +213,10 @@ function SejourCard({ s, onCancel, style, setOpen }) {
           className="relative overflow-hidden shrink-0"
           style={{ width: 140 }}
         >
+
           <img
             src={`http://localhost:3000${chambre?.images?.[0]}`}
+            // src={chambre.images[0]}
             alt={chambre?.type}
             className="w-full h-full object-cover transition-transform duration-500"
             style={{
@@ -503,7 +505,7 @@ export default function MesSejours() {
   const [activeRole, setActiveRole] = useState("Client");
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("Tous");
-  const {sejours, setSejours} = useContext(AppContext);
+  const {sejours, setSejours, fetchSejours} = useContext(AppContext);
   const [selectedSejour, setSelectedSejour] = useState(null);
   // const [sejours, setSejours] = useState(SEJOURS);
   const [cancelTarget, setCancelTarget] = useState(null);
@@ -524,18 +526,7 @@ console.log('canceleleltarget===>', cancelTarget)
       
         console.log("data API:", data);
       
-        // ⚠️ sécurisation
-        const updatedReservation = data.reservation;
-      
-        setSejours(prev =>
-          Array.isArray(prev)
-            ? prev.map(s =>
-                s._id === id
-                  ? updatedReservation
-                  : s
-              )
-            : []
-        );
+        fetchSejours();
 
     } catch (e) {
       alert(e.response?.data?.message || e.message);

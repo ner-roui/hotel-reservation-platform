@@ -39,6 +39,7 @@ router.get("/cleaned", getCleanedRooms);
 
 // PUT ROOM CLEAN
 router.put("/clean/:id", cleanRoom);
+
 // GET by id
 router.get("/:id", getRoomById);
 

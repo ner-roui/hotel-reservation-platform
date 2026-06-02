@@ -23,8 +23,8 @@ export default function ModalReservation({ chambre, onClose }) {
   const [step, setStep] = useState(1);
   const [done, setDone] = useState(false);
   const navigate = useNavigate();
-  const {setSejours} = useContext(AppContext)
-
+  const {fetchSejours} = useContext(AppContext)
+ 
     const [arrivee, setArrivee] = useState(new Date());
 
     const [depart, setDepart] = useState(
@@ -63,6 +63,7 @@ export default function ModalReservation({ chambre, onClose }) {
 
 
   const reserver = async (c) => {
+  
   try {
     const { data } = await axios.post(
       `http://localhost:3000/api/reservations/${c._id}`,
@@ -88,7 +89,9 @@ export default function ModalReservation({ chambre, onClose }) {
     //   paymentMethod: "Carte bancaire",
     // } ]))
 
-    setSejours(prev => ([...prev, data.reservation]))
+    // setSejours(prev => ([...prev, data.reservation]))
+
+    fetchSejours();
 
     console.log(data.reservation);
 
