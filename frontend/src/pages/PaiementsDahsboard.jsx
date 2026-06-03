@@ -10,17 +10,7 @@ const useFont = () => {
   }, []);
 };
 
-/* ── Data ───────────────────────────────────────────── */
-const TRANSACTIONS = [
-  { id: "PAY-9821", client: "Émile Rousseau",  initials: "ÉR", color: "#6366f1", methode: "Carte Visa",       date: "12 Avr 2026", montant: 1240, statut: "Payé" },
-  { id: "PAY-9820", client: "Léa Bernard",     initials: "LB", color: "#ec4899", methode: "Carte Mastercard", date: "12 Avr 2026", montant: 320,  statut: "Payé" },
-  { id: "PAY-9819", client: "Hugo Martin",     initials: "HM", color: "#f59e0b", methode: "Espèces",          date: "11 Avr 2026", montant: 410,  statut: "En attente" },
-  { id: "PAY-9818", client: "Camille Petit",   initials: "CP", color: "#10b981", methode: "Carte Visa",       date: "10 Avr 2026", montant: 1980, statut: "Payé" },
-  { id: "PAY-9817", client: "Noé Faure",       initials: "NF", color: "#8b5cf6", methode: "Virement",         date: "09 Avr 2026", montant: 760,  statut: "Remboursé" },
-  { id: "PAY-9816", client: "Inès Marchand",   initials: "IM", color: "#0ea5e9", methode: "Apple Pay",        date: "08 Avr 2026", montant: 560,  statut: "Payé" },
-  { id: "PAY-9815", client: "Thomas Renard",   initials: "TR", color: "#f97316", methode: "Carte Visa",       date: "07 Avr 2026", montant: 2200, statut: "Payé" },
-  { id: "PAY-9814", client: "Marie Fontaine",  initials: "MF", color: "#06b6d4", methode: "PayPal",           date: "06 Avr 2026", montant: 390,  statut: "En attente" },
-];
+
 
 const STATUT_CFG = {
   "Payé":        { bg: "#dcfce7", text: "#15803d", border: "#bbf7d0", dot: "#22c55e" },

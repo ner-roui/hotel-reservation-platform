@@ -32,12 +32,6 @@ const RESERVATION = {
   img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80",
 };
 
-// const METHODS = [
-//   { id: "carte",   label: "Carte",      icon: "💳" },
-//   { id: "paypal",  label: "PayPal",     icon: "🅿️" },
-//   { id: "apple",   label: "Apple Pay",  icon: "🍎" },
-//   { id: "especes", label: "Espèces",    icon: "💵" },
-// ];
 
 
 const METHODS = [
@@ -134,8 +128,23 @@ function MethodBtn({ m, active, onClick }) {
 }
 
 /* ── Summary card ──────────────────────────────────── */
-function Summary({ res }) {
-  const total = res.prixNuit * res.nights + res.taxes;
+function Summary({ reservation }) {
+  
+
+  const formatDate = (dateString) => {
+    const months = [
+      "Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
+      "Juil", "Août", "Sep", "Oct", "Nov", "Déc"
+    ];
+  
+    const date = new Date(dateString);
+  
+    return `${date.getDate()} ${
+      months[date.getMonth()]
+    } ${date.getFullYear()}`;
+  };
+
+  const total = reservation?.prixParNuit  * reservation?.nuits;
   return (
     <div
       className="rounded-2xl overflow-hidden sticky top-24"
@@ -150,25 +159,28 @@ function Summary({ res }) {
       <div className="h-px" style={{ background: "#ede5db" }} />
 
       <div className="overflow-hidden" style={{ height: 140 }}>
-        <img src={res.img} alt={res.chambre.type} className="w-full h-full object-cover" style={{ filter: "brightness(.92)" }} />
+        <img src={`http://localhost:3000${reservation?.chambre?.images?.[0]}`} alt={reservation?.chambre.type} className="w-full h-full object-cover" style={{ filter: "brightness(.92)" }} />
       </div>
 
       <div className="p-5">
         <h3 className="font-bold mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#1c1917", fontSize: 17 }}>
-          {res.chambre.type} · Chambre {res.chambre.numero}
+          {reservation?.chambre.type} · Chambre {reservation?.chambre.numero}
         </h3>
         <div className="space-y-2 mb-5">
         <div className="flex items-center gap-2.5">
           <CalendarDays size={14} style={{ color: "#a07850" }} />
           <span className="text-sm" style={{ color: "#6b5244" }}>
-            {res.dates}
+            {/* {res.dates} */}
+            {formatDate(reservation?.arrivee)} → {formatDate(reservation?.depart)}
+            {/* "14 → 18 Avr 2026", */}
+            
           </span>
         </div>
 
         <div className="flex items-center gap-2.5">
           <Bed size={14} style={{ color: "#a07850" }} />
           <span className="text-sm" style={{ color: "#6b5244" }}>
-            {res.chambre.lit} · {res.chambre.capacite} personnes
+            {reservation?.chambre.lit} · {reservation?.chambre.capacite} personnes
           </span>
         </div>
       </div>
@@ -177,12 +189,12 @@ function Summary({ res }) {
 
         <div className="space-y-2.5 mb-4">
           <div className="flex justify-between">
-            <span className="text-sm" style={{ color: "#a8968a" }}>€{res.prixNuit} × {res.nights} nuits</span>
-            <span className="text-sm font-semibold" style={{ color: "#1c1917" }}>€ {res.prixNuit * res.nights}</span>
+            <span className="text-sm" style={{ color: "#a8968a" }}>€{reservation?.prixParNuit} × {reservation?.nuits} nuits</span>
+            <span className="text-sm font-semibold" style={{ color: "#1c1917" }}>€ {reservation?.prixParNuit * reservation?.nuits}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm" style={{ color: "#a8968a" }}>Taxes & frais</span>
-            <span className="text-sm font-semibold" style={{ color: "#1c1917" }}>€ {res.taxes}</span>
+            <span className="text-sm font-semibold" style={{ color: "#1c1917" }}>€ 0</span>
           </div>
         </div>
 
@@ -258,8 +270,49 @@ export default function PaiementPage() {
   const [paying, setPaying] = useState(false);
   const [search, setSearch] = useState("");
 
+  const [reservation, setReservation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const { id } = useParams();
-  const total = RESERVATION.prixNuit * RESERVATION.nights + RESERVATION.taxes;
+  const total = reservation?.prixParNuit * reservation?.nuits ;
+
+
+  function formatReservationId(id) {
+    const num = parseInt(id.slice(-4), 16); // convertit les 4 derniers caractères hexadécimaux
+    const code = num.toString(36).toUpperCase();
+  
+    return `RES-${code}`;
+  }
+  
+  useEffect(() => {
+    const fetchReservation = async () => {
+      try {
+        setLoading(true);
+
+        const {data} = await axios.get(
+          `http://localhost:3000/api/reservations/getonereservation/${id}`
+        );
+        console.log('one res', data )
+        setReservation(data.reservation);
+      } catch (err) {
+        setError(
+          err.data?.message || "Erreur lors du chargement"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchReservation();
+    }
+  }, [id]);
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>{error}</p>;
+
+  
 
   const handlePay = async () => {
     try {
@@ -345,7 +398,7 @@ export default function PaiementPage() {
               <span style={{ color: "#d97706", fontSize: 16 }}>⏱</span>
               <p className="text-sm">
                 <span style={{ color: "#6b5244" }}>Réservation </span>
-                <span className="font-semibold" style={{ color: "#a07850" }}>{RESERVATION.id}</span>
+                <span className="font-semibold" style={{ color: "#a07850" }}>{formatReservationId(reservation._id)}</span>
                 <span style={{ color: "#6b5244" }}> créée — statut </span>
                 <span className="font-semibold" style={{ color: "#d97706" }}>En attente</span>
                 <span style={{ color: "#6b5244" }}> jusqu'au paiement.</span>
@@ -376,11 +429,11 @@ export default function PaiementPage() {
                   {/* Card form */}
                   {method === "carte" && (
                     <div className="space-y-4">
-                      <Field label="Numéro de carte" placeholder="4242 4242 4242 4242" icon="💳"
+                      <Field label="Numéro de carte" placeholder="4242 4242 4242 4242" 
                         value={cardNum} onChange={v => setCardNum(formatCard(v))} />
                       <div className="flex gap-3">
                         <Field label="Expiration" placeholder="MM/AA" half value={expiry} onChange={v => setExpiry(formatExpiry(v))} />
-                        <Field label="CVC" placeholder="123" icon="🔒" half value={cvc} onChange={v => setCvc(v.replace(/\D/g, "").slice(0, 3))} />
+                        <Field label="CVC" placeholder="123"  half value={cvc} onChange={v => setCvc(v.replace(/\D/g, "").slice(0, 3))} />
                       </div>
                       <Field label="Nom sur la carte" placeholder="Élise Moreau" value={name} onChange={setName} />
                     </div>
@@ -392,8 +445,8 @@ export default function PaiementPage() {
                       style={{ background: "#faf7f4", border: "1px solid #ddd5c8" }}
                     >
                       <div className="flex items-center justify-center text-3xl mb-3">
-  <FaPaypal size={32} />
-</div>
+                        <FaPaypal size={32} />
+                    </div>
                       <p className="text-sm font-semibold mb-1" style={{ color: "#1c1917" }}>Se connecter à PayPal</p>
                       <p className="text-xs" style={{ color: "#a8968a" }}>Vous serez redirigé vers PayPal pour compléter votre paiement.</p>
                     </div>
@@ -491,7 +544,7 @@ export default function PaiementPage() {
 
               {/* ── Summary ── */}
               <div className="w-72 shrink-0">
-                <Summary res={RESERVATION} />
+               <Summary reservation={reservation} />
               </div>
             </div>
           )}

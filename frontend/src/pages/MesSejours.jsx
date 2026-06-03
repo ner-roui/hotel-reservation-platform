@@ -270,10 +270,12 @@ export default function MesSejours() {
   };
 
   const filtered = sejours?.filter(s => {
-    const mTab = activeTab === "Tous" || s.status === activeTab;
+    console.log('status', s.status, 'activite', activeTab);
+    const mTab = activeTab === "Tous" || STATUT_CFG[s.status].value === activeTab;
     const mSearch = !search || s.type?.toLowerCase().includes(search.toLowerCase()) || s._id?.includes(search);
     return mTab && mSearch;
   });
+  console.log('filtered=======================>', filtered);
 
   const stats = {
     total:      sejours?.length || 0,
@@ -391,7 +393,12 @@ export default function MesSejours() {
                 {tab}
                 {tab !== "Tous" && (
                   <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-500">
-                    {sejours?.filter(s => s.statut === tab).length || 0}
+                    {
+                      sejours?.filter((s) => {
+                        console.log('status-->', STATUT_CFG[s.status].value, 'tab', tab);
+                        return STATUT_CFG[s.status].value === tab;
+                      }).length || 0
+                    }
                   </span>
                 )}
               </button>

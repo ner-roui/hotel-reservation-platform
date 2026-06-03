@@ -22,7 +22,7 @@ export default function ReservationPage() {
   const [search, setSearch] = useState("");
   const [prixMax, setPrixMax] = useState(1000);
   const [price, setPrice] = useState("note");
-  const [filterTypes, setFilterTypes] = useState(["Standard", "Deluxe", "Suite", "Présidentielle"]);
+  const [filterTypes, setFilterTypes] = useState(["Standard","Supérieure" , "Deluxe", "Suite","Suite Présidentielle" ]);
   const [filterEquip, setFilterEquip] = useState([]);
   const [selected, setSelected] = useState(null);
   const [scrolled, setScrolled] = useState(false);
@@ -59,8 +59,11 @@ export default function ReservationPage() {
       filterrooms = filterrooms.filter(item => filterTypes.includes(item.type));
     }
     filterrooms = filterrooms.filter(item => item.prix_nuit <= prixMax);
-    if (price === "asc") return [...filterrooms].sort((a, b) => a.prix - b.prix);
-    if (price === "desc") return [...filterrooms].sort((a, b) => b.prix - a.prix);
+    if (price === "asc") {
+      console.log('filerrromms--->price',filterrooms )
+      return [...filterrooms].sort((a, b) => a.prix_nuit - b.prix_nuit);
+    }
+    if (price === "desc") return [...filterrooms].sort((a, b) => b.prix_nuit - a.prix_nuit);
     return filterrooms;
   }, [filterTypes, filterEquip, prixMax, search, price, chambres]);
 
@@ -260,7 +263,7 @@ export default function ReservationPage() {
               {/* Cards */}
               <div className="grid grid-cols-3 gap-4">
                 {filtered.map((c, i) => (
-                  <div key={c.id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
+                  <div key={c._id} style={{ animation: `fadeUp .4s ${i * 0.05}s ease both` }}>
                     <ChambreCard c={c} onReserver={setSelected} />
                   </div>
                 ))}
