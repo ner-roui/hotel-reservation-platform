@@ -76,9 +76,9 @@ export default function HomePage() {
 
         <div className="relative mx-auto flex min-h-[760px] max-w-7xl items-center px-6">
           <div className="max-w-3xl">
-            <div className="mb-6 inline-flex items-center rounded-full border border-violet-300 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-600">
-              ✨ Hôtel premium de l'année 2026
-            </div>
+          <div className="mb-6 inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
+            ✨ Hôtel premium de l'année 2026
+          </div>
 
             <h1
               className="mb-6 text-6xl font-bold leading-tight text-slate-900 md:text-7xl"
@@ -133,7 +133,7 @@ export default function HomePage() {
                   />
                 </div>
 
-                <button className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-4 text-sm font-semibold text-white transition hover:scale-[1.02] shadow-md shadow-violet-200">
+                <button className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#a07850] to-[#7c5a38] px-6 py-4 text-sm font-semibold text-white transition hover:scale-[1.02] shadow-md shadow-[#a07850]/30">
                   <Search size={18} />
                   Rechercher
                 </button>
@@ -164,9 +164,9 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-violet-500">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#a07850]">
               Catalogue
-            </p>
+          </p>
             <h2
               className="text-5xl font-bold text-slate-900"
               style={{ fontFamily: "'Playfair Display', serif" }}
@@ -184,7 +184,7 @@ export default function HomePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Rechercher une chambre..."
-              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pl-12 pr-4 text-sm text-slate-800 outline-none shadow-sm transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pl-12 pr-4 text-sm text-slate-800 outline-none shadow-sm transition focus:border-[#a07850] focus:ring-2 focus:ring-[#a07850]/20"
             />
           </div>
         </div>

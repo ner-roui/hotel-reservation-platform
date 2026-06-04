@@ -23,9 +23,9 @@ export default function Navbar() {
         
         {/* LOGO */}
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
-            <span className="text-lg font-bold text-white">L</span>
-          </div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#a07850] to-[#7c5a38] shadow-lg shadow-[#a07850]/20">
+          <span className="text-lg font-bold text-white">L</span>
+        </div>
 
           <div>
             <h2
@@ -61,10 +61,10 @@ export default function Navbar() {
           {link.name}
 
           <span
-            className={`absolute -bottom-2 left-0 h-[2px] rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-300 ${
+            className={`absolute -bottom-2 left-0 h-[2px] rounded-full bg-gradient-to-r from-amber-600 to-yellow-800 transition-all duration-300 ${
               isActive ? "w-full" : "w-0"
             }`}
-          ></span>
+            ></span>
         </>
       )}
     </NavLink>
@@ -81,9 +81,9 @@ export default function Navbar() {
           </button>
 
           {/* CTA */}
-          <button className="hidden rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:scale-[1.03] hover:shadow-violet-500/40 md:block">
-            Réserver
-          </button>
+            <button className="flex-1 rounded-2xl bg-gradient-to-r from-[#a07850] to-[#7c5a38] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#a07850]/20 transition-all duration-200 hover:brightness-110">
+              Réserver
+            </button>
 
           {/* MOBILE MENU BUTTON */}
           <button
@@ -117,7 +117,7 @@ export default function Navbar() {
               <Bell size={18} />
             </button>
 
-            <button className="flex-1 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white">
+            <button className="flex-1 rounded-2xl bg-gradient-to-r from-[#a07850] to-[#7c5a38] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#a07850]/20 transition-all duration-200 hover:brightness-110">
               Réserver
             </button>
           </div>

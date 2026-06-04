@@ -5,7 +5,8 @@ import StepChambre from "./StepChambre";
 import StepRecap from "./StepRecap";
 import { AppContext } from "../context/Context";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/useToast";
 const RESERVATION = {
   id: "RES-2842",
   type: "Deluxe", numero: "202", etage: 2,
@@ -28,6 +29,8 @@ export default function ModifierModal({ sejour, onClose }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const { setSejours } = useContext(AppContext);
+  const { toast, ToastPortal } = useToast();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     arrivee:   new Date(sejour.arrivee),
@@ -40,8 +43,24 @@ export default function ModifierModal({ sejour, onClose }) {
   const handleChange = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   const handleSave = async () => {
+ 
     try {
       setSaving(true);
+      const isSame =
+      new Date(sejour.arrivee).getTime() === new Date(form.arrivee).getTime() &&
+      new Date(sejour.depart).getTime() === new Date(form.depart).getTime() &&
+      sejour.voyageurs === form.voyageurs &&
+      sejour.chambre?._id === form.chambre?._id;
+
+    if (isSame) {
+      setSaving(false);
+      toast.info("Aucune modification détectée");
+      setTimeout(() =>{
+        onClose(false)
+      }, 4000)
+      
+      return;
+    }
       const { data } = await axios.put(
         `http://localhost:3000/api/reservations/updatereservation/${sejour._id}`,
         {
@@ -53,6 +72,7 @@ export default function ModifierModal({ sejour, onClose }) {
         },
         { withCredentials: true }
       );
+
       setSejours(prev =>
         prev.map(s =>
           s._id === sejour._id
@@ -72,6 +92,8 @@ export default function ModifierModal({ sejour, onClose }) {
   const total  = (form.chambre?.prix_nuit || 0) * nights + Math.round((form.chambre?.prix_nuit || 0) * nights * 0.1);
 
   return (
+    <>
+    <ToastPortal />
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       {/* Overlay */}
       <div className="absolute inset-0 backdrop-blur-md" style={{ background: "rgba(44,26,14,.45)" }} />
@@ -164,7 +186,7 @@ export default function ModifierModal({ sejour, onClose }) {
                 >
                   Voir mes séjours
                 </button>
-                <button
+                <button onClick={() => navigate(`/payementpage/${sejour._id}`)}
                   className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all"
                   style={{ background: "#faf7f4", border: "1px solid #ddd5c8", color: "#6b5244" }}
                   onMouseEnter={e => e.currentTarget.style.background = "#f0e8e0"}
@@ -279,5 +301,6 @@ export default function ModifierModal({ sejour, onClose }) {
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
+    </>
   );
 }

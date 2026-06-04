@@ -1,42 +1,39 @@
-const RESERVATION = {
-  id: "RES-2842",
-  type: "Deluxe", numero: "202", etage: 2,
-  lit: "1 lit king", superficie: 32,
-  dateIn: "2026-04-14", dateOut: "2026-04-17",
-  voyageurs: 2, prixNuit: 220,
-  img: "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=600&q=80",
-  equipements: ["WiFi", "TV 4K", "Minibar", "Spa privé"],
-  statut: "En attente",
-  notes: "",
-};
-
 const TYPE_COLORS = {
-  "Standard":       { bg: "rgba(37,99,235,.08)",  border: "rgba(37,99,235,.2)",   text: "#1d4ed8" },
-  "Deluxe":         { bg: "rgba(124,58,237,.08)", border: "rgba(124,58,237,.2)",  text: "#6d28d9" },
-  "Suite":          { bg: "rgba(180,130,40,.1)",  border: "rgba(180,130,40,.25)", text: "#92650a" },
-  "Présidentielle": { bg: "rgba(5,150,105,.08)",  border: "rgba(5,150,105,.2)",   text: "#065f46" },
+  "Standard":           { bg: "rgba(37,99,235,.08)",  border: "rgba(37,99,235,.2)",   text: "#1d4ed8" },
+  "Deluxe":             { bg: "rgba(124,58,237,.08)", border: "rgba(124,58,237,.2)",  text: "#6d28d9" },
+  "Suite":              { bg: "rgba(180,130,40,.1)",  border: "rgba(180,130,40,.25)", text: "#92650a" },
+  "Suite Présidentielle":{ bg: "rgba(5,150,105,.08)", border: "rgba(5,150,105,.2)",   text: "#065f46" },
+  "Présidentielle":     { bg: "rgba(5,150,105,.08)",  border: "rgba(5,150,105,.2)",   text: "#065f46" },
 };
 
 function diffDays(a, b) {
   return Math.max(1, Math.round((new Date(b) - new Date(a)) / 86400000));
 }
 function formatDate(d) {
+  if (!d) return "--";
   const dt = new Date(d);
   return dt.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, notes }) {
   const nights   = diffDays(dateIn, dateOut);
-  const prixBase = chambre.prix_nuit * nights;
+  const prixBase = (chambre.prix_nuit || 0) * nights;
   const taxes    = Math.round(prixBase * 0.1);
   const total    = prixBase + taxes;
   const tc       = TYPE_COLORS[chambre.type] || TYPE_COLORS["Standard"];
 
-  const hasChanged =
-    chambre.numero !== RESERVATION.numero ||
-    dateIn  !== RESERVATION.dateIn  ||
-    dateOut !== RESERVATION.dateOut ||
-    voyageurs !== RESERVATION.voyageurs;
+  /* ── Comparaison avec les données ORIGINALES de la réservation ── */
+  const origChambre   = res.chambre;          // objet chambre original
+  const origArrivee   = new Date(res.arrivee);
+  const origDepart    = new Date(res.depart);
+  const origVoyageurs = res.voyageurs || 1;
+
+  const chambreChanged   = chambre._id !== origChambre?._id;
+  const datesChanged     =
+    new Date(dateIn).toDateString()  !== origArrivee.toDateString() ||
+    new Date(dateOut).toDateString() !== origDepart.toDateString();
+  const voyageursChanged = voyageurs !== origVoyageurs;
+  const hasChanged       = chambreChanged || datesChanged || voyageursChanged;
 
   return (
     <div style={{ animation: "fadeUp .4s ease both" }}>
@@ -63,12 +60,14 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
             Modifications détectées
           </p>
           <div className="space-y-2">
-            {chambre.numero !== RESERVATION.numero && (
+
+            {/* Chambre changée */}
+            {chambreChanged && (
               <div className="flex items-center gap-2 text-xs flex-wrap">
                 <span>🛏️</span>
                 <span style={{ color: "#a8968a" }}>Chambre :</span>
                 <span style={{ textDecoration: "line-through", color: "#dc2626" }}>
-                  {RESERVATION.type} {RESERVATION.numero}
+                  {origChambre?.type} {origChambre?.numero}
                 </span>
                 <span style={{ color: "#c8b8a8" }}>→</span>
                 <span style={{ color: "#059669", fontWeight: 600 }}>
@@ -76,12 +75,14 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
                 </span>
               </div>
             )}
-            {(dateIn !== RESERVATION.dateIn || dateOut !== RESERVATION.dateOut) && (
+
+            {/* Dates changées */}
+            {datesChanged && (
               <div className="flex items-center gap-2 text-xs flex-wrap">
                 <span>📅</span>
                 <span style={{ color: "#a8968a" }}>Dates :</span>
                 <span style={{ textDecoration: "line-through", color: "#dc2626" }}>
-                  {formatDate(RESERVATION.dateIn)} → {formatDate(RESERVATION.dateOut)}
+                  {formatDate(origArrivee)} → {formatDate(origDepart)}
                 </span>
                 <span style={{ color: "#c8b8a8" }}>→</span>
                 <span style={{ color: "#059669", fontWeight: 600 }}>
@@ -89,12 +90,14 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
                 </span>
               </div>
             )}
-            {voyageurs !== RESERVATION.voyageurs && (
+
+            {/* Voyageurs changés */}
+            {voyageursChanged && (
               <div className="flex items-center gap-2 text-xs">
                 <span>👥</span>
                 <span style={{ color: "#a8968a" }}>Voyageurs :</span>
                 <span style={{ textDecoration: "line-through", color: "#dc2626" }}>
-                  {RESERVATION.voyageurs}
+                  {origVoyageurs}
                 </span>
                 <span style={{ color: "#c8b8a8" }}>→</span>
                 <span style={{ color: "#059669", fontWeight: 600 }}>{voyageurs}</span>
@@ -104,13 +107,26 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
         </div>
       )}
 
+      {/* ── Aucun changement ── */}
+      {!hasChanged && (
+        <div
+          className="rounded-2xl p-4 mb-5 flex items-center gap-3"
+          style={{ background: "rgba(5,150,105,.05)", border: "1px solid rgba(5,150,105,.15)" }}
+        >
+          <span>✅</span>
+          <p className="text-xs" style={{ color: "#065f46" }}>
+            Aucune modification détectée. La réservation reste identique.
+          </p>
+        </div>
+      )}
+
       {/* ── Room card ── */}
       <div
         className="flex gap-4 rounded-2xl overflow-hidden mb-5"
         style={{ background: "#faf7f4", border: "1px solid #ddd5c8" }}
       >
         <img
-          src={`http://localhost:3000${chambre.images[0]}`}
+          src={`http://localhost:3000${chambre.images?.[0]}`}
           className="w-28 h-24 object-cover shrink-0"
           alt=""
           style={{ filter: "brightness(.95)" }}
@@ -131,10 +147,10 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
             </span>
           </div>
           <p className="text-xs mb-1" style={{ color: "#a8968a" }}>
-            🛏️ {chambre.lit} · 📐 {chambre.superficie}m² · Étage {RESERVATION.etage}
+            🛏️ {chambre.lit} · 📐 {chambre.superficie}m² · Étage {chambre.etage}
           </p>
           <p className="text-xs" style={{ color: "#b8a898" }}>
-            📅 {formatDate(dateIn)} → {formatDate(dateOut)} · 🌙 {nights} nuits · 👥 {voyageurs} pers.
+            📅 {formatDate(dateIn)} → {formatDate(dateOut)} · 🌙 {nights} nuit{nights > 1 ? "s" : ""} · 👥 {voyageurs} pers.
           </p>
           {notes && (
             <p className="text-xs mt-1 italic" style={{ color: "#a07850" }}>"{notes}"</p>
@@ -149,7 +165,7 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
       >
         <div className="space-y-2.5 mb-3">
           <div className="flex justify-between text-sm">
-            <span style={{ color: "#a8968a" }}>€{chambre.prix_nuit} × {nights} nuits</span>
+            <span style={{ color: "#a8968a" }}>€{chambre.prix_nuit} × {nights} nuit{nights > 1 ? "s" : ""}</span>
             <span className="font-semibold" style={{ color: "#1c1917" }}>€ {prixBase}</span>
           </div>
           <div className="flex justify-between text-sm">

@@ -10,9 +10,10 @@ import  {  Bed,
           ClipboardList,
           Circle,
           CheckCircle2,
-          CreditCard,} from "lucide-react";
+          CreditCard,
+          Lock} from "lucide-react";
 
-          import { Lock, Wallet, ShieldCheck } from "lucide-react";
+
 
 const useFont = () => {
   useEffect(() => {
@@ -192,15 +193,24 @@ function SejourCard({ s, onCancel, style, setOpen }) {
           <div className="flex items-center gap-2 shrink-0">
             {s.paymentStatus === "UNPAID" && s.status !== "CANCELLED" && (
               <button
-                onClick={() => onPay(s._id)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
-                style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 4px 14px rgba(124,58,237,.25)" }}
-                onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 6px 20px rgba(124,58,237,.4)")}
-                onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 4px 14px rgba(124,58,237,.25)")}
-              >
-                <Lock size={16} />
+                  onClick={() => onPay(s._id)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
+                  style={{
+                    background: "linear-gradient(135deg,#a07850,#7c5a38)",
+                    boxShadow: "0 4px 14px rgba(160,120,80,.25)"
+                  }}
+                  onMouseEnter={e => (
+                    e.currentTarget.style.boxShadow =
+                      "0 6px 20px rgba(160,120,80,.4)"
+                  )}
+                  onMouseLeave={e => (
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 14px rgba(160,120,80,.25)"
+                  )}
+                >
+                  <Lock size={16} />
                   Payer
-              </button>
+                </button>
             )}
 
             {isActive && (
@@ -395,7 +405,7 @@ export default function MesSejours() {
                   <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-500">
                     {
                       sejours?.filter((s) => {
-                        console.log('status-->', STATUT_CFG[s.status].value, 'tab', tab);
+                  
                         return STATUT_CFG[s.status].value === tab;
                       }).length || 0
                     }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import {
   CalendarDays, Bed ,
   DollarSign
 } from "lucide-react";
+import { AppContext } from "../context/Context";
 
 const useFont = () => {
   useEffect(() => {
@@ -22,15 +23,6 @@ const useFont = () => {
   }, []);
 };
 
-const RESERVATION = {
-  id: "RES-2843",
-  chambre: { type: "Standard", numero: "101", lit: "1 lit double", capacite: 2 },
-  dates: "14 → 18 Avr 2026",
-  nights: 4,
-  prixNuit: 120,
-  taxes: 48,
-  img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80",
-};
 
 
 
@@ -218,7 +210,7 @@ function Summary({ reservation }) {
 }
 
 /* ── Success screen ────────────────────────────────── */
-function SuccessScreen() {
+function SuccessScreen({res}) {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -232,7 +224,7 @@ function SuccessScreen() {
         Réservation confirmée !
       </h2>
       <p className="text-sm mb-1" style={{ color: "#6b5244" }}>
-        Réservation <span className="font-semibold" style={{ color: "#a07850" }}>{RESERVATION.id}</span> — Paiement accepté
+        Réservation <span className="font-semibold" style={{ color: "#a07850" }}>{res._id}</span> — Paiement accepté
       </p>
       <p className="text-sm" style={{ color: "#a8968a" }}>Un email de confirmation a été envoyé à votre adresse.</p>
       <div className="flex gap-3 mt-8">
@@ -269,7 +261,7 @@ export default function PaiementPage() {
   const [paid, setPaid] = useState(false);
   const [paying, setPaying] = useState(false);
   const [search, setSearch] = useState("");
-
+  const {fetchSejours} = useContext(AppContext)
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -325,7 +317,7 @@ export default function PaiementPage() {
             method === "paypal"  ? "PayPal" :
             method === "apple"   ? "Apple Pay" :
                                    "Espèces",
-          montant_paye: total,
+          montant_paye: method === "especes" ? 0 : total,
           taxe: 0,
           reduction: 0,
           transaction_id: `TXN-${Date.now()}`,
@@ -333,6 +325,8 @@ export default function PaiementPage() {
         },
         { withCredentials: true }
       );
+      console.log('res=====>', res);
+      fetchSejours()
       setTimeout(() => { setPaying(false); setPaid(true); }, 800);
     } catch (error) {
       console.log("Erreur paiement:", error.response?.data || error.message);
@@ -407,7 +401,7 @@ export default function PaiementPage() {
           )}
 
           {paid ? (
-            <SuccessScreen />
+            <SuccessScreen res={reservation} />
           ) : (
             <div className="flex gap-6" style={{ animation: "fadeUp .5s .1s ease both" }}>
 

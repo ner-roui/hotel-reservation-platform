@@ -15,6 +15,17 @@ export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange 
   const safeOut = dateOut ? new Date(dateOut) : null;
   const nights  = safeIn && safeOut ? diffDays(safeIn, safeOut) : 0;
 
+  const handleArriveeChange = (v) => {
+    const newArrivee = new Date(v);
+    onChange("arrivee", newArrivee);
+    // Si départ est avant ou égal à la nouvelle arrivée → décaler au lendemain
+    if (!safeOut || safeOut <= newArrivee) {
+      const nextDay = new Date(newArrivee);
+      nextDay.setDate(nextDay.getDate() + 1);
+      onChange("depart", nextDay);
+    }
+  };
+
   return (
     <div style={{ animation: "fadeUp .4s ease both" }}>
       <h2
@@ -33,12 +44,12 @@ export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange 
           label="Arrivée"
           value={toInputDate(safeIn)}
           min={toInputDate(new Date())}
-          onChange={(v) => onChange("arrivee", new Date(v))}
+          onChange={handleArriveeChange}
         />
         <DateField
           label="Départ"
           value={toInputDate(safeOut)}
-          min={toInputDate(safeIn || new Date())}
+          min={toInputDate(safeIn ? new Date(safeIn.getTime() + 86400000) : new Date())}
           onChange={(v) => onChange("depart", new Date(v))}
         />
       </div>
@@ -72,7 +83,6 @@ export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange 
         </label>
 
         <div className="flex items-center gap-3">
-          {/* − */}
           <button
             onClick={() => onChange("voyageurs", Math.max(1, voyageurs - 1))}
             className="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold transition-all"
@@ -81,7 +91,6 @@ export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange 
             onMouseLeave={e => { e.currentTarget.style.background = "#faf7f4"; e.currentTarget.style.borderColor = "#ddd5c8"; }}
           >−</button>
 
-          {/* Counter */}
           <div
             className="flex-1 text-center py-2.5 rounded-xl"
             style={{ background: "rgba(160,120,80,.07)", border: "1px solid rgba(160,120,80,.2)" }}
@@ -97,7 +106,6 @@ export default function StepDates({ dateIn, dateOut, voyageurs, notes, onChange 
             </span>
           </div>
 
-          {/* + */}
           <button
             onClick={() => onChange("voyageurs", Math.min(6, voyageurs + 1))}
             className="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold transition-all"

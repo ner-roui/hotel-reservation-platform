@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../context/Context";
 
+import { useToast } from "../components/useToast";
+
+
 /* ── Stars ──────────────────────────────── */
 function Stars({ note }) {
   return (
@@ -23,7 +26,7 @@ export default function ModalReservation({ chambre, onClose }) {
   const [done, setDone] = useState(false);
   const navigate = useNavigate();
   const { fetchSejours } = useContext(AppContext);
-
+  const { toast, ToastPortal } = useToast();
   const [arrivee, setArrivee] = useState(new Date());
   const [depart, setDepart] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
   const [openArrivee, setOpenArrivee] = useState(false);
@@ -52,14 +55,19 @@ export default function ModalReservation({ chambre, onClose }) {
         { arrivee, depart, prixParNuit: c.prix_nuit },
         { withCredentials: true }
       );
+      toast.success("Réservation créée avec succès.");
       await fetchSejours();
-      navigate(`/payementpage/${data.reservation._id}`);
+      setTimeout(() => {
+        navigate(`/payementpage/${data.reservation._id}`);
+      }, 4000); // 1.2s pour laisser voir le toast
     } catch (e) {
-      alert(e.response?.data?.message || e.message);
+      toast.error(e.response?.data?.message || e.message);
     }
   };
 
   return (
+    <>
+    <ToastPortal />
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={onClose}
@@ -275,5 +283,6 @@ export default function ModalReservation({ chambre, onClose }) {
         }
       `}</style>
     </div>
+    </>
   );
 }
