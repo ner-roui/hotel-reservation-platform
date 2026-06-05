@@ -43,7 +43,6 @@ const fetchChambres = async () => {
         const { data } = await axios.get(
             "http://localhost:3000/api/chambres/get-room"
         );
-
         setChambres(data.chambres);
         setLenChambres(data.count);
         

@@ -26,8 +26,15 @@ const useFont = () => {
 
 const STATUT_CFG = {
   "PENDING":   { value: "En attente", badge: "bg-amber-100 text-amber-700 border-amber-200",    dot: "bg-amber-400",  glow: "rgba(245,158,11,.15)" },
+  "CHECKIN": {
+    value: "En cours",
+    badge: "bg-green-100 text-green-700 border-green-200",
+    dot: "bg-green-500",
+    glow: "rgba(34,197,94,.12)",
+  },
+
   "CONFIRMED": { value: "Confirmée",  badge: "bg-violet-100 text-violet-700 border-violet-200", dot: "bg-violet-500", glow: "rgba(124,58,237,.12)" },
-  "Terminée":  { value: "Terminée",   badge: "bg-slate-100 text-slate-500 border-slate-200",    dot: "bg-slate-400",  glow: "rgba(100,116,139,.08)" },
+  "CHECKOUT":  { value: "Terminée",   badge: "bg-slate-100 text-slate-500 border-slate-200",    dot: "bg-slate-400",  glow: "rgba(100,116,139,.08)" },
   "CANCELLED": { value: "Annulée",    badge: "bg-red-100 text-red-600 border-red-200",          dot: "bg-red-400",    glow: "rgba(239,68,68,.1)" },
 };
 
@@ -268,7 +275,7 @@ export default function MesSejours() {
   const [cancelTarget, setCancelTarget] = useState(null);
   const [notification, setNotification] = useState(null);
 
-  const tabs = ["Tous", "En attente", "Confirmée", "Terminée", "Annulée"];
+  const tabs = ["Tous", "En attente","En cours" , "Confirmée", "Terminée", "Annulée"];
 
   const handleCancel = async (id) => {
     try {
@@ -405,7 +412,7 @@ export default function MesSejours() {
                   <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-500">
                     {
                       sejours?.filter((s) => {
-                  
+                        console.log('statusssssss', s.status);
                         return STATUT_CFG[s.status].value === tab;
                       }).length || 0
                     }

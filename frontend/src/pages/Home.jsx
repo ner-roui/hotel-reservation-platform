@@ -33,20 +33,50 @@ export default function HomePage() {
   useFont();
 
   const [search, setSearch] = useState("");
-  const [arrivee, setArrivee] = useState("14 Avr 2026");
-  const [depart, setDepart] = useState("18 Avr 2026");
-  const [voyageurs, setVoyageurs] = useState("2 Adultes");
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  
+  const [arrivee, setArrivee] = useState(
+    today.toISOString().split("T")[0]
+  );
+  
+  const [depart, setDepart] = useState(
+    tomorrow.toISOString().split("T")[0]
+  );
+  const [voyageurs, setVoyageurs] = useState(2);
   const [selected, setSelected] = useState(null);
+  const [chambresDisponibles, setChambresDisponibles] = useState([]);
 
   const { chambres, loading } = useContext(AppContext);
 
-  const filtered = useMemo(() => {
-    return chambres.filter(
-      (c) =>
-        c.type.toLowerCase().includes(search.toLowerCase()) ||
-        c.numero.includes(search)
-    );
-  }, [search, chambres]);
+  const rechercherChambres = async () => {
+    try {
+      console.log('arrivee', arrivee, 'depart', depart)
+      const response = await fetch(
+        `http://localhost:3000/api/chambres/disponibles?arrivee=${arrivee}&depart=${depart}&adults=${voyageurs}`
+      );
+  
+      const data = await response.json();
+  
+      setChambresDisponibles(data.chambres);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const chambresAffichees =
+  chambresDisponibles?.length > 0
+    ? chambresDisponibles
+    : chambres;
+
+const filtered = useMemo(() => {
+  return chambresAffichees.filter(
+    (c) =>
+      c.type.toLowerCase().includes(search.toLowerCase()) ||
+      c.numero.includes(search)
+  );
+}, [search, chambresAffichees]);
 
   if (loading) {
     return (
@@ -103,11 +133,21 @@ export default function HomePage() {
                     Arrivée
                   </div>
                   <input
+                    type="date"
                     value={arrivee}
-                    onChange={(e) => setArrivee(e.target.value)}
+                    onChange={(e) => {
+                      const nouvelleArrivee = e.target.value;
+
+                      setArrivee(nouvelleArrivee);
+
+                      const dateDepart = new Date(nouvelleArrivee);
+                      dateDepart.setDate(dateDepart.getDate() + 1);
+
+                      setDepart(dateDepart.toISOString().split("T")[0]);
+                    }}
                     className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none"
                   />
-                </div>
+                  </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-slate-400">
@@ -115,28 +155,51 @@ export default function HomePage() {
                     Départ
                   </div>
                   <input
-                    value={depart}
-                    onChange={(e) => setDepart(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none"
-                  />
+                      type="date"
+                      value={depart || ""}
+                      onChange={(e) => setDepart(e.target.value)}
+                      className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none"
+                    />
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-slate-400">
-                    <Users size={14} />
-                    Voyageurs
+
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-slate-400">
+                      <Users size={14} />
+                      Voyageurs
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setVoyageurs((v) => Math.max(1, v - 1))}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300"
+                      >
+                        -
+                      </button>
+
+                      <span className="text-lg font-semibold text-slate-800">
+                        {voyageurs}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => setVoyageurs((v) => v + 1)}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <input
-                    value={voyageurs}
-                    onChange={(e) => setVoyageurs(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none"
-                  />
-                </div>
 
-                <button className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#a07850] to-[#7c5a38] px-6 py-4 text-sm font-semibold text-white transition hover:scale-[1.02] shadow-md shadow-[#a07850]/30">
-                  <Search size={18} />
-                  Rechercher
-                </button>
+                <button
+                    onClick={rechercherChambres}
+                    className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#a07850] to-[#7c5a38] px-6 py-4 text-sm font-semibold text-white transition hover:scale-[1.02] shadow-md shadow-[#a07850]/30"
+                  >
+                    <Search size={18} />
+                    Rechercher
+                  </button>
               </div>
             </div>
           </div>

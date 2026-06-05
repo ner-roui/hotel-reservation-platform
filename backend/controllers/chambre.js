@@ -1,6 +1,7 @@
 // controllers/chambreController.js
 
 const ChambreModel = require("../models/RoomModels");
+const Reservation = require('../models/ReservationModel');
 
 // ─────────────────────────────────────────────
 // ADD ROOM
@@ -309,6 +310,80 @@ const updateRoomStatus = async (req, res) => {
   }
 };
 
+
+// GET /api/chambres/disponibles
+// Query params: arrivee, depart, adults, children, rooms
+
+
+
+
+const getChambresDisponibles = async (req, res) => {
+  console.log('jkasjkadsjksdjkasjkjks')
+  try {
+    const {
+      arrivee,
+      depart,
+      capacite,
+    } = req.query;
+
+    if (!arrivee || !depart) {
+      return res.status(400).json({
+        error: 'arrivee et depart sont requis',
+      });
+    }
+
+    const dateArrivee = new Date(arrivee);
+    const dateDepart = new Date(depart);
+
+    if (
+      isNaN(dateArrivee.getTime()) ||
+      isNaN(dateDepart.getTime()) ||
+      dateDepart <= dateArrivee
+    ) {
+      return res.status(400).json({
+        error: 'Dates invalides',
+      });
+    }
+
+    const nbVoyageurs =
+      parseInt(capacite)
+
+    const nbNuits = Math.ceil(
+      (dateDepart - dateArrivee) / 86400000
+    );
+
+    const reserveesIds = await Reservation.distinct('chambre', {
+      statut: { $ne: 'annulee' },
+      arrivee: { $lt: dateDepart },
+      depart: { $gt: dateArrivee },
+    });
+
+    const chambres = await ChambreModel.find({
+      _id: { $nin: reserveesIds },
+      capacite: { $gte: nbVoyageurs },
+    });
+
+    return res.status(200).json({
+      chambres,
+      meta: {
+        arrivee: dateArrivee,
+        depart: dateDepart,
+        capacite: nbVoyageurs,
+        nbNuits,
+        
+      },
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
+
+
+
 // ─────────────────────────────────────────────
 // UPDATE ROOM
 // ─────────────────────────────────────────────
@@ -428,5 +503,22 @@ deleteRoom = async (req, res) => {
 
 
 
+const getUnavailableDates = async (req, res) => {
+  try {
+    const  roomId  = req.params.id;
+    const room = await ChambreModel.findById(roomId).select("reservation_active");
 
-module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , cleanRoom,getCleanedRooms , updateRoom ,updateRoomStatus,getOccupiedRooms ,deleteRoom }
+    const intervals = (room.reservation_active || [])
+      .filter((r) => r.paymentStatus === "PAID")
+      .map((r) => ({
+        start: new Date(r.date_checkin),   // ← objet Date JS
+        end: new Date(r.date_checkout),    // ← objet Date JS
+      }));
+
+    res.json({ intervals });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
+module.exports = {addRoom, getAllRooms, getRoomById, getAvailableRooms , getRoomsToClean , cleanRoom,getCleanedRooms , updateRoom ,updateRoomStatus, getChambresDisponibles, getOccupiedRooms ,deleteRoom , getUnavailableDates}
