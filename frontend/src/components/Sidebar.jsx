@@ -1,121 +1,110 @@
-import { useState } from "react";
-import React from "react";
-import {
-  LayoutDashboard,
-  BedDouble,
-  Users,
-  CreditCard,
-  BarChart3,
-  Settings,
-  Hotel,
-} from "lucide-react";
 import { NavLink } from "react-router-dom";
-
+import { FaThLarge, FaBed, FaUsers, FaCalendarAlt, FaCreditCard, FaList } from "react-icons/fa";
 
 const navItems = [
-  { label: "Dashboard", icon: "⊞", active: true , path : "/Dashboard"},
-  { label: "Ajouter Chambre", icon: "🛏" , path : "/Createroom"},
-  { label: "List Chambres", icon: "🛏" , path : "/Listroom"},
-  { label: "Utilisateurs", icon: "👤" , path : "/Listusers"},
-  { label: "Réservations", icon: "📅"  , path : "/Listusers"},
-  { label: "Paiements", icon: "💳"  , path : "/Paiements"},
-  { label: "Rapports", icon: "📊" },
-  { label: "Paramètres", icon: "⚙️" },
+  { label: "Dashboard",       icon: <FaThLarge />,    path: "/dashboard" },
+  { label: "Ajouter Chambre", icon: <FaBed />,         path: "createroom" },
+  { label: "List Chambres",   icon: <FaList />,        path: "listroom" },
+  { label: "Utilisateurs",    icon: <FaUsers />,       path: "listusers" },
+  { label: "Réservations",    icon: <FaCalendarAlt />, path: "reservations" },
+  { label: "Paiements",       icon: <FaCreditCard />,  path: "paiements" },
 ];
 
-
 export default function Sidebar() {
-  const [activeNav, setActiveNav] = useState("Dashboard");
-  const menu = [
-    {
-      name: "Dashboard",
-      icon: LayoutDashboard,
-      active: true,
-    
-    },
-    {
-      name: "Ajouter Chambre",
-      icon: BedDouble,
-    },
-    {
-      name: "List Chambre",
-      icon: BedDouble,
-    },
-    {
-      name: "Utilisateurs",
-      icon: Users,
-    },
-    {
-      name: "Paiements",
-      icon: CreditCard,
-    },
-    {
-      name: "Rapports",
-      icon: BarChart3,
-    },
-    {
-      name: "Paramètres",
-      icon: Settings,
-    },
-  ];
-
   return (
-        <aside className="w-56 bg-slate-900 flex flex-col py-5 px-3 shrink-0">
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-2 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">L</div>
-          <div>
-            <p className="text-white font-semibold text-sm leading-tight">Lumière Hotels</p>
-            <p className="text-slate-400 text-xs">Admin • Power user</p>
-          </div>
+    <aside
+      className="w-56 flex flex-col py-5 px-3 shrink-0"
+      style={{ background: "#2c1a0e" }}
+    >
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-2 mb-8">
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm"
+          style={{ background: "linear-gradient(135deg,#a07850,#7c5a38)" }}
+        >
+          L
         </div>
+        <div>
+          <p className="text-white font-semibold text-sm leading-tight">Lumière Hotels</p>
+          <p className="text-xs" style={{ color: "#a8968a" }}>Admin • Power user</p>
+        </div>
+      </div>
 
-        {/* Nav */}
-        <nav className="flex flex-col gap-1 flex-1">
-          {navItems.map((item) => (
-            <NavLink to={item.path}
-              key={item.label}
-              onClick={() => setActiveNav(item.label)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
-                activeNav === item.label
-                  ? "bg-indigo-600 text-white"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              <span className="text-base">{item.icon}</span>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Hotel card */}
-        <div className="rounded-2xl overflow-hidden mt-4 relative">
-          <div
-            className="h-28 bg-gradient-to-b from-indigo-900 to-slate-900 flex flex-col justify-end p-3"
-            style={{
-              backgroundImage: "linear-gradient(to bottom, rgba(30,27,75,0.6), rgba(15,23,42,0.95)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400')",
-              backgroundSize: "cover",
-              backgroundPosition: "center"
+      {/* Nav */}
+      <nav className="flex flex-col gap-1 flex-1">
+        {navItems.map((item) => (
+          <NavLink
+            to={item.path}
+            key={item.label}
+            end={item.path === "/dashboard"}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                isActive ? "text-white" : "hover:text-white"
+              }`
+            }
+            style={({ isActive }) =>
+              isActive
+                ? { background: "linear-gradient(135deg,#a07850,#7c5a38)" }
+                : { color: "#a8968a" }
+            }
+            onMouseEnter={e => {
+              if (!e.currentTarget.classList.contains("text-white"))
+                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+            }}
+            onMouseLeave={e => {
+              if (!e.currentTarget.style.backgroundImage?.includes("linear-gradient(135deg,#a07850"))
+                e.currentTarget.style.background = "";
             }}
           >
-            <div className="flex gap-1 justify-center mb-2">
-              {[0,1,2].map(i => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === 0 ? 'bg-white' : 'bg-slate-600'}`} />)}
-            </div>
-            <div className="text-yellow-400 text-xs mb-0.5">👑</div>
-            <p className="text-white text-xs font-bold">Lumière Hotels</p>
-            <p className="text-slate-400 text-xs">L'excellence à chaque séjour.</p>
-          </div>
-        </div>
+            <span className="text-base">{item.icon}</span>
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
 
-        {/* User */}
-        <div className="flex items-center gap-2 mt-4 px-2 pt-4 border-t border-slate-800">
-          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">SL</div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white text-xs font-semibold truncate">Sophie Laurent</p>
-            <p className="text-slate-400 text-xs">Power user</p>
+      {/* Hotel card */}
+      <div className="rounded-2xl overflow-hidden mt-4">
+        <div
+          className="h-28 flex flex-col justify-end p-3"
+          style={{
+            backgroundImage:
+              "linear-gradient(to bottom, rgba(44,26,14,0.5), rgba(44,26,14,0.97)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="flex gap-1 justify-center mb-2">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: i === 0 ? "#a07850" : "#3d2614" }}
+              />
+            ))}
           </div>
-          <span className="text-slate-400 text-xs">▾</span>
+          <div className="text-xs mb-0.5" style={{ color: "#a07850" }}>👑</div>
+          <p className="text-white text-xs font-bold">Lumière Hotels</p>
+          <p className="text-xs" style={{ color: "#a8968a" }}>L'excellence à chaque séjour.</p>
         </div>
-      </aside>
+      </div>
+
+      {/* User */}
+      <div
+        className="flex items-center gap-2 mt-4 px-2 pt-4"
+        style={{ borderTop: "1px solid #3d2614" }}
+      >
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+          style={{ background: "linear-gradient(135deg,#a07850,#7c5a38)" }}
+        >
+          SL
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white text-xs font-semibold truncate">Sophie Laurent</p>
+          <p className="text-xs" style={{ color: "#a8968a" }}>Power user</p>
+        </div>
+        <span className="text-xs" style={{ color: "#a8968a" }}>▾</span>
+      </div>
+    </aside>
   );
 }

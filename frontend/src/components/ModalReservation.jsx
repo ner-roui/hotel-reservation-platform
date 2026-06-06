@@ -45,14 +45,7 @@ export default function ModalReservation({ chambre, onClose }) {
         `http://localhost:3000/api/chambres/unavailable-dates/${chambre._id}`,
         { withCredentials: true }
       )
-      // .then(({ data }) => {
-      //   // data.intervals = [{ start: "ISO string", end: "ISO string" }, ...]
-      //   const parsed = (data.intervals || []).map((r) => ({
-      //     start: new Date(r.start), // ← objet Date obligatoire pour excludeDateIntervals
-      //     end: new Date(r.end),
-      //   }));
-      //   setExcludedIntervals(parsed);
-      // })
+
       .then(({ data }) => {
         const parsed = (data.intervals || []).map((r) => {
           const start = new Date(r.start);

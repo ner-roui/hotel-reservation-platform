@@ -102,49 +102,8 @@ export default function LumiereFooter() {
             </div>
   
             {/* Roles */}
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/30 mb-5">
-                Espaces dédiés
-              </p>
-  
-              <div className="flex flex-col gap-3">
-                {roles.map(({ label, icon, desc }) => (
-                  <a
-                    key={label}
-                    href="#"
-                    className="
-                      group
-                      flex items-center gap-3
-                      px-4 py-3
-                      rounded-xl
-                      bg-white/[0.03]
-                      backdrop-blur-md
-                      border border-white/10
-                      hover:bg-white/[0.06]
-                      hover:border-blue-500/30
-                      hover:translate-x-1
-                      transition-all duration-300
-                    "
-                  >
-                    <span className="text-lg">{icon}</span>
-  
-                    <div className="flex flex-col">
-                      <span className="text-sm text-white/80">
-                        {label}
-                      </span>
-  
-                      <span className="text-xs text-white/40">
-                        {desc}
-                      </span>
-                    </div>
-  
-                    <span className="ml-auto text-white/30 group-hover:text-blue-400 transition-colors">
-                      →
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
+      
+           
           </div>
   
           {/* Bottom Bar */}

@@ -277,8 +277,8 @@ export default function PaiementsPage() {
 
   // const total   = TRANSACTIONS.reduce((s, t) => t.statut === "Payé" ? s + t.montant : s, 0);
   // const pending = TRANSACTIONS.reduce((s, t) => t.statut === "En attente" ? s + t.montant : s, 0);
-  const refunds = TRANSACTIONS?.reduce((s, t) => t.statut === "Remboursé" ? s + t.montant : s, 0);
-
+  // const refunds = TRANSACTIONS?.reduce((s, t) => t.statut === "Remboursé" ? s + t.montant : s, 0);
+ 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#f4f6f9", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>
         {/* Divider */}
@@ -331,9 +331,9 @@ export default function PaiementsPage() {
             <KpiCard title="En attente" value={pending} prefix="€ " badge="8 paiements" badgeColor="#eab308"
               sparkData={[800,1200,900,1500,1100,1800,1400,2100,1800,pending/10]}
               sparkColor="#f59e0b" accent="#f59e0b" delay={0.06} />
-            <KpiCard title="Remboursements" value={refunds} prefix="€ " badge="ce mois" badgeColor="#94a3b8"
+            {/* <KpiCard title="Remboursements" value={refunds} prefix="€ " badge="ce mois" badgeColor="#94a3b8"
               sparkData={[200,400,300,500,400,600,500,700,600,refunds/2]}
-              sparkColor="#94a3b8" accent="#94a3b8" delay={0.12} />
+              sparkColor="#94a3b8" accent="#94a3b8" delay={0.12} /> */}
           </div>
 
           {/* Transactions table */}
@@ -397,7 +397,7 @@ export default function PaiementsPage() {
 
             {/* Table footer */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: "1px solid #f1f5f9", background: "#fafbfc" }}>
-              <p className="text-xs" style={{ color: "#94a3b8" }}>Affichage de {filtered.length} sur {TRANSACTIONS.length} transactions</p>
+              <p className="text-xs" style={{ color: "#94a3b8" }}>Affichage de {filtered.length} sur 7 transactions</p>
               <div className="flex items-center gap-2">
                 {["←", "1", "2", "3", "→"].map((p, i) => (
                   <button key={i} className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-medium transition-all"
