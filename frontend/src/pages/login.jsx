@@ -104,7 +104,7 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-700 via-blue-500 to-cyan-400 flex items-center justify-center px-6 py-10 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#3d2614] via-[#6b4a2e] to-[#a07850] flex items-center justify-center px-6 py-10 relative overflow-hidden">
 
       {/* background */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 blur-3xl rounded-full"></div>
@@ -193,20 +193,20 @@ const handleSubmit = async (e) => {
                 const active = role === item.name;
 
                 return (
-                  <button
-                    type="button"
-                    key={item.name}
-                    onClick={() => setRole(item.name)}
-                    className={`border rounded-2xl py-5 flex flex-col items-center gap-2 transition
-                    ${
-                      active
-                        ? "border-blue-500 bg-blue-50 text-blue-600"
-                        : "border-gray-200 text-gray-500"
-                    }`}
-                  >
-                    <Icon size={22} />
-                    {item.name}
-                  </button>
+                    <button
+                      type="button"
+                      key={item.name}
+                      onClick={() => setRole(item.name)}
+                      className={`border rounded-2xl py-5 flex flex-col items-center gap-2 transition
+                      ${
+                        active
+                          ? "border-[#a07850] bg-[#f5eeeb] text-[#a07850]"
+                          : "border-gray-200 text-gray-500 hover:border-[#a07850] hover:text-[#a07850]"
+                      }`}
+                    >
+                      <Icon size={22} />
+                      {item.name}
+                    </button>
                 );
               })}
             </div>
@@ -294,10 +294,11 @@ const handleSubmit = async (e) => {
               </div>
 
               {/* BUTTON */}
+              {/* BUTTON */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-16 rounded-2xl bg-blue-600 text-white font-semibold text-lg flex items-center justify-center gap-3 disabled:opacity-70"
+                className="w-full h-16 rounded-2xl bg-[#a07850] hover:bg-[#8a6542] text-white font-semibold text-lg flex items-center justify-center gap-3 disabled:opacity-70 transition-colors"
               >
                 {loading
                   ? "Chargement..."
@@ -315,7 +316,7 @@ const handleSubmit = async (e) => {
                     Pas de compte ?{" "}
                     <span
                       onClick={() => setMode("signup")}
-                      className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                      className="text-[#a07850] font-semibold cursor-pointer hover:underline"
                     >
                       Créer un compte
                     </span>
@@ -325,7 +326,7 @@ const handleSubmit = async (e) => {
                     Déjà un compte ?{" "}
                     <span
                       onClick={() => setMode("login")}
-                      className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                      className="text-[#a07850] font-semibold cursor-pointer hover:underline hover:text-[#8a6542] transition-colors"
                     >
                       Se connecter
                     </span>

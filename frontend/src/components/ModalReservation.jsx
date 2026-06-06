@@ -136,7 +136,7 @@ export default function ModalReservation({ chambre, onClose }) {
 
         {/* Modal */}
         <div
-          className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl"
+          className="relative w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl"
           style={{
             background: "#fff",
             border: "1px solid #ddd5c8",
@@ -263,7 +263,7 @@ export default function ModalReservation({ chambre, onClose }) {
                   onChange={handleArriveeChange}
                   open={openArrivee}
                   minDate={new Date()}
-                
+                  // calendarStartDay={1}   // ← 0 = Dim, 1 = Lun
                   excludeDateIntervals={excludedIntervals}
                   onClickOutside={() => setOpenArrivee(false)}
                   popperPlacement="bottom"

@@ -1,7 +1,7 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-
-/* ───────────── Nav Item ───────────── */
+import React, { useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { AppContext } from "../../context/Context";
+import axios from "axios";
 function NavItem({ to, label, icon }) {
   return (
     <NavLink
@@ -9,90 +9,106 @@ function NavItem({ to, label, icon }) {
       className={({ isActive }) =>
         `flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm font-medium transition-all duration-200 ${
           isActive
-            ? "bg-blue-600 text-white shadow-sm"
-            : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+            ? "bg-white/15 text-white shadow-sm border border-white/20"
+            : "text-[#d4b896] hover:bg-white/10 hover:text-white"
         }`
       }
     >
-      <span className="w-5 h-5 flex items-center justify-center">
-        {icon}
-      </span>
+      <span className="w-5 h-5 flex items-center justify-center">{icon}</span>
       <span>{label}</span>
     </NavLink>
   );
 }
 
-/* ───────────── Sidebar ───────────── */
 export default function SidebarEmp() {
+  const navigate = useNavigate();
+  const {user} = useContext(AppContext);
+  
+
+
+  const logout = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/logout",
+        {},
+        {
+          withCredentials: true, // si tu utilises des cookies/session
+        }
+      );
+
+
+
+      console.log("Déconnexion réussie", response.data);
+
+      // Redirection éventuelle
+     navigate('/login')
+    } catch (error) {
+      console.error(
+        "Erreur lors de la déconnexion",
+        error.response?.data || error.message
+      );
+    }
+  };
   return (
-    <aside className="w-56 h-screen bg-white border-r border-gray-100 flex flex-col">
-      
+    <aside className="w-56 h-screen bg-gradient-to-b from-[#3d2614] via-[#6b4a2e] to-[#a07850] flex flex-col shadow-lg shadow-[#a07850]/20">
+
       {/* BRAND */}
-      <div className="px-5 py-5 border-b border-gray-100">
+      <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-            <svg
-              className="w-5 h-5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 21h18M4 21V7l8-4 8 4v14"
+          <div className="w-9 h-9 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center shadow-sm">
+            {/* Clé d'hôtel */}
+            <svg className="w-5 h-5 text-[#e8c99a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
               />
             </svg>
           </div>
-
           <div>
-            <p className="text-sm font-semibold text-gray-900">
-              Lumière Hotels
-            </p>
-            <p className="text-xs text-gray-400">
-              Réception · Employé
-            </p>
+            <p className="text-sm font-semibold text-white">Lumière Hotels</p>
+            <p className="text-xs text-[#c4a882]">Réception · Employé</p>
           </div>
         </div>
       </div>
 
       {/* NAV */}
       <nav className="flex-1 py-4 space-y-1">
-        
+
+        {/* Réservations */}
         <NavItem
           to="/resemployepage"
           label="Réservations"
           icon={
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
               />
             </svg>
           }
         />
 
+        {/* Plan des chambres */}
         <NavItem
           to="/planchambres"
           label="Plan des chambres"
           icon={
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M3 7h18M3 12h18M3 17h18"
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
               />
             </svg>
           }
         />
 
-        <div className="mx-4 my-2 h-px bg-gray-100" />
+        <div className="mx-4 my-2 h-px bg-white/10" />
 
+        {/* Nettoyage */}
         <NavItem
           to="/nettoyagepage"
           label="Nettoyage"
           icon={
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M12 3v18m9-9H3"
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21a48.25 48.25 0 01-8.135-.687c-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"
               />
             </svg>
           }
@@ -100,18 +116,28 @@ export default function SidebarEmp() {
       </nav>
 
       {/* USER */}
-      <div className="border-t border-gray-100 px-5 py-4 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-sm font-semibold text-blue-700">
-          MD
+      <div className="border-t border-white/10 px-5 py-4 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-sm font-semibold text-[#e8c99a]">
+          {user?.prenom?.[0]}{user?.name?.[0]}
         </div>
-
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 truncate">
-            Marc Dubois
-          </p>
-          <p className="text-xs text-gray-400">Employé</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-white truncate">{user?.prenom} {user?.name}</p>
+          <p className="text-xs text-[#c4a882]">Employé</p>
         </div>
+        {/* Logout */}
+        <button
+          onClick={logout}
+          className="text-[#c4a882] hover:text-white transition-colors"
+          title="Déconnexion"
+        >
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-9A2.25 2.25 0 002.25 5.25v13.5A2.25 2.25 0 004.5 21h9a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25"
+            />
+          </svg>
+        </button>
       </div>
+
     </aside>
   );
 }

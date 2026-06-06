@@ -1,41 +1,7 @@
 import { useContext, useState , useEffect} from "react";
 import { AppContext } from "../../context/Context";
 import  axios from "axios"
-/* ── data ── */
-const floorsData = [
-  {
-    floor: 1,
-    rooms: [
-      { id: 101, type: "Standard", size: "24 m²", status: "available" },
-      { id: 102, type: "Standard", size: "24 m²", status: "occupied" },
-    ],
-  },
-  {
-    floor: 2,
-    rooms: [
-      { id: 201, type: "Deluxe", size: "32 m²", status: "cleaning" },
-      { id: 202, type: "Deluxe", size: "32 m²", status: "available" },
-    ],
-  },
-  {
-    floor: 3,
-    rooms: [
-      { id: 301, type: "Standard", size: "24 m²", status: "occupied" },
-    ],
-  },
-  {
-    floor: 4,
-    rooms: [
-      { id: 402, type: "Suite", size: "58 m²", status: "available" },
-    ],
-  },
-  {
-    floor: 5,
-    rooms: [
-      { id: 501, type: "Présidentielle", size: "90 m²", status: "available" },
-    ],
-  },
-];
+
 
 /* ── status config ── */
 const STATUS = {

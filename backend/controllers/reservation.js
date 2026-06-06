@@ -146,6 +146,10 @@ const checkInReservation = async (req, res) => {
     reservation.status = "CHECKIN";
     // reservation.date_checkout = now;
 
+    // Si paiement en espèces => marqué comme payé au check-in
+      if (reservation.paymentMethod === "Espèces") {
+        reservation.paymentStatus = "PAID";
+      }
     // 2. update chambre status
     chambre.statut = "Occupée";
 
