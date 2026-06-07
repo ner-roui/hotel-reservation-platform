@@ -211,6 +211,7 @@ export default function ModifierModal({ sejour, onClose }) {
                   selected={form.chambre}
                   onSelect={c => handleChange("chambre", c)}
                   voyageurs={form.voyageurs}
+                  currentReservation={sejour}  
                 />
               )}
               {step === 2 && (
