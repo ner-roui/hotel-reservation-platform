@@ -18,6 +18,7 @@ const {
   checkOutReservation,
   getReservationsAnnule,
   getMonthlyRevenue,
+  downloadInvoice
   
 } = require("../controllers/reservation");
 
@@ -27,6 +28,11 @@ router.get("/getallreservations", auth, getAllReservations);
 router.get("/getreservationsannule", getReservationsAnnule);
 router.get("/myreservation", auth, getUserReservations);
 router.get("/monthly-revenue", getMonthlyRevenue);
+router.get(
+  "/invoice/:id/download",
+  auth,
+  downloadInvoice
+);
 router.get("/getonereservation/:id", getReservationById );
 router.get("/reservationbyid/:id", auth, getReservationById);
 router.put("/updatereservation/:id", auth, updateReservation);

@@ -1,60 +1,48 @@
 import { useState, useEffect } from "react";
-import axios from "axios"
+import axios from "axios";
 
-/* ── Fonts ── */
 const useFont = () => {
   useEffect(() => {
     const l = document.createElement("link");
     l.rel = "stylesheet";
-    l.href =
-      "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+    l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap";
     document.head.appendChild(l);
   }, []);
 };
 
-/* ── Data ── */
-const INITIAL_USERS = [
-  { id: 1, prenom: "Sophie",  name: "Laurent", email: "sophie@lumiere.com",  role: "Admin",     statut: "Actif",   createdAt: "12 Jan 2025", lastSeen: "Aujourd'hui", reservations: 0 },
-  { id: 2, prenom: "Marc",    name: "Dubois",  email: "marc@lumiere.com",    role: "Réception", statut: "Actif",   createdAt: "03 Mar 2025", lastSeen: "Hier",        reservations: 0 },
-  { id: 3, prenom: "Amélie",  name: "Roy",     email: "amelie@lumiere.com",  role: "Nettoyage", statut: "Actif",   createdAt: "18 Juin 2025",lastSeen: "Il y a 2j",  reservations: 0 },
-  { id: 4, prenom: "Élise",   name: "Moreau",  email: "elise@gmail.com",     role: "Client",    statut: "Actif",   createdAt: "01 Avr 2026", lastSeen: "Aujourd'hui", reservations: 4 },
-  { id: 5, prenom: "Julien",  name: "Caron",   email: "julien@lumiere.com",  role: "Réception", statut: "Inactif", createdAt: "22 Fév 2025", lastSeen: "Il y a 12j", reservations: 0 },
-  { id: 6, prenom: "Camille", name: "Petit",   email: "camille@gmail.com",   role: "Client",    statut: "Actif",   createdAt: "14 Avr 2026", lastSeen: "Aujourd'hui", reservations: 2 },
-  { id: 7, prenom: "Hugo",    name: "Martin",  email: "hugo@lumiere.com",    role: "Admin",     statut: "Actif",   createdAt: "05 Nov 2024", lastSeen: "Il y a 3j",  reservations: 0 },
-];
-
 const ROLE_CFG = {
-  Admin:     { bg: "bg-violet-100",  border: "border-violet-300",  text: "text-violet-800",  icon: "🛡" },
-  Réception: { bg: "bg-blue-100",    border: "border-blue-300",    text: "text-blue-800",    icon: "🪪" },
-  Nettoyage: { bg: "bg-amber-100",   border: "border-amber-300",   text: "text-amber-800",   icon: "✨" },
-  Client:    { bg: "bg-emerald-100", border: "border-emerald-300", text: "text-emerald-800", icon: "👤" },
+  Admin:     { bg: "#f0e6db", border: "#c4a882", text: "#7c5a38", icon: "🛡" },
+  Réception: { bg: "#faf7f4", border: "#ddd5c8", text: "#a07850", icon: "🪪" },
+  Nettoyage: { bg: "#fef3c7", border: "#fde68a", text: "#92400e", icon: "✨" },
+  Client:    { bg: "#f0fdf4", border: "#86efac", text: "#166534", icon: "👤" },
 };
 
 const ROLES = ["Admin", "Réception", "Nettoyage", "Client"];
 
-const AVATAR_COLORS = [
-  "from-violet-500 to-indigo-600",
-  "from-sky-400 to-blue-600",
-  "from-amber-400 to-orange-500",
-  "from-emerald-400 to-teal-600",
-  "from-pink-400 to-rose-600",
-  "from-purple-500 to-violet-600",
-  "from-cyan-400 to-sky-600",
+const AVATAR_GRADIENTS = [
+  "linear-gradient(135deg,#a07850,#7c5a38)",
+  "linear-gradient(135deg,#c4a882,#a07850)",
+  "linear-gradient(135deg,#7c5a38,#3d2614)",
+  "linear-gradient(135deg,#d4b896,#a07850)",
+  "linear-gradient(135deg,#6b4a2e,#3d2614)",
+  "linear-gradient(135deg,#b8956a,#7c5a38)",
+  "linear-gradient(135deg,#e8d5bf,#c4a882)",
 ];
 
-const initials = (u) =>
-  ((u?.prenom?.[0] || "") + (u?.name?.[0] || "")).toUpperCase(); 
-/* ── Toast ── */
+const initials = (u) => ((u?.prenom?.[0] || "") + (u?.name?.[0] || "")).toUpperCase();
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
 function Toast({ toast }) {
   if (!toast) return null;
   return (
     <div
-      className={`fixed top-5 right-5 z-50 flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium text-white shadow-xl transition-all ${
-        toast.type === "error"
-          ? "bg-gradient-to-r from-red-600 to-red-700"
-          : "bg-gradient-to-r from-violet-600 to-indigo-600"
-      }`}
-      style={{ animation: "fadeUp .3s ease both" }}
+      className="fixed top-5 right-5 z-50 flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium text-white shadow-xl"
+      style={{
+        background: toast.type === "error"
+          ? "linear-gradient(135deg,#dc2626,#b91c1c)"
+          : "linear-gradient(135deg,#a07850,#7c5a38)",
+        animation: "fadeUp .3s ease both",
+      }}
     >
       <span>{toast.type === "error" ? "🗑️" : "✓"}</span>
       {toast.msg}
@@ -62,106 +50,101 @@ function Toast({ toast }) {
   );
 }
 
-/* ── Field (outside modal to avoid remount on every keystroke) ── */
+// ── Field ─────────────────────────────────────────────────────────────────────
 function Field({ label, field, placeholder, type = "text", value, onChange, error }) {
+  const [focused, setFocused] = useState(false);
   return (
     <div className="flex-1">
-      <label className="block text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-slate-400">
+      <label className="block text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: "#a8968a" }}>
         {label}
       </label>
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(field, e.target.value)}
+        onChange={e => onChange(field, e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-xl px-4 py-2.5 text-sm bg-slate-50 text-slate-900 placeholder:text-slate-400 border focus:outline-none focus:ring-2 focus:ring-violet-300 transition-all ${
-          error ? "border-red-400" : "border-slate-200"
-        }`}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all"
+        style={{
+          background: "#faf7f4",
+          color: "#2c1a0e",
+          border: error ? "1px solid #ef4444" : focused ? "1px solid #a07850" : "1px solid #ddd5c8",
+          boxShadow: focused ? "0 0 0 3px rgba(160,120,80,0.12)" : "none",
+        }}
       />
       {error && <p className="text-xs mt-1 text-red-500">{error}</p>}
     </div>
   );
 }
- 
-/* ── User Modal (Add / Edit) ── */
+
+// ── User Modal ────────────────────────────────────────────────────────────────
 function UserModal({ user, onSave, onClose }) {
   const isEdit = !!user;
   const [form, setForm] = useState(
-    user
-      ? { ...user }
-      : { prenom: "", name: "", email: "", role: "Client", statut: "Actif" }
+    user ? { ...user } : { prenom: "", name: "", email: "", role: "Client", statut: "Actif" }
   );
   const [errors, setErrors] = useState({});
- 
-  const handleChange = (field, value) => setForm((f) => ({ ...f, [field]: value }));
- 
+
+  const handleChange = (field, value) => setForm(f => ({ ...f, [field]: value }));
+
   const validate = () => {
     const e = {};
     if (!form.prenom.trim()) e.prenom = "Requis";
-    if (!form.name.trim()) e.name = "Requis";
+    if (!form.name.trim())   e.name   = "Requis";
     if (!form.email.trim() || !form.email.includes("@")) e.email = "Email invalide";
     return e;
   };
- 
+
   const handleSubmit = () => {
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-    onSave({
-      ...form,
-      id: user?.id,
-      createdAt: user?.createdAt || "Aujourd'hui",
-      lastSeen: "Aujourd'hui",
-      reservations: user?.reservations ?? 0,
-    });
+    onSave({ ...form, id: user?.id, createdAt: user?.createdAt || "Aujourd'hui", lastSeen: "Aujourd'hui", reservations: user?.reservations ?? 0 });
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md"
+      style={{ background: "rgba(44,26,14,0.55)" }}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl bg-white border border-slate-200"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl bg-white"
+        style={{ border: "1px solid #ede5db" }}
+        onClick={e => e.stopPropagation()}
       >
-        {/* Top accent bar */}
-        <div className="h-0.5 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-400" />
+        {/* Accent bar */}
+        <div className="h-0.5" style={{ background: "linear-gradient(90deg,#a07850,#c4a882,#7c5a38)" }} />
 
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-500 mb-0.5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: "#a07850" }}>
                 {isEdit ? "Modifier l'utilisateur" : "Nouvel utilisateur"}
               </p>
-              <h3
-                className="text-lg font-semibold text-slate-900"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
+              <h3 className="text-lg font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#2c1a0e" }}>
                 {isEdit ? `${user.prenom} ${user.name}` : "Ajouter un compte"}
               </h3>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm text-slate-400 bg-slate-100 border border-slate-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all"
-            >
-              ✕
-            </button>
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all"
+              style={{ background: "#faf7f4", border: "1px solid #ddd5c8", color: "#a8968a" }}
+              onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.color = "#dc2626"; e.currentTarget.style.borderColor = "#fca5a5"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#faf7f4"; e.currentTarget.style.color = "#a8968a"; e.currentTarget.style.borderColor = "#ddd5c8"; }}
+            >✕</button>
           </div>
 
           {/* Avatar preview */}
           {(form.prenom || form.name) && (
-            <div className="flex items-center gap-3 p-3 rounded-2xl mb-5 bg-slate-50 border border-slate-200">
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold bg-gradient-to-br ${AVATAR_COLORS[0]}`}
-              >
+            <div className="flex items-center gap-3 p-3 rounded-2xl mb-5" style={{ background: "#faf7f4", border: "1px solid #ede5db" }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ background: AVATAR_GRADIENTS[0] }}>
                 {(form.prenom?.[0] || "") + (form.name?.[0] || "")}
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900">
-                  {form.prenom} {form.name}
-                </p>
-                <p className="text-xs text-slate-400">{form.email || "—"}</p>
+                <p className="text-sm font-medium" style={{ color: "#2c1a0e" }}>{form.prenom} {form.name}</p>
+                <p className="text-xs" style={{ color: "#a8968a" }}>{form.email || "—"}</p>
               </div>
             </div>
           )}
@@ -169,51 +152,28 @@ function UserModal({ user, onSave, onClose }) {
           {/* Fields */}
           <div className="space-y-4">
             <div className="flex gap-3">
-            <Field
-                label="Prénom"
-                field="prenom"
-                placeholder="Sophie"
-                value={form.prenom || ""}
-                onChange={handleChange}
-                error={errors.prenom}
-              />
-            <Field
-                  label="Nom"
-                  field="name"
-                  placeholder="Laurent"
-                  value={form.name || ""}
-                  onChange={handleChange}
-                  error={errors.name}
-                />
+              <Field label="Prénom" field="prenom" placeholder="Sophie" value={form.prenom || ""} onChange={handleChange} error={errors.prenom} />
+              <Field label="Nom"    field="name"   placeholder="Laurent" value={form.name   || ""} onChange={handleChange} error={errors.name}   />
             </div>
-            <Field
-                label="Email"
-                field="email"
-                placeholder="sophie@lumiere.com"
-                type="email"
-                value={form.email || ""}
-                onChange={handleChange}
-                error={errors.email}
-              />
+            <Field label="Email" field="email" placeholder="sophie@lumiere.com" type="email" value={form.email || ""} onChange={handleChange} error={errors.email} />
 
-            {/* Role selector */}
+            {/* Role */}
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-400">
-                Rôle
-              </label>
+              <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#a8968a" }}>Rôle</label>
               <div className="grid grid-cols-4 gap-2">
-                {ROLES.map((r) => {
+                {ROLES.map(r => {
                   const rc = ROLE_CFG[r];
                   const active = form.role === r;
                   return (
                     <button
                       key={r}
-                      onClick={() => setForm((f) => ({ ...f, role: r }))}
-                      className={`py-2 rounded-xl text-xs font-semibold transition-all border ${
-                        active
-                          ? `${rc.bg} ${rc.border} ${rc.text}`
-                          : "bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100"
-                      }`}
+                      onClick={() => setForm(f => ({ ...f, role: r }))}
+                      className="py-2 rounded-xl text-xs font-semibold transition-all"
+                      style={{
+                        background: active ? rc.bg : "#faf7f4",
+                        border: `1px solid ${active ? rc.border : "#ddd5c8"}`,
+                        color: active ? rc.text : "#a8968a",
+                      }}
                     >
                       <div className="text-base mb-0.5">{rc.icon}</div>
                       {r}
@@ -223,25 +183,22 @@ function UserModal({ user, onSave, onClose }) {
               </div>
             </div>
 
-            {/* Statut selector */}
+            {/* Statut */}
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-400">
-                Statut
-              </label>
+              <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#a8968a" }}>Statut</label>
               <div className="flex gap-2">
-                {["Actif", "Inactif"].map((s) => {
+                {["Actif", "Inactif"].map(s => {
                   const active = form.statut === s;
                   return (
                     <button
                       key={s}
-                      onClick={() => setForm((f) => ({ ...f, statut: s }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all border ${
-                        active
-                          ? s === "Actif"
-                            ? "bg-emerald-50 border-emerald-300 text-emerald-700"
-                            : "bg-slate-100 border-slate-300 text-slate-600"
-                          : "bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100"
-                      }`}
+                      onClick={() => setForm(f => ({ ...f, statut: s }))}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                      style={{
+                        background: active ? (s === "Actif" ? "#f0fdf4" : "#faf7f4") : "#faf7f4",
+                        border: `1px solid ${active ? (s === "Actif" ? "#86efac" : "#ddd5c8") : "#ddd5c8"}`,
+                        color: active ? (s === "Actif" ? "#166534" : "#7c5a38") : "#a8968a",
+                      }}
                     >
                       {s === "Actif" ? "● Actif" : "○ Inactif"}
                     </button>
@@ -255,13 +212,15 @@ function UserModal({ user, onSave, onClose }) {
           <div className="flex gap-3 mt-6">
             <button
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all"
-            >
-              Annuler
-            </button>
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              style={{ background: "#faf7f4", border: "1px solid #ddd5c8", color: "#7c5a38" }}
+              onMouseEnter={e => e.currentTarget.style.background = "#f0e6db"}
+              onMouseLeave={e => e.currentTarget.style.background = "#faf7f4"}
+            >Annuler</button>
             <button
               onClick={handleSubmit}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 shadow-lg shadow-violet-200 hover:shadow-violet-300 transition-all"
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+              style={{ background: "linear-gradient(135deg,#a07850,#7c5a38)" }}
             >
               {isEdit ? "Enregistrer" : "Créer le compte"}
             </button>
@@ -272,46 +231,43 @@ function UserModal({ user, onSave, onClose }) {
   );
 }
 
-/* ── Delete Modal ── */
+// ── Delete Modal ──────────────────────────────────────────────────────────────
 function DeleteModal({ user, onConfirm, onClose }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md"
+      style={{ background: "rgba(44,26,14,0.55)" }}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl bg-white border border-slate-200"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl bg-white"
+        style={{ border: "1px solid #ede5db" }}
+        onClick={e => e.stopPropagation()}
       >
         <div className="p-6 text-center">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-4 bg-red-50 border border-red-200">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-4" style={{ background: "#fee2e2", border: "1px solid #fca5a5" }}>
             🗑️
           </div>
-          <h3
-            className="text-lg font-semibold text-slate-900 mb-1"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
+          <h3 className="text-lg font-semibold mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#2c1a0e" }}>
             Supprimer l'utilisateur ?
           </h3>
-          <p className="text-sm text-slate-600 mb-1">
-            <span className="font-semibold text-violet-700">
-              {user.prenom} {user.name}
-            </span>
+          <p className="text-sm mb-1" style={{ color: "#6b5b52" }}>
+            <span className="font-semibold" style={{ color: "#a07850" }}>{user.prenom} {user.name}</span>
           </p>
-          <p className="text-xs text-slate-400 mb-6">Cette action est irréversible.</p>
+          <p className="text-xs mb-6" style={{ color: "#a8968a" }}>Cette action est irréversible.</p>
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all"
-            >
-              Annuler
-            </button>
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              style={{ background: "#faf7f4", border: "1px solid #ddd5c8", color: "#7c5a38" }}
+              onMouseEnter={e => e.currentTarget.style.background = "#f0e6db"}
+              onMouseLeave={e => e.currentTarget.style.background = "#faf7f4"}
+            >Annuler</button>
             <button
               onClick={() => onConfirm(user.id)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-700 shadow-lg shadow-red-100 hover:shadow-red-200 transition-all"
-            >
-              Supprimer
-            </button>
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+              style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)" }}
+            >Supprimer</button>
           </div>
         </div>
       </div>
@@ -319,40 +275,42 @@ function DeleteModal({ user, onConfirm, onClose }) {
   );
 }
 
-/* ── User Row ── */
+// ── User Row ──────────────────────────────────────────────────────────────────
 function UserRow({ user, idx, onEdit, onDelete }) {
-  const rc = ROLE_CFG[user.role] || ROLE_CFG["Client"];
-  const av = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+  const rc    = ROLE_CFG[user.role] || ROLE_CFG["Client"];
+  const av    = AVATAR_GRADIENTS[idx % AVATAR_GRADIENTS.length];
   const actif = user.statut === "Actif";
-  console.log('waudserrrr' , user)
+
   return (
-    <tr className="border-b border-slate-100 hover:bg-violet-50/40 transition-colors">
+    <tr
+      className="transition-colors"
+      style={{ borderBottom: "1px solid #faf7f4" }}
+      onMouseEnter={e => e.currentTarget.style.background = "#faf7f4"}
+      onMouseLeave={e => e.currentTarget.style.background = ""}
+    >
       {/* Name */}
       <td className="px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <div
-            className={`w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0 bg-gradient-to-br ${av}`}
-          >
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: av }}>
             {initials(user)}
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">
-              {user.prenom} {user.name}
-            </p>
-            <p className="text-xs text-slate-400">Créé le {user.createdAt}</p>
+            <p className="text-sm font-semibold" style={{ color: "#2c1a0e" }}>{user.prenom} {user.name}</p>
+            <p className="text-xs" style={{ color: "#a8968a" }}>Créé le {user.createdAt}</p>
           </div>
         </div>
       </td>
 
       {/* Email */}
       <td className="px-4 py-3.5">
-        <span className="text-sm text-slate-500">{user.email}</span>
+        <span className="text-sm" style={{ color: "#6b5b52" }}>{user.email}</span>
       </td>
 
       {/* Role */}
       <td className="px-4 py-3.5">
         <span
-          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${rc.bg} ${rc.border} ${rc.text}`}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
+          style={{ background: rc.bg, border: `1px solid ${rc.border}`, color: rc.text }}
         >
           {rc.icon} {user.role}
         </span>
@@ -361,32 +319,34 @@ function UserRow({ user, idx, onEdit, onDelete }) {
       {/* Statut */}
       <td className="px-4 py-3.5">
         <span
-          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${
+          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
+          style={
             actif
-              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-              : "bg-slate-100 border-slate-200 text-slate-500"
-          }`}
+              ? { background: "#f0fdf4", border: "1px solid #86efac", color: "#166534" }
+              : { background: "#faf7f4", border: "1px solid #ddd5c8", color: "#a8968a" }
+          }
         >
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${actif ? "bg-emerald-500" : "bg-slate-400"}`}
-          />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: actif ? "#22c55e" : "#a8968a" }} />
           {user.statut}
         </span>
       </td>
 
       {/* Last seen */}
       <td className="px-4 py-3.5 hidden lg:table-cell">
-        <span className="text-xs text-slate-400">{user.lastSeen}</span>
+        <span className="text-xs" style={{ color: "#a8968a" }}>{user.lastSeen}</span>
       </td>
 
       {/* Reservations */}
       <td className="px-4 py-3.5 hidden lg:table-cell">
         {user.reservations > 0 ? (
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-violet-100 text-violet-700 border border-violet-200">
-            {user.reservations.length} rés.
+          <span
+            className="text-xs font-semibold px-2.5 py-1 rounded-lg"
+            style={{ background: "#f0e6db", color: "#7c5a38", border: "1px solid #ddd5c8" }}
+          >
+            {user.reservations} rés.
           </span>
         ) : (
-          <span className="text-xs text-slate-300">—</span>
+          <span style={{ color: "#ddd5c8", fontSize: 12 }}>—</span>
         )}
       </td>
 
@@ -395,35 +355,36 @@ function UserRow({ user, idx, onEdit, onDelete }) {
         <div className="flex items-center gap-2 justify-end">
           <button
             onClick={() => onEdit(user)}
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-sm border border-slate-200 bg-slate-50 text-slate-500 hover:bg-violet-100 hover:text-violet-700 hover:border-violet-200 transition-all"
-          >
-            ✏️
-          </button>
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all"
+            style={{ background: "#faf7f4", border: "1px solid #ddd5c8", color: "#a8968a" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#f0e6db"; e.currentTarget.style.borderColor = "#c4a882"; e.currentTarget.style.color = "#7c5a38"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "#faf7f4"; e.currentTarget.style.borderColor = "#ddd5c8"; e.currentTarget.style.color = "#a8968a"; }}
+          >✏️</button>
           <button
             onClick={() => onDelete(user)}
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-sm border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 hover:border-red-200 transition-all"
-          >
-            🗑️
-          </button>
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all"
+            style={{ background: "#fee2e2", border: "1px solid #fca5a5", color: "#f87171" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#fecaca"; e.currentTarget.style.color = "#dc2626"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.color = "#f87171"; }}
+          >🗑️</button>
         </div>
       </td>
     </tr>
   );
 }
 
-/* ── Main ── */
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function UtilisateursPage() {
   useFont();
 
-  // const [users, setUsers] = useState(INITIAL_USERS);
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
-  const [filterRole, setFilterRole] = useState("Tous");
-  const [editTarget, setEditTarget] = useState(null);
+  const [users,        setUsers]        = useState([]);
+  const [search,       setSearch]       = useState("");
+  const [filterRole,   setFilterRole]   = useState("Tous");
+  const [editTarget,   setEditTarget]   = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [showAdd, setShowAdd] = useState(false);
-  const [toast, setToast] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [showAdd,      setShowAdd]      = useState(false);
+  const [toast,        setToast]        = useState(null);
+  const [loading,      setLoading]      = useState(true);
 
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
@@ -431,95 +392,31 @@ export default function UtilisateursPage() {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-  
-        const {data} = await axios.get("http://localhost:3000/api/auth/users");
-        
-        const formattedUsers = data.users.map((u) => ({
-          id: u._id,
-          prenom: u.prenom,
-          name: u.name,
-          email: u.email,
-          role: u.role || "Client",
-          statut: u.status || "Actif",
-  
-          createdAt: new Date(u.createdAt).toLocaleDateString("fr-FR", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          }),
-  
-          lastSeen: "Aujourd'hui",
-  
-          reservations: u.reservations?.length || 0,
-        }));
-  
-        setUsers(formattedUsers);
-  
-      } catch (error) {
-        console.log(error);
-  
-      } finally {
-  
-        setLoading(false);
-  
-      }
-    };
-  
-    fetchUsers();
+    axios.get("http://localhost:3000/api/auth/users").then(({ data }) => {
+      setUsers(data.users.map(u => ({
+        id: u._id, prenom: u.prenom, name: u.name, email: u.email,
+        role: u.role || "Client", statut: u.status || "Actif",
+        createdAt: new Date(u.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }),
+        lastSeen: "Aujourd'hui",
+        reservations: u.reservations?.length || 0,
+      })));
+    }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
   const handleSave = async (u) => {
-    console.log('uouoiu-->', u);
     try {
       if (editTarget) {
-        // UPDATE USER
-        const res = await axios.put(
-          `http://localhost:3000/api/auth/users/updateuser/${u.id}`,
-          {
-            prenom: u.prenom,
-            name: u.name,
-            email: u.email,
-            role: u.role || "Client",
-            statut: u.status || "Actif",
-          }
-        );
-          
-        const data = res.data;
-        console.log('iupdateuser---->', data )
+        const { data } = await axios.put(`http://localhost:3000/api/auth/users/updateuser/${u.id}`, { prenom: u.prenom, name: u.name, email: u.email, role: u.role || "Client", statut: u.status || "Actif" });
         if (!data.success) throw new Error(data.message);
-  
-        setUsers((prev) =>
-          prev.map((x) => (x.id === u.id ? u : x))
-        );
-  
+        setUsers(prev => prev.map(x => x.id === u.id ? u : x));
         showToast(`${u.prenom} ${u.name} mis à jour`);
       } else {
-        console.log('eww', u)
-        // CREATE USER
-        const res = await axios.post(
-          "http://localhost:3000/api/auth/users/createuser",
-          u
-        );
-        
-        const data = res.data;
-        console.log('create user-->>', data)
-  
+        const { data } = await axios.post("http://localhost:3000/api/auth/users/createuser", u);
         if (!data.success) throw new Error(data.message);
-  
-        const newUser = {
-          id: data.user._id,
-          ...u,
-        };
-  
-        setUsers((prev) => [...prev, newUser]);
-  
+        setUsers(prev => [...prev, { id: data.user._id, ...u }]);
         showToast(`${u.prenom} ${u.name} créé avec succès`);
       }
-  
-      setEditTarget(null);
-      setShowAdd(false);
+      setEditTarget(null); setShowAdd(false);
     } catch (error) {
       showToast(error.response?.data?.message || error.message, "error");
     }
@@ -527,153 +424,117 @@ export default function UtilisateursPage() {
 
   const handleDelete = async (id) => {
     try {
-      const u = users.find((x) => x.id === id);
-  
-      const res = await axios.delete(
-        `http://localhost:3000/api/auth/users/deleteuser/${id}`
-      );
-  
-      const data = res.data;
-  
+      const u = users.find(x => x.id === id);
+      const { data } = await axios.delete(`http://localhost:3000/api/auth/users/deleteuser/${id}`);
       if (!data.success) throw new Error(data.message);
-  
-      setUsers((prev) => prev.filter((x) => x.id !== id));
-  
+      setUsers(prev => prev.filter(x => x.id !== id));
       setDeleteTarget(null);
-  
       showToast(`${u.prenom} ${u.name} supprimé`, "error");
-  
     } catch (error) {
-      showToast(
-        error.response?.data?.message || error.message,
-        "error"
-      );
+      showToast(error.response?.data?.message || error.message, "error");
     }
   };
 
-  const filtered = users.filter((u) => {
-    const mSearch =
-      !search ||
-      `${u.prenom} ${u.name} ${u.email}`.toLowerCase().includes(search.toLowerCase());
-    const mRole = filterRole === "Tous" || u.role === filterRole;
+  const filtered = users.filter(u => {
+    const mSearch = !search || `${u.prenom} ${u.name} ${u.email}`.toLowerCase().includes(search.toLowerCase());
+    const mRole   = filterRole === "Tous" || u.role === filterRole;
     return mSearch && mRole;
   });
 
   const stats = [
-    { label: "Total",   val: users.length,                               icon: "👥", color: "text-violet-700" },
-    { label: "Actifs",  val: users.filter((u) => u.statut === "Actif").length, icon: "🟢", color: "text-emerald-600" },
-    { label: "Admins",  val: users.filter((u) => u.role === "Admin").length,   icon: "🛡",  color: "text-violet-600" },
-    { label: "Clients", val: users.filter((u) => u.role === "Client").length,  icon: "👤", color: "text-teal-600" },
+    { label: "Total",   val: users.length,                                    icon: "👥", color: "#a07850" },
+    { label: "Actifs",  val: users.filter(u => u.statut === "Actif").length,  icon: "🟢", color: "#166534" },
+    { label: "Admins",  val: users.filter(u => u.role === "Admin").length,    icon: "🛡",  color: "#7c5a38" },
+    { label: "Clients", val: users.filter(u => u.role === "Client").length,   icon: "👤", color: "#3d2614" },
   ];
 
   return (
-    <div
-      className="min-h-screen w-full bg-white text-slate-900"
-      style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}
-    >
+    <div className="min-h-screen w-full" style={{ background: "#faf7f4", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, color: "#2c1a0e" }}>
+
       {/* Topbar */}
-      <div className="sticky top-0 z-20 px-8 py-4 bg-white border-b border-slate-200">
+      <div className="sticky top-0 z-20 px-8 py-4 bg-white" style={{ borderBottom: "1px solid #ede5db" }}>
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">🔍</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: "#a8968a" }}>🔍</span>
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher chambres, clients, réservations..."
-              className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-300 transition-all"
+              className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl outline-none transition-all"
+              style={{ background: "#faf7f4", border: "1px solid #ddd5c8", color: "#2c1a0e" }}
             />
           </div>
-          <div className="relative w-10 h-10 rounded-xl flex items-center justify-center bg-slate-50 border border-slate-200 cursor-pointer">
-            <span className="text-slate-500">🔔</span>
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-violet-600 border-2 border-white" />
-          </div>
+
         </div>
       </div>
 
       <div className="px-8 py-7">
-        {/* Page header */}
-        <div
-          className="flex items-start justify-between mb-7"
-          style={{ animation: "fadeUp .5s ease both" }}
-        >
+
+        {/* Header */}
+        <div className="flex items-start justify-between mb-7" style={{ animation: "fadeUp .5s ease both" }}>
           <div>
-            <h1
-              className="text-2xl font-semibold text-slate-900"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
+            <h1 className="text-2xl font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#2c1a0e" }}>
               Utilisateurs
             </h1>
-            <p className="text-sm mt-0.5 text-slate-500">
-              Gérez les comptes et les rôles.
-            </p>
+            <p className="text-sm mt-0.5" style={{ color: "#a8968a" }}>Gérez les comptes et les rôles.</p>
           </div>
           <button
             onClick={() => setShowAdd(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 shadow-lg shadow-violet-200 hover:shadow-violet-300 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+            style={{ background: "linear-gradient(135deg,#a07850,#7c5a38)" }}
           >
             + Ajouter Utilisateur
           </button>
         </div>
 
         {/* Stats */}
-        <div
-          className="grid grid-cols-4 gap-3 mb-7"
-          style={{ animation: "fadeUp .5s .04s ease both" }}
-        >
+        <div className="grid grid-cols-4 gap-3 mb-7" style={{ animation: "fadeUp .5s .04s ease both" }}>
           {stats.map((s, i) => (
             <div
               key={i}
-              className="rounded-2xl p-4 flex items-center gap-3 bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
-              style={{ animation: `fadeUp .5s ${0.04 + i * 0.06}s ease both` }}
+              className="rounded-2xl p-4 flex items-center gap-3 bg-white shadow-sm hover:shadow-md transition-shadow"
+              style={{ border: "1px solid #ede5db", animation: `fadeUp .5s ${0.04 + i * 0.06}s ease both` }}
             >
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base bg-slate-50 border border-slate-200 shrink-0">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0" style={{ background: "#faf7f4", border: "1px solid #ddd5c8" }}>
                 {s.icon}
               </div>
               <div>
-                <p
-                  className={`font-bold text-xl leading-none ${s.color}`}
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  {s.val}
-                </p>
-                <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
+                <p className="font-bold text-xl leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: s.color }}>{s.val}</p>
+                <p className="text-xs mt-0.5" style={{ color: "#a8968a" }}>{s.label}</p>
               </div>
             </div>
           ))}
         </div>
 
         {/* Table card */}
-        <div
-          className="rounded-2xl overflow-hidden border border-slate-200 bg-white"
-          style={{ animation: "fadeUp .5s .1s ease both" }}
-        >
+        <div className="rounded-2xl overflow-hidden bg-white" style={{ border: "1px solid #ede5db", animation: "fadeUp .5s .1s ease both" }}>
+
           {/* Toolbar */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-50 border border-slate-200">
-              {["Tous", ...ROLES].map((r) => (
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid #ede5db" }}>
+            <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "#faf7f4", border: "1px solid #ddd5c8" }}>
+              {["Tous", ...ROLES].map(r => (
                 <button
                   key={r}
                   onClick={() => setFilterRole(r)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={
                     filterRole === r
-                      ? "bg-violet-100 text-violet-700 border border-violet-200"
-                      : "text-slate-500 border border-transparent hover:bg-slate-100"
-                  }`}
+                      ? { background: "linear-gradient(135deg,#a07850,#7c5a38)", color: "#fff" }
+                      : { color: "#a8968a" }
+                  }
+                  onMouseEnter={e => { if (filterRole !== r) e.currentTarget.style.background = "#f0e6db"; }}
+                  onMouseLeave={e => { if (filterRole !== r) e.currentTarget.style.background = ""; }}
                 >
                   {r}
                   {r !== "Tous" && (
-                    <span
-                      className={`ml-1.5 text-xs ${
-                        filterRole === r ? "text-violet-400" : "text-slate-400"
-                      }`}
-                    >
-                      {users.filter((u) => u.role === r).length}
+                    <span className="ml-1.5 text-xs" style={{ color: filterRole === r ? "rgba(255,255,255,0.7)" : "#c4a882" }}>
+                      {users.filter(u => u.role === r).length}
                     </span>
                   )}
                 </button>
               ))}
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs" style={{ color: "#a8968a" }}>
               {filtered.length} utilisateur{filtered.length > 1 ? "s" : ""}
             </p>
           </div>
@@ -681,17 +542,12 @@ export default function UtilisateursPage() {
           {/* Table */}
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50">
-                {["name", "Email", "Rôle", "Statut", "Dernière activité", "Réservations", ""].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-400"
-                    >
-                      {h}
-                    </th>
-                  )
-                )}
+              <tr style={{ borderBottom: "1px solid #ede5db", background: "#faf7f4" }}>
+                {["Nom", "Email", "Rôle", "Statut", "Dernière activité", "Réservations", ""].map(h => (
+                  <th key={h} className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#a8968a" }}>
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -699,23 +555,13 @@ export default function UtilisateursPage() {
                 <tr>
                   <td colSpan={7} className="py-16 text-center">
                     <div className="text-3xl mb-3">👥</div>
-                    <p className="text-sm font-medium text-slate-900">
-                      Aucun utilisateur trouvé
-                    </p>
-                    <p className="text-xs mt-1 text-slate-400">
-                      Modifiez votre recherche ou vos filtres
-                    </p>
+                    <p className="text-sm font-medium" style={{ color: "#2c1a0e" }}>Aucun utilisateur trouvé</p>
+                    <p className="text-xs mt-1" style={{ color: "#a8968a" }}>Modifiez votre recherche ou vos filtres</p>
                   </td>
                 </tr>
               ) : (
                 filtered.map((u, i) => (
-                  <UserRow
-                    key={u.id}
-                    user={u}
-                    idx={i}
-                    onEdit={(u) => setEditTarget(u)}
-                    onDelete={(u) => setDeleteTarget(u)}
-                  />
+                  <UserRow key={u.id} user={u} idx={i} onEdit={u => setEditTarget(u)} onDelete={u => setDeleteTarget(u)} />
                 ))
               )}
             </tbody>
@@ -723,23 +569,13 @@ export default function UtilisateursPage() {
         </div>
       </div>
 
-      {/* Modals */}
       {(showAdd || editTarget) && (
-        <UserModal
-          user={editTarget}
-          onSave={handleSave}
-          onClose={() => { setEditTarget(null); setShowAdd(false); }}
-        />
+        <UserModal user={editTarget} onSave={handleSave} onClose={() => { setEditTarget(null); setShowAdd(false); }} />
       )}
       {deleteTarget && (
-        <DeleteModal
-          user={deleteTarget}
-          onConfirm={handleDelete}
-          onClose={() => setDeleteTarget(null)}
-        />
+        <DeleteModal user={deleteTarget} onConfirm={handleDelete} onClose={() => setDeleteTarget(null)} />
       )}
 
-      {/* Toast */}
       <Toast toast={toast} />
 
       <style>{`

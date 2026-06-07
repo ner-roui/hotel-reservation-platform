@@ -1,7 +1,7 @@
 const Reservation = require("../models/ReservationModel");
 const RoomModel = require("../models/RoomModels");
 const UserModel = require("../models/UserModel");
-
+const PDFDocument = require("pdfkit");
 /**
  * CREATE RESERVATION
  */
@@ -356,6 +356,7 @@ const getUserReservations = async (req, res) => {
     const { userId } = req.user;
 
     const reservations = await Reservation.find({ user: userId })
+    .populate("user", "prenom name email")
       .populate("chambre")
       .sort({ createdAt: -1 });
 
@@ -526,15 +527,233 @@ const deleteReservation = async (req, res) => {
 
 
 
-module.exports = { createReservation, 
+
+const downloadInvoice = async (req, res) => {
+  try {
+    const reservation = await Reservation.findById(req.params.id)
+      .populate("user",   "prenom name email")
+      .populate("chambre","type numero etage superficie vue prix_nuit");
+
+    if (!reservation)
+      return res.status(404).json({ message: "Réservation introuvable" });
+
+    if (reservation.paymentStatus !== "PAID")
+      return res.status(403).json({ message: "Paiement non effectué" });
+
+    const invoiceNum = `FAC-${reservation._id.toString().slice(-6).toUpperCase()}`;
+    const nights     = reservation.nuits || Math.ceil(
+      (new Date(reservation.depart) - new Date(reservation.arrivee)) / (1000 * 60 * 60 * 24)
+    );
+    const totalTTC = reservation.total;
+
+    const formatDate = (d) =>
+      new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+
+    // ── PDF ──────────────────────────────────────────────────────────
+    // autoFirstPage:false + layout fixe pour garantir UNE seule page
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 0,
+      autoFirstPage: false,
+      bufferPages: true,
+    });
+
+    doc.addPage({ size: "A4", margin: 0 });
+
+    res.setHeader("Content-Disposition", `attachment; filename=facture-${invoiceNum}.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+    doc.pipe(res);
+
+    const ML   = 50;               // margin left
+    const MR   = 50;               // margin right
+    const W    = 595 - ML - MR;    // A4 width = 595pt
+    // couleurs
+    const WARM  = "#7c5a38";
+    const LIGHT = "#a8968a";
+    const DARK  = "#2c1a0e";
+
+    let y = 0; // curseur vertical manuel — on ne laisse jamais PDFKit décider
+
+    // ── Header band ──────────────────────────────────────────────────
+    doc.rect(0, y, 595, 75).fill("#3d2614");
+
+    doc.fillColor("#fff").font("Helvetica-Bold").fontSize(20)
+       .text("LUMIÈRE HOTELS", ML, 18, { lineBreak: false });
+    doc.fillColor("#c4a882").font("Helvetica").fontSize(9)
+       .text("L'excellence à chaque séjour", ML, 42, { lineBreak: false });
+
+    doc.fillColor("#fff").font("Helvetica-Bold").fontSize(24)
+       .text("FACTURE", 0, 16, { align: "right", width: 595 - MR, lineBreak: false });
+    doc.fillColor("#c4a882").font("Helvetica").fontSize(9)
+       .text(invoiceNum, 0, 44, { align: "right", width: 595 - MR, lineBreak: false });
+
+    y = 75;
+
+    // ── Thin accent line ─────────────────────────────────────────────
+    doc.rect(0, y, 595, 3)
+       .fillOpacity(1)
+       .fill("#a07850");
+    y += 3;
+
+    // ── Meta row ─────────────────────────────────────────────────────
+    y += 12;
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(9)
+       .text(`Émise le : ${formatDate(new Date())}`, ML, y, { lineBreak: false });
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(9)
+       .text(`Méthode : ${reservation.paymentMethod || "Carte bancaire"}`, ML, y + 14, { lineBreak: false });
+
+    // Paid badge
+    doc.roundedRect(595 - MR - 82, y + 2, 82, 18, 9).fill("#dcfce7");
+    doc.fillColor("#15803d").font("Helvetica-Bold").fontSize(8)
+       .text("✓  PAYÉE", 595 - MR - 82, y + 7, { width: 82, align: "center", lineBreak: false });
+
+    y += 42;
+
+    // ── Client + Chambre boxes ────────────────────────────────────────
+    const boxH = 62;
+    const halfW = (W - 10) / 2;
+
+    // Client box
+    doc.rect(ML, y, halfW, boxH).fill("#faf7f4");
+    doc.rect(ML, y, halfW, boxH).stroke("#ede5db");
+    doc.fillColor(LIGHT).font("Helvetica-Bold").fontSize(7)
+       .text("FACTURÉ À", ML + 10, y + 8, { lineBreak: false });
+    doc.fillColor(DARK).font("Helvetica-Bold").fontSize(11)
+       .text(`${reservation.user?.prenom || ""} ${reservation.user?.name || ""}`, ML + 10, y + 20, { lineBreak: false });
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(8)
+       .text(reservation.user?.email || "", ML + 10, y + 36, { lineBreak: false });
+
+    // Chambre box
+    const bx2 = ML + halfW + 10;
+    doc.rect(bx2, y, halfW, boxH).fill("#faf7f4");
+    doc.rect(bx2, y, halfW, boxH).stroke("#ede5db");
+    doc.fillColor(LIGHT).font("Helvetica-Bold").fontSize(7)
+       .text("CHAMBRE", bx2 + 10, y + 8, { lineBreak: false });
+    doc.fillColor(DARK).font("Helvetica-Bold").fontSize(11)
+       .text(`${reservation.chambre?.type} — Ch. ${reservation.chambre?.numero}`, bx2 + 10, y + 20, { lineBreak: false });
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(8)
+       .text(`Étage ${reservation.chambre?.etage}  ·  ${reservation.chambre?.superficie} m²`, bx2 + 10, y + 36, { lineBreak: false });
+
+    y += boxH + 12;
+
+    // ── Dates row ────────────────────────────────────────────────────
+    const dW  = (W - 16) / 3;
+    const dH  = 42;
+
+    [
+      { label: "ARRIVÉE",  val: formatDate(reservation.arrivee) },
+      { label: "DÉPART",   val: formatDate(reservation.depart)  },
+      { label: "DURÉE",    val: `${nights} nuit${nights > 1 ? "s" : ""}` },
+    ].forEach((item, i) => {
+      const dx = ML + i * (dW + 8);
+      doc.rect(dx, y, dW, dH).fill("#faf7f4");
+      doc.rect(dx, y, dW, dH).stroke("#ede5db");
+      doc.fillColor(LIGHT).font("Helvetica-Bold").fontSize(7)
+         .text(item.label, dx, y + 7, { width: dW, align: "center", lineBreak: false });
+      doc.fillColor(DARK).font("Helvetica-Bold").fontSize(10)
+         .text(item.val, dx, y + 20, { width: dW, align: "center", lineBreak: false });
+    });
+
+    y += dH + 16;
+
+    // ── Table header ─────────────────────────────────────────────────
+    doc.rect(ML, y, W, 22).fill("#3d2614");
+
+    const cols = [
+      { label: "DESCRIPTION",   x: ML + 10,      w: 200 },
+      { label: "QUANTITÉ",      x: ML + 218,     w: 80,  align: "center" },
+      { label: "PRIX / NUIT",   x: ML + 306,     w: 90,  align: "right"  },
+      { label: "TOTAL",         x: ML + 400,     w: 90,  align: "right"  },
+    ];
+
+    cols.forEach(c => {
+      doc.fillColor("#c4a882").font("Helvetica-Bold").fontSize(7.5)
+         .text(c.label, c.x, y + 7, { width: c.w, align: c.align || "left", lineBreak: false });
+    });
+
+    y += 22;
+
+    // ── Table row ────────────────────────────────────────────────────
+    const rowH = 50;
+    doc.rect(ML, y, W, rowH).fill("#fdfbf8");
+    doc.rect(ML, y, W, rowH).stroke("#ede5db");
+
+    doc.fillColor(DARK).font("Helvetica-Bold").fontSize(10)
+       .text(`${reservation.chambre?.type} — Chambre ${reservation.chambre?.numero}`, ML + 10, y + 8, { width: 200, lineBreak: false });
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(8)
+       .text(`${formatDate(reservation.arrivee)} → ${formatDate(reservation.depart)}`, ML + 10, y + 24, { width: 200, lineBreak: false });
+
+    doc.fillColor(DARK).font("Helvetica").fontSize(10)
+       .text(`${nights} nuit${nights > 1 ? "s" : ""}`, ML + 218, y + 18, { width: 80, align: "center", lineBreak: false });
+    doc.fillColor(DARK).font("Helvetica").fontSize(10)
+       .text(`€${(reservation.prixParNuit || reservation.chambre?.prix_nuit || 0).toLocaleString("fr-FR")}`,
+             ML + 306, y + 18, { width: 90, align: "right", lineBreak: false });
+    doc.fillColor(DARK).font("Helvetica-Bold").fontSize(13)
+       .text(`€${totalTTC?.toLocaleString("fr-FR")}`, ML + 400, y + 16, { width: 90, align: "right", lineBreak: false });
+
+    y += rowH + 14;
+
+    // ── Total block (simple, sans TVA) ───────────────────────────────
+    const totW = 210;
+    const totX = ML + W - totW;
+
+    doc.rect(totX, y, totW, 32).fill("#3d2614");
+    doc.fillColor("#e7d8c7").font("Helvetica-Bold").fontSize(11)
+       .text("TOTAL", totX + 12, y + 10, { width: totW / 2, lineBreak: false });
+    doc.fillColor("#fff").font("Helvetica-Bold").fontSize(15)
+       .text(`€${totalTTC?.toLocaleString("fr-FR")}`, totX, y + 8, { width: totW - 12, align: "right", lineBreak: false });
+
+    y += 32 + 10;
+
+    // ── Payment method ───────────────────────────────────────────────
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(8.5)
+       .text(`Payé par : `, totX, y, { continued: true, lineBreak: false })
+       .fillColor(WARM).font("Helvetica-Bold")
+       .text(reservation.paymentMethod || "Carte bancaire", { lineBreak: false });
+
+    // ── Footer (position absolue en bas de page) ──────────────────────
+    // On le place en absolu pour ne PAS dépendre du curseur y courant
+    const footY = 842 - 55;
+    doc.rect(ML, footY - 8, W, 0.5).fill("#ede5db");
+
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(7.5)
+       .text(
+         "Lumière Hotels SAS  ·  SIRET 123 456 789 00012",
+         ML, footY, { width: W, align: "center", lineBreak: false }
+       );
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(7.5)
+       .text(
+         "12 Avenue des Lumières, Paris 75008  ·  contact@lumiere-hotels.fr",
+         ML, footY + 13, { width: W, align: "center", lineBreak: false }
+       );
+    doc.fillColor(LIGHT).font("Helvetica").fontSize(7.5)
+       .text(
+         "Merci pour votre confiance et à bientôt chez Lumière Hotels 🙏",
+         ML, footY + 26, { width: W, align: "center", lineBreak: false }
+       );
+
+    doc.end();
+
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = {
+  createReservation,
   checkInReservation,
   getAllReservations,
   getUserReservations,
   getReservationById,
   updateReservation,
   deleteReservation,
-  cancelReservation, 
+  cancelReservation,
   checkOutReservation,
   getReservationsAnnule,
-  getMonthlyRevenue
- };
+  getMonthlyRevenue,
+  downloadInvoice,
+};
+
+
