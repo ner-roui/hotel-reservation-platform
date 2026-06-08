@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import ModifierModal from "../components/ModifierModal";
 import { AppContext } from "../context/Context";
+import { useToast } from "../components/useToast";
 
 /* ── Google Fonts ───────────────────────────────────── */
 const useFont = () => {
@@ -280,7 +281,7 @@ function CancelModal({ sejour, onConfirm, onClose }) {
             Annuler la réservation ?
           </h3>
           <p className="text-sm mb-1 text-slate-500">
-            <span className="text-violet-600 font-semibold">{sejour._id}</span> — {sejour.chambre?.type} {sejour.chambre?.numero}
+            <span className="text-amber-800 font-semibold">{formatReservationId(sejour._id)}</span> — {sejour.chambre?.type} {sejour.chambre?.numero}
           </p>
           <p className="text-xs mb-6 text-slate-400">Cette action est irréversible.</p>
           <div className="flex gap-3">
@@ -304,6 +305,7 @@ function CancelModal({ sejour, onConfirm, onClose }) {
    SEJOUR CARD
 ══════════════════════════════════════════════════════ */
 function SejourCard({ s, onCancel, onInvoice, onModify, style }) {
+
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
 
@@ -497,17 +499,17 @@ export default function MesSejours() {
   const [notification,   setNotification]    = useState(null);
 
   const { sejours, fetchSejours } = useContext(AppContext);
-
+  const { toast, ToastPortal } = useToast();
   const tabs = ["Tous", "En attente", "En cours", "Confirmée", "Terminée", "Annulée"];
 
   const handleCancel = async (id) => {
     try {
       await axios.patch(`http://localhost:3000/api/reservations/cancel/${id}`, {}, { withCredentials: true });
       fetchSejours();
-      setNotification("Réservation annulée avec succès.");
-      setTimeout(() => setNotification(null), 3000);
+      toast.success("Réservation annulée avec succès.");
+     
     } catch (e) {
-      alert(e.response?.data?.message || e.message);
+      toast.error(e.response?.data?.message || e.message);
     }
   };
 
@@ -534,6 +536,9 @@ export default function MesSejours() {
   ];
 
   return (
+    <>
+     <ToastPortal />
+    
     <div className="flex h-screen overflow-hidden bg-slate-50" style={{ fontFamily: "'Outfit',sans-serif", fontWeight: 300 }}>
       <main className="flex-1 overflow-y-auto flex flex-col">
 
@@ -549,10 +554,7 @@ export default function MesSejours() {
                 className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl bg-slate-100 border border-slate-200 text-slate-800 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all"
               />
             </div>
-            <div className="relative w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 border border-slate-200 cursor-pointer hover:bg-slate-200 transition-all">
-              
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-violet-500 border-2 border-white" />
-            </div>
+           
           </div>
         </div>
 
@@ -650,5 +652,6 @@ export default function MesSejours() {
         input::placeholder { color:#94a3b8; }
       `}</style>
     </div>
+    </>
   );
 }
