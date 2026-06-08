@@ -32,7 +32,7 @@ export default function SidebarEmp() {
         "http://localhost:3000/api/auth/logout",
         {},
         {
-          withCredentials: true, // si tu utilises des cookies/session
+          withCredentials: true, 
         }
       );
 
@@ -88,7 +88,7 @@ export default function SidebarEmp() {
 
         {/* Plan des chambres */}
         <NavItem
-          to="/planchambres"
+          to="/resemployepage/planchambres"
           label="Plan des chambres"
           icon={
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5" strokeWidth={1.8}>
@@ -103,7 +103,7 @@ export default function SidebarEmp() {
 
         {/* Nettoyage */}
         <NavItem
-          to="/nettoyagepage"
+          to="/resemployepage/nettoyagepage"
           label="Nettoyage"
           icon={
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5" strokeWidth={1.8}>

@@ -54,7 +54,7 @@ export default function HomePage() {
     try {
       console.log('arrivee', arrivee, 'depart', depart)
       const response = await fetch(
-        `http://localhost:3000/api/chambres/disponibles?arrivee=${arrivee}&depart=${depart}&adults=${voyageurs}`
+        `http://localhost:3000/api/chambres/disponibles?arrivee=${arrivee}&depart=${depart}&capacite=${voyageurs}`
       );
   
       const data = await response.json();

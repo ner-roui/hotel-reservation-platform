@@ -4,7 +4,7 @@ const ChambreModel = require("../models/RoomModels");
 
 
 const createPayment = async (req, res) => {
-  console.log('effectuer un payment -->>');
+  
   try {
     const { id } = req.params;
     if (!id) {
@@ -53,9 +53,8 @@ const createPayment = async (req, res) => {
     // ─────────────────────────────────────────────────────────────
     // LOGIQUE PRIORITÉ : Premier paiement confirmé gagne
     // ─────────────────────────────────────────────────────────────
-    const estPaiementConfirme = statut === "Payé";
-    console.log('estPaiementConfirme:', estPaiementConfirme, '| statut:', statut);
 
+    const estPaiementConfirme = statut === "Payé";
     if (estPaiementConfirme) {
 
       // 1. Vérifier si une réservation déjà PAYÉE existe pour les mêmes dates
@@ -64,17 +63,16 @@ const createPayment = async (req, res) => {
         chambre:       reservationData.chambre._id,
         status:        "CONFIRMED",
         paymentStatus: "PAID",
-        arrivee:       { $lt: reservationData.depart },   // ✅ chevauchement correct
-        depart:        { $gt: reservationData.arrivee },  // ✅ chevauchement correct
+        arrivee:       { $lt: reservationData.depart },   
+        depart:        { $gt: reservationData.arrivee }, 
       });
 
-      console.log('reservationConfirmeeExistante:', reservationConfirmeeExistante);
-
+   
       if (reservationConfirmeeExistante) {
         // Une réservation payée existe déjà → annuler la réservation actuelle
         reservationData.status        = "CANCELLED";
         reservationData.paymentStatus = "UNPAID";
-        reservationData.cancelledAt   = new Date();       // ✅ champ du schéma
+        reservationData.cancelledAt   = new Date();       
         await reservationData.save();
 
         return res.status(409).json({
@@ -90,13 +88,13 @@ const createPayment = async (req, res) => {
       const reservationsEnAttente = await ReservationModel.find({
         _id:           { $ne: reservationData._id },
         chambre:       reservationData.chambre._id,
-        status:        "PENDING",                         // ✅ enum du schéma
-        paymentStatus: "UNPAID",                          // ✅ enum du schéma
-        arrivee:       { $lt: reservationData.depart },   // ✅ champ correct
-        depart:        { $gt: reservationData.arrivee },  // ✅ champ correct
+        status:        "PENDING",                         
+        paymentStatus: "UNPAID",                         
+        arrivee:       { $lt: reservationData.depart },   
+        depart:        { $gt: reservationData.arrivee },  
       });
 
-      console.log('reservationsEnAttente:', reservationsEnAttente);
+      
 
       if (reservationsEnAttente.length > 0) {
         const idsAnnules = reservationsEnAttente.map((r) => r._id);
@@ -106,9 +104,9 @@ const createPayment = async (req, res) => {
           { _id: { $in: idsAnnules } },
           {
             $set: {
-              status:      "CANCELLED",  // ✅ enum du schéma
-              paymentStatus: "UNPAID",   // ✅ enum du schéma
-              cancelledAt: new Date(),   // ✅ champ du schéma
+              status:      "CANCELLED", 
+              paymentStatus: "UNPAID",   
+              cancelledAt: new Date(),   
             },
           }
         );
@@ -125,7 +123,7 @@ const createPayment = async (req, res) => {
       }
 
       // Confirmer la réservation actuelle
-      reservationData.status = "CONFIRMED";  // ✅ enum du schéma
+      reservationData.status = "CONFIRMED";  
     }
     // ─────────────────────────────────────────────────────────────
 
@@ -148,7 +146,7 @@ const createPayment = async (req, res) => {
     });
 
     // Mise à jour réservation
-    reservationData.paymentStatus = statut === "Payé" ? "PAID" : "UNPAID";  // ✅ enum du schéma
+    reservationData.paymentStatus = statut === "Payé" ? "PAID" : "UNPAID";  
     reservationData.paymentMethod = methode;
     await reservationData.save();
 

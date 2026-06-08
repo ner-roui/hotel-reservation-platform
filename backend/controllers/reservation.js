@@ -319,7 +319,8 @@ const getAllReservations = async (req, res) => {
   try {
     const reservations = await Reservation.find()
       .populate("user", "-password")
-      .populate("chambre");
+      .populate("chambre")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       message: "Liste des réservations",

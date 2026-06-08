@@ -8,13 +8,20 @@ import {
   Lock,
   ArrowRight,
   Building2,
+  Eye, 
+  EyeOff
 } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../context/Context";
+import { useToast } from "../components/useToast";
 
 export default function LoginPage() {
   
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { toast, ToastPortal } = useToast();
   const [form, setForm] = useState({
     name: "",
     prenom: "",
@@ -77,25 +84,25 @@ const handleSubmit = async (e) => {
       withCredentials: true,
     });
 
-    console.log(data);
-
+ 
     getUserData();
 
-    alert(mode === "login" ? "✅ Connexion réussie" : "✅ Compte créé");
+    toast.success(mode === "login" ? "Connexion réussie" : " Compte créé");
+   
+    
+    setTimeout(() => {
+      if (data.user.role === "Admin") {
+        navigate("/dashboard");
+      } else if (data.user.role === "Réception") {
+        navigate("/resemployepage");
+      } else {
+        navigate("/home");
+      }
+    }, 2000);
 
-    if (data.user.role === "Admin") {
-      navigate("/dashboard");
-    }else if(data.user.role === "Réception"){
-      navigate("/resemployepage");
-      
-    }
-    else {
-      navigate("/home");
-    }
   } catch (err) {
-    console.log("ERROR:", err);
-
-    alert(err.response?.data?.message || "Erreur serveur");
+   
+    toast.error(err.response?.data?.message || "Erreur serveur");
   } finally {
     setLoading(false);
   }
@@ -104,6 +111,9 @@ const handleSubmit = async (e) => {
 
 
   return (
+    <>
+     <ToastPortal />
+    
     <div className="min-h-screen bg-gradient-to-br from-[#3d2614] via-[#6b4a2e] to-[#a07850] flex items-center justify-center px-6 py-10 relative overflow-hidden">
 
       {/* background */}
@@ -276,23 +286,30 @@ const handleSubmit = async (e) => {
 
               {/* PASSWORD */}
               <div>
-                <label className="text-sm font-semibold text-gray-500 uppercase">
-                  Mot de passe
-                </label>
+              <label className="text-sm font-semibold text-gray-500 uppercase">
+                Mot de passe
+              </label>
 
-                <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
-                  <Lock size={20} className="text-gray-400" />
+              <div className="flex items-center border rounded-2xl px-4 h-16 mt-2">
+                <Lock size={20} className="text-gray-400" />
 
-                  <input
-                    value={form.password}
-                    onChange={(e) => set("password", e.target.value)}
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full h-full px-3 outline-none bg-transparent"
-                  />
-                </div>
+                <input
+                  value={form.password}
+                  onChange={(e) => set("password", e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="w-full h-full px-3 outline-none bg-transparent"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-500 hover:text-gray-800"
+                >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-
+            </div>
               {/* BUTTON */}
               {/* BUTTON */}
               <button
@@ -339,5 +356,6 @@ const handleSubmit = async (e) => {
         </div>
       </div>
     </div>
+    </>
   );
 }
