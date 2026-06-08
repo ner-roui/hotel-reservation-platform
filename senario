@@ -85,3 +85,25 @@ Si vous développez un logiciel hôtelier (PMS), je peux aussi vous proposer un 
 
 Sinon :
     changement refusé ou frais fixe de modification
+
+
+
+
+
+
+    -----------------------------------------------------------
+
+
+    Paiement reçu
+      │
+      ▼
+  statut === "Payé" ?
+      │
+   OUI ──► Réservation PAYÉE existe déjà pour ces dates ?
+      │           │
+      │        OUI ──► Annuler la réservation ACTUELLE → 409
+      │           │
+      │        NON ──► Annuler toutes les réservations EN ATTENTE concurrentes
+      │                └──► Confirmer la réservation ACTUELLE → 201
+      │
+   NON ──► Continuer normalement (statut PENDING) → 201

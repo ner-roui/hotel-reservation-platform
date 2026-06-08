@@ -4,14 +4,13 @@ const ChambreModel = require("../models/RoomModels");
 
 
 const createPayment = async (req, res) => {
+  console.log('effectuer un payment -->>');
   try {
-    
-    const {id} = req.params;
+    const { id } = req.params;
     if (!id) {
-      return res.status(400).json({
-        message: "ID réservation manquant",
-      });
+      return res.status(400).json({ message: "ID réservation manquant" });
     }
+
     const {
       methode,
       montant_paye,
@@ -27,37 +26,22 @@ const createPayment = async (req, res) => {
     const reservationData = await ReservationModel.findById(id)
       .populate("user")
       .populate("chambre");
-      reservationData.status = "CONFIRMED";
-
-    console.log('reservationdata', reservationData )
 
     if (!reservationData) {
-      return res.status(404).json({
-        message: "Réservation introuvable",
-      });
+      return res.status(404).json({ message: "Réservation introuvable" });
     }
 
     // Vérifier chambre
-    const chambre = await ChambreModel.findById(
-      reservationData.chambre._id
-    );
-
+    const chambre = await ChambreModel.findById(reservationData.chambre._id);
     if (!chambre) {
-      return res.status(404).json({
-        message: "Chambre introuvable",
-      });
+      return res.status(404).json({ message: "Chambre introuvable" });
     }
 
     // Calculs
-    const montant_total =
-      reservationData.total + taxe - reduction;
-
-    // const montant_restant =
-    //   montant_total - montant_paye;
+    const montant_total = reservationData.total + taxe - reduction;
 
     // Statut paiement
     let statut = "En attente";
-
     if (montant_paye === 0) {
       statut = "En attente";
     } else if (montant_paye < montant_total) {
@@ -66,84 +50,134 @@ const createPayment = async (req, res) => {
       statut = "Payé";
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // LOGIQUE PRIORITÉ : Premier paiement confirmé gagne
+    // ─────────────────────────────────────────────────────────────
+    const estPaiementConfirme = statut === "Payé";
+    console.log('estPaiementConfirme:', estPaiementConfirme, '| statut:', statut);
+
+    if (estPaiementConfirme) {
+
+      // 1. Vérifier si une réservation déjà PAYÉE existe pour les mêmes dates
+      const reservationConfirmeeExistante = await ReservationModel.findOne({
+        _id:           { $ne: reservationData._id },
+        chambre:       reservationData.chambre._id,
+        status:        "CONFIRMED",
+        paymentStatus: "PAID",
+        arrivee:       { $lt: reservationData.depart },   // ✅ chevauchement correct
+        depart:        { $gt: reservationData.arrivee },  // ✅ chevauchement correct
+      });
+
+      console.log('reservationConfirmeeExistante:', reservationConfirmeeExistante);
+
+      if (reservationConfirmeeExistante) {
+        // Une réservation payée existe déjà → annuler la réservation actuelle
+        reservationData.status        = "CANCELLED";
+        reservationData.paymentStatus = "UNPAID";
+        reservationData.cancelledAt   = new Date();       // ✅ champ du schéma
+        await reservationData.save();
+
+        return res.status(409).json({
+          message:
+            "Cette chambre a déjà été payée par un autre client pour ces dates. " +
+            "Votre réservation a été automatiquement annulée.",
+          reservation_annulee: reservationData._id,
+        });
+      }
+
+      // 2. Aucune réservation payée concurrente → ce paiement prend la priorité
+      //    Annuler toutes les réservations PENDING en chevauchement
+      const reservationsEnAttente = await ReservationModel.find({
+        _id:           { $ne: reservationData._id },
+        chambre:       reservationData.chambre._id,
+        status:        "PENDING",                         // ✅ enum du schéma
+        paymentStatus: "UNPAID",                          // ✅ enum du schéma
+        arrivee:       { $lt: reservationData.depart },   // ✅ champ correct
+        depart:        { $gt: reservationData.arrivee },  // ✅ champ correct
+      });
+
+      console.log('reservationsEnAttente:', reservationsEnAttente);
+
+      if (reservationsEnAttente.length > 0) {
+        const idsAnnules = reservationsEnAttente.map((r) => r._id);
+
+        // Annuler les réservations concurrentes
+        await ReservationModel.updateMany(
+          { _id: { $in: idsAnnules } },
+          {
+            $set: {
+              status:      "CANCELLED",  // ✅ enum du schéma
+              paymentStatus: "UNPAID",   // ✅ enum du schéma
+              cancelledAt: new Date(),   // ✅ champ du schéma
+            },
+          }
+        );
+
+        // Retirer ces réservations de chambre.reservation_active
+        chambre.reservation_active = chambre.reservation_active.filter(
+          (item) =>
+            !idsAnnules.some(
+              (annuleId) => annuleId.toString() === item.reservation_id.toString()
+            )
+        );
+
+        console.log(`${idsAnnules.length} réservation(s) annulée(s) au profit de ${reservationData._id}`);
+      }
+
+      // Confirmer la réservation actuelle
+      reservationData.status = "CONFIRMED";  // ✅ enum du schéma
+    }
+    // ─────────────────────────────────────────────────────────────
+
     // Création paiement
     const payment = await PaymentModel.create({
-      reservation: reservationData._id,
-
-      chambre: reservationData.chambre._id,
-
-      user: reservationData.user._id,
-
+      reservation:   reservationData._id,
+      chambre:       reservationData.chambre._id,
+      user:          reservationData.user._id,
       montant_total,
-
       montant_paye,
-
       taxe,
-
       reduction,
-
       methode,
-
       statut,
-
       transaction_id,
-
       date_limite,
-
       notes,
-
       valide_par,
-
       date_paiement: new Date(),
     });
 
     // Mise à jour réservation
-    if (statut === "Payé") {
-      reservationData.paymentStatus = "PAID";
-    } else {
-      reservationData.paymentStatus = "UNPAID";
-    }
-
+    reservationData.paymentStatus = statut === "Payé" ? "PAID" : "UNPAID";  // ✅ enum du schéma
     reservationData.paymentMethod = methode;
-
     await reservationData.save();
 
     // Mise à jour chambre
-    chambre.reservation_active =
-      chambre.reservation_active.map((item) => {
-        if (
-          item.reservation_id.toString() ===
-          reservationData._id.toString()
-        ) {
-          return {
-            ...item.toObject(),
-            paymentStatus:
-              statut === "Payé"
-                ? "PAID"
-                : "UNPAID",
-          };
-        }
+    chambre.reservation_active = chambre.reservation_active.map((item) => {
+      if (item.reservation_id.toString() === reservationData._id.toString()) {
+        return {
+          ...item.toObject(),
+          paymentStatus: statut === "Payé" ? "PAID" : "UNPAID",
+        };
+      }
+      return item;
+    });
 
-        return item;
-      });
-  
     await chambre.save();
 
     res.status(201).json({
       message: "Paiement créé avec succès",
       payment,
+      ...(estPaiementConfirme && {
+        info: "Votre paiement a été confirmé en priorité. Les réservations en attente concurrentes ont été annulées.",
+      }),
     });
+
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      message: "Erreur serveur",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
-
-
 
 
 // GET ALL PAYMENTS
@@ -162,11 +196,7 @@ const getPayments = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      message: "Erreur serveur",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
 

@@ -96,7 +96,7 @@ function App() {
   
 
       {/* PAGE 404 */}
-      {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 }
