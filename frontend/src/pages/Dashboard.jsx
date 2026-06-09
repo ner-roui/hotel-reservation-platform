@@ -125,15 +125,7 @@ export default function LumiereHotelsDashboard() {
                 style={{ border: "1px solid #ddd5c8", color: "#3d2614" }}
               />
             </div>
-            <div className="relative">
-              <div
-                className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm cursor-pointer"
-                style={{ border: "1px solid #ddd5c8" }}
-              >
-                <span>🔔</span>
-              </div>
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2" style={{ borderColor: "#faf7f4" }} />
-            </div>
+           
           </div>
         </div>
 

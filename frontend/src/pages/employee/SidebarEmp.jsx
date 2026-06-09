@@ -38,7 +38,7 @@ export default function SidebarEmp() {
 
 
 
-      console.log("Déconnexion réussie", response.data);
+     
 
       // Redirection éventuelle
      navigate('/login')

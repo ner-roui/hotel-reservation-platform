@@ -9,7 +9,7 @@ const AdminRoute = () => {
   if (loading) {
     return <p>Loading...</p>;
 }
-console.log('useradmin', user)
+
   // utilisateur non connecté
   if (!user) {
     return <Navigate to="/login" />;

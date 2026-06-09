@@ -341,3 +341,140 @@ Si tu veux, je peux t’aider à transformer ça en architecture propre type :
 * ou système booking scalable (sans jamais de mismatch data)
 
 ça t’éviterait ce genre de bug définitivement.
+---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+Si l'erreur apparaît **uniquement quand tu rafraîchis la page Login avant d'être connecté**, alors c'est probablement un comportement normal.
+
+Voici ce qui se passe :
+
+1. Ton `ContextProvider` s'exécute au chargement de l'application :
+
+```js
+useEffect(() => {
+  init();
+}, []);
+```
+
+2. `init()` appelle :
+
+```js
+await getUserData();
+```
+
+3. `getUserData()` fait une requête vers :
+
+```js
+GET /api/auth/getuserdata
+```
+
+4. Comme tu n'es pas connecté, il n'y a pas de cookie JWT ou de token.
+
+5. Le backend exécute :
+
+```js
+if (!userId) {
+  return res.status(401).json({ message: "Non autorisé" });
+}
+```
+
+6. Le navigateur reçoit donc un **401 Unauthorized**.
+
+Ce n'est pas forcément une erreur applicative : c'est simplement le serveur qui répond « aucun utilisateur connecté ».
+
+---
+
+### Pourquoi vois-tu quand même du rouge dans la console ?
+
+Même si tu as :
+
+```js
+catch (e) {
+  setUser(null);
+  return null;
+}
+```
+
+Chrome affiche souvent les requêtes HTTP 401 dans l'onglet Console/Network car la requête a réellement échoué côté HTTP.
+
+---
+
+### Solution 1 (la plus propre)
+
+Ne considère pas le 401 comme une erreur si tu vérifies simplement si l'utilisateur est connecté :
+
+```js
+const getUserData = async () => {
+  try {
+    const { data } = await axios.get(
+      "http://localhost:3000/api/auth/getuserdata",
+      { withCredentials: true }
+    );
+
+    setUser(data.user);
+    return data.user;
+
+  } catch (e) {
+    if (e.response?.status === 401) {
+      setUser(null);
+      return null;
+    }
+
+    console.error(e);
+    return null;
+  }
+};
+```
+
+---
+
+### Solution 2 : Ne pas appeler `getUserData()` sur la page Login
+
+Si l'utilisateur est sur `/login`, tu peux éviter la requête :
+
+```js
+import { useLocation } from "react-router-dom";
+
+const location = useLocation();
+
+useEffect(() => {
+  if (location.pathname !== "/login") {
+    init();
+  }
+}, [location.pathname]);
+```
+
+---
+
+### Solution 3 : Vérifier la présence du token avant l'appel
+
+Si tu utilises un token dans `localStorage` :
+
+```js
+const token = localStorage.getItem("token");
+
+if (token) {
+  await getUserData();
+}
+```
+
+Mais dans ton code actuel tu sembles utiliser des **cookies HTTP Only** (`withCredentials: true`), donc cette solution n'est utile que si tu stockes réellement le token côté navigateur.
+
+---
+
+Pour être sûr à 100 %, montre-moi :
+
+* le message exact du 401 dans l'onglet Network ;
+* ton middleware d'authentification ;
+* la fonction `login` qui crée le cookie.
+
+Je pourrai confirmer si c'est un simple 401 normal au démarrage ou un problème de configuration.

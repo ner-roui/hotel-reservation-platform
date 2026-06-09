@@ -1,6 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { FaThLarge, FaBed, FaUsers, FaCalendarAlt, FaCreditCard, FaList } from "react-icons/fa";
-
+import { useNavigate } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa";
+import axios from "axios";
 const navItems = [
   { label: "Dashboard",       icon: <FaThLarge />,    path: "/dashboard" },
   { label: "Ajouter Chambre", icon: <FaBed />,         path: "createroom" },
@@ -11,6 +13,28 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:3000/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      localStorage.removeItem("token");
+      sessionStorage.clear();
+
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <aside
       className="w-56 flex flex-col py-5 px-3 shrink-0"
@@ -93,17 +117,18 @@ export default function Sidebar() {
         className="flex items-center gap-2 mt-4 px-2 pt-4"
         style={{ borderTop: "1px solid #3d2614" }}
       >
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-          style={{ background: "linear-gradient(135deg,#a07850,#7c5a38)" }}
-        >
-          SL
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-white text-xs font-semibold truncate">Sophie Laurent</p>
-          <p className="text-xs" style={{ color: "#a8968a" }}>Power user</p>
-        </div>
-        <span className="text-xs" style={{ color: "#a8968a" }}>▾</span>
+       
+        <button
+    onClick={handleLogout}
+    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:text-white mt-4"
+    style={{
+      color: "#a8968a",
+      background: "rgba(255,255,255,0.06)",
+    }}
+  >
+    <FaSignOutAlt className="text-base" />
+    Déconnexion
+  </button>
       </div>
     </aside>
   );

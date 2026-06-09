@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { FaApple, FaPaypal} from "react-icons/fa";
-
+import { useToast } from "../components/useToast";
 import {
   CreditCard,
   Wallet,
@@ -24,7 +24,10 @@ const useFont = () => {
 };
 
 
-
+function formatReservationId(id) {
+  const num = parseInt(id.slice(-4), 16);
+  return `RES-${num.toString(36).toUpperCase()}`;
+}
 
 const METHODS = [
   {
@@ -224,7 +227,7 @@ function SuccessScreen({res}) {
         Réservation confirmée !
       </h2>
       <p className="text-sm mb-1" style={{ color: "#6b5244" }}>
-        Réservation <span className="font-semibold" style={{ color: "#a07850" }}>{res._id}</span> — Paiement accepté
+        Réservation <span className="font-semibold" style={{ color: "#a07850" }}>{formatReservationId(res._id)}</span> — Paiement accepté
       </p>
       <p className="text-sm" style={{ color: "#a8968a" }}>Un email de confirmation a été envoyé à votre adresse.</p>
       <div className="flex gap-3 mt-8">
@@ -266,6 +269,7 @@ export default function PaiementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { toast, ToastPortal } = useToast();
   const { id } = useParams();
   const total = reservation?.prixParNuit * reservation?.nuits ;
 
@@ -285,7 +289,6 @@ export default function PaiementPage() {
         const {data} = await axios.get(
           `http://localhost:3000/api/reservations/getonereservation/${id}`
         );
-        console.log('one res', data )
         setReservation(data.reservation);
       } catch (err) {
         setError(
@@ -325,11 +328,11 @@ export default function PaiementPage() {
         },
         { withCredentials: true }
       );
-      console.log('res=====>', res);
+   
       fetchSejours()
       setTimeout(() => { setPaying(false); setPaid(true); }, 800);
     } catch (error) {
-      console.log("Erreur paiement:", error.response?.data || error.message);
+      toast.error("Erreur paiement:", error.response?.data || error.message);
       setPaying(false);
     }
   };
@@ -338,6 +341,9 @@ export default function PaiementPage() {
   const formatExpiry = v => { const d = v.replace(/\D/g, "").slice(0, 4); return d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d; };
 
   return (
+    <>
+     <ToastPortal />
+   
     <div className="flex h-screen overflow-hidden" style={{ background: "#f5f0eb", fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}>
 
       <main className="flex-1 overflow-y-auto flex flex-col">
@@ -552,5 +558,6 @@ export default function PaiementPage() {
         input::placeholder { color: #b8a898; }
       `}</style>
     </div>
+    </>
   );
 }

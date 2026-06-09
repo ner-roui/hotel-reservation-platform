@@ -83,7 +83,7 @@ const RolePill = ({ label, icon, active, onClick }) => (
 
 /* ── Room card ── */
 const RoomCard = ({ room, onClick }) => {
-  console.log('roommaa', room);
+
   const s = STATUS[room.statut];
   return (
     <button onClick={() => onClick(room)}
@@ -157,7 +157,7 @@ export default function PlanChambres() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
 
-  console.log('les chambres', chambres)
+
 
   useEffect(() => {
     if (chambres?.length) {
@@ -192,7 +192,7 @@ export default function PlanChambres() {
 };
 
 const handleStatusChange = async (roomId, newStatus) => {
-  console.log('roomId----------------------------------->', roomId, 'newStatus---------------------->',newStatus);
+ 
 
   try {
 

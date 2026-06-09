@@ -114,10 +114,7 @@ export default function ChambreCard({ c, onReserver }) {
               Ch. {c.numero} · {c.superficie} m² · {c.lit}
             </p>
           </div>
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,.85)" }}>
-            <span className="text-amber-500 text-xs">★</span>
-            <span className="text-xs font-semibold" style={{ color: "#1c1917" }}>{c.note?.toFixed(1)}</span>
-          </div>
+          
         </div>
       </div>
 

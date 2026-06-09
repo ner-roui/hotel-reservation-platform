@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { AppContext } from "../context/Context";
-
+import { useToast } from "../components/useToast";
 const statutConfig = {
   "Disponible":  { bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
   "Occupée":     { bg: "bg-blue-100",    text: "text-blue-700",    dot: "bg-blue-500"    },
@@ -30,17 +31,83 @@ function StarRating({ note }) {
   );
 }
 
+// ── Confirm Delete Modal ───────────────────────────────────────────────────────
+function ConfirmDeleteModal({ chambre, onConfirm, onCancel, loading }) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={onCancel}>
+      <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "rgba(44,26,14,0.55)" }} />
+      <div
+        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
+        style={{ border: "1px solid #ede5db" }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Icon */}
+        <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+          <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+
+        <h3 className="text-lg font-bold text-center mb-1" style={{ color: "#2c1a0e" }}>
+          Supprimer la chambre ?
+        </h3>
+        <p className="text-sm text-center mb-1" style={{ color: "#a8968a" }}>
+          Chambre <span className="font-semibold" style={{ color: "#3d2614" }}>#{chambre.numero}</span> — {chambre.type}
+        </p>
+        <p className="text-xs text-center mb-6" style={{ color: "#ef4444" }}>
+          Cette action est irréversible.
+        </p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+            style={{ background: "#faf7f4", color: "#6b5b52", border: "1px solid #ddd5c8" }}
+            onMouseEnter={e => e.currentTarget.style.background = "#f0e6db"}
+            onMouseLeave={e => e.currentTarget.style.background = "#faf7f4"}
+          >
+            Annuler
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all flex items-center justify-center gap-2"
+            style={{
+              background: loading ? "#fca5a5" : "linear-gradient(135deg,#ef4444,#dc2626)",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Suppression...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Supprimer
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Chambre Card ──────────────────────────────────────────────────────────────
-function ChambreCard({ chambre, onSelect }) {
+function ChambreCard({ chambre, onSelect, onDeleteClick }) {
   const sc = statutConfig[chambre.statut];
   return (
     <div
-      onClick={() => onSelect(chambre)}
       className="bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden group"
       style={{ border: "1px solid #ede5db" }}
     >
       {/* Image */}
-      <div className="h-40 relative overflow-hidden">
+      <div className="h-40 relative overflow-hidden" onClick={() => onSelect(chambre)}>
         <img src={`http://localhost:3000${chambre.images[0]}`} className="w-full h-full object-cover" />
         <div className="absolute top-3 left-3">
           <span className="text-xs font-bold text-white bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
@@ -57,7 +124,7 @@ function ChambreCard({ chambre, onSelect }) {
       </div>
 
       {/* Body */}
-      <div className="px-4 pt-2 pb-4">
+      <div className="px-4 pt-2 pb-4" onClick={() => onSelect(chambre)}>
         <div className="flex items-start justify-between mb-2">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "#a8968a" }}>{chambre.type}</p>
@@ -112,12 +179,28 @@ function ChambreCard({ chambre, onSelect }) {
           )}
         </div>
       </div>
+
+      {/* ── Delete button at bottom of card ── */}
+      <div className="px-4 pb-4 pt-0">
+        <button
+          onClick={e => { e.stopPropagation(); onDeleteClick(chambre); }}
+          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all"
+          style={{ background: "#fff1f1", color: "#ef4444", border: "1px solid #fecaca" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.borderColor = "#fca5a5"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "#fff1f1"; e.currentTarget.style.borderColor = "#fecaca"; }}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Supprimer
+        </button>
+      </div>
     </div>
   );
 }
 
 // ── Detail Panel ──────────────────────────────────────────────────────────────
-function DetailPanel({ chambre, onClose }) {
+function DetailPanel({ chambre, onClose, onDeleteClick }) {
   const navigate = useNavigate();
   if (!chambre) return null;
   const sc = statutConfig[chambre.statut];
@@ -231,6 +314,20 @@ function DetailPanel({ chambre, onClose }) {
             >
               ✏️ Modifier la chambre
             </button>
+
+            {/* ── DELETE button in panel ── */}
+            <button
+              onClick={() => onDeleteClick(chambre)}
+              className="w-full py-3 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2"
+              style={{ background: "linear-gradient(135deg,#ef4444,#dc2626)" }}
+              onMouseEnter={e => e.currentTarget.style.filter = "brightness(1.1)"}
+              onMouseLeave={e => e.currentTarget.style.filter = "none"}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Supprimer la chambre
+            </button>
           </div>
         </div>
       </div>
@@ -240,21 +337,25 @@ function DetailPanel({ chambre, onClose }) {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ChambresAdmin() {
-  const [search,       setSearch]       = useState("");
-  const [filterStatut, setFilterStatut] = useState("Tous");
-  const [filterType,   setFilterType]   = useState("Tous");
-  const [viewMode,     setViewMode]     = useState("grid");
-  const [selected,     setSelected]     = useState(null);
-  const { chambres, lenChambres } = useContext(AppContext);
+  const [search,        setSearch]        = useState("");
+  const [filterStatut,  setFilterStatut]  = useState("Tous");
+  const [filterType,    setFilterType]    = useState("Tous");
+  const [viewMode,      setViewMode]      = useState("grid");
+  const [selected,      setSelected]      = useState(null);
+  const [toDelete,      setToDelete]      = useState(null);   // chambre à supprimer
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  // const [toast,         setToast]         = useState(null);   // { type: 'success'|'error', msg }
+  const { toast, ToastPortal } = useToast();
+  const { chambres, lenChambres, fetchChambres } = useContext(AppContext);
   const navigate = useNavigate();
 
   const statuts = ["Tous", "Disponible", "Occupée", "À nettoyer", "Maintenance"];
   const types   = ["Tous", "Standard", "Supérieure", "Deluxe", "Suite", "Suite Présidentielle"];
 
   const filtered = chambres?.filter(c => {
-    const matchSearch  = c.numero.includes(search) || c.type.toLowerCase().includes(search.toLowerCase()) || (c.client && c.client.toLowerCase().includes(search.toLowerCase()));
-    const matchStatut  = filterStatut === "Tous" || c.statut === filterStatut;
-    const matchType    = filterType   === "Tous" || c.type   === filterType;
+    const matchSearch = c.numero.includes(search) || c.type.toLowerCase().includes(search.toLowerCase()) || (c.client && c.client.toLowerCase().includes(search.toLowerCase()));
+    const matchStatut = filterStatut === "Tous" || c.statut === filterStatut;
+    const matchType   = filterType   === "Tous" || c.type   === filterType;
     return matchSearch && matchStatut && matchType;
   });
 
@@ -274,11 +375,41 @@ export default function ChambresAdmin() {
     { label: "Maintenance", val: stats.maintenance, bg: "#ef4444", color: "#fff" },
   ];
 
+  // ── Show toast ──────────────────────────────────────────────────────────────
+  const showToast = (type, msg) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  // ── Delete handler ──────────────────────────────────────────────────────────
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    setDeleteLoading(true);
+    try {
+      await axios.delete(
+        `http://localhost:3000/api/chambres/delete/${toDelete._id}`,
+        { withCredentials: true }
+      );
+     toast.success("success", `Chambre #${toDelete.numero} supprimée avec succès.`);
+      setToDelete(null);
+      setSelected(null);
+      // Rafraîchit la liste depuis le contexte
+      if (typeof fetchChambres === "function") fetchChambres();
+    } catch (err) {
+      toast.error("error", err.response?.data?.message || "Erreur lors de la suppression.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
+    <>
+     <ToastPortal />
+   
     <div className="flex h-screen overflow-hidden" style={{ background: "#faf7f4", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       <main className="flex-1 overflow-y-auto">
 
-        {/* Topbar */}
+        {/* ── Topbar ── */}
         <div
           className="sticky top-0 z-20 px-8 pt-6 pb-4 backdrop-blur-sm"
           style={{ background: "rgba(250,247,244,0.95)", borderBottom: "1px solid #ede5db" }}
@@ -324,7 +455,6 @@ export default function ChambresAdmin() {
               />
             </div>
 
-            {/* Statut filter pills */}
             <div className="flex items-center gap-1 bg-white rounded-xl p-1 shadow-sm" style={{ border: "1px solid #ddd5c8" }}>
               {statuts.map(s => (
                 <button
@@ -353,7 +483,6 @@ export default function ChambresAdmin() {
               {types.map(t => <option key={t}>{t}</option>)}
             </select>
 
-            {/* View toggle */}
             <div className="flex items-center bg-white rounded-xl p-1 shadow-sm gap-1" style={{ border: "1px solid #ddd5c8" }}>
               <button
                 onClick={() => setViewMode("grid")}
@@ -382,11 +511,20 @@ export default function ChambresAdmin() {
             {filtered?.length} chambre{filtered?.length > 1 ? "s" : ""} affichée{filtered?.length > 1 ? "s" : ""}
           </p>
 
+          {/* ── Grid view ── */}
           {viewMode === "grid" ? (
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-              {filtered?.map(c => <ChambreCard key={c._id} chambre={c} onSelect={setSelected} />)}
+              {filtered?.map(c => (
+                <ChambreCard
+                  key={c._id}
+                  chambre={c}
+                  onSelect={setSelected}
+                  onDeleteClick={setToDelete}
+                />
+              ))}
             </div>
           ) : (
+            /* ── List view ── */
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid #ede5db" }}>
               <table className="w-full">
                 <thead>
@@ -403,39 +541,53 @@ export default function ChambresAdmin() {
                     return (
                       <tr
                         key={c._id}
-                        onClick={() => setSelected(c)}
                         className="cursor-pointer transition-colors"
                         style={{ borderBottom: i !== filtered.length - 1 ? "1px solid #faf7f4" : "none" }}
                         onMouseEnter={e => e.currentTarget.style.background = "#faf7f4"}
                         onMouseLeave={e => e.currentTarget.style.background = ""}
                       >
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3" onClick={() => setSelected(c)}>
                           <div className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${tc} flex items-center justify-center text-sm`} />
                             <span className="font-bold" style={{ color: "#2c1a0e" }}>#{c.numero}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: "#6b5b52" }}>{c.type}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: "#6b5b52" }} onClick={() => setSelected(c)}>{c.type}</td>
+                        <td className="px-4 py-3" onClick={() => setSelected(c)}>
                           <span className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full w-fit ${sc.bg} ${sc.text}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />{c.statut}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }}>{c.etage}</td>
-                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }}>{c.capacite} pers.</td>
-                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }}>{c.superficie}m²</td>
-                        <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: "#6b5b52" }}>{c.vue}</td>
-                        <td className="px-4 py-3 text-sm font-bold" style={{ color: "#a07850" }}>€{c.prix_nuit}</td>
-                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }}>
+                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }} onClick={() => setSelected(c)}>{c.etage}</td>
+                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }} onClick={() => setSelected(c)}>{c.capacite} pers.</td>
+                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }} onClick={() => setSelected(c)}>{c.superficie}m²</td>
+                        <td className="px-4 py-3 text-sm whitespace-nowrap" style={{ color: "#6b5b52" }} onClick={() => setSelected(c)}>{c.vue}</td>
+                        <td className="px-4 py-3 text-sm font-bold" style={{ color: "#a07850" }} onClick={() => setSelected(c)}>€{c.prix_nuit}</td>
+                        <td className="px-4 py-3 text-sm" style={{ color: "#6b5b52" }} onClick={() => setSelected(c)}>
                           {c.client || <span style={{ color: "#ddd5c8" }}>—</span>}
                         </td>
                         <td className="px-4 py-3">
-                          <button
-                            className="text-xs font-medium hover:opacity-70 transition-opacity"
-                            style={{ color: "#a07850" }}
-                          >
-                            Voir →
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setSelected(c)}
+                              className="text-xs font-medium hover:opacity-70 transition-opacity"
+                              style={{ color: "#a07850" }}
+                            >
+                              Voir →
+                            </button>
+                            <button
+                              onClick={e => { e.stopPropagation(); setToDelete(c); }}
+                              className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all"
+                              style={{ background: "#fff1f1", color: "#ef4444", border: "1px solid #fecaca" }}
+                              onMouseEnter={e => e.currentTarget.style.background = "#fee2e2"}
+                              onMouseLeave={e => e.currentTarget.style.background = "#fff1f1"}
+                            >
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              Supprimer
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -447,7 +599,34 @@ export default function ChambresAdmin() {
         </div>
       </main>
 
-      {selected && <DetailPanel chambre={selected} onClose={() => setSelected(null)} />}
+      {/* ── Detail panel ── */}
+      {selected && (
+        <DetailPanel
+          chambre={selected}
+          onClose={() => setSelected(null)}
+          onDeleteClick={setToDelete}
+        />
+      )}
+
+      {/* ── Confirm delete modal ── */}
+      {toDelete && (
+        <ConfirmDeleteModal
+          chambre={toDelete}
+          onConfirm={handleDelete}
+          onCancel={() => setToDelete(null)}
+          loading={deleteLoading}
+        />
+      )}
+
+    
+
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+      `}</style>
     </div>
+    </>
   );
 }

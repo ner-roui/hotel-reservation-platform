@@ -30,7 +30,7 @@ export default function ReservationPage() {
 
   // ── Chambres : context (toutes) + résultats API (disponibles) ─────────
   const { chambres } = useContext(AppContext);
-  console.log('chambres=====>', chambres);
+
   const [chambresDisponibles, setChambresDisponibles] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [searchDone,    setSearchDone]    = useState(false);
@@ -61,7 +61,7 @@ export default function ReservationPage() {
   const toggleType  = (t) => setFilterTypes((p) => p.includes(t) ? p.filter((x) => x !== t) : [...p, t]);
   const toggleEquip = (e) => setFilterEquip((p) => p.includes(e) ? p.filter((x) => x !== e) : [...p, e]);
 
-  // ── 🔑 Appel API disponibilité ────────────────────────────────────────
+  // ──  Appel API disponibilité ────────────────────────────────────────
   const rechercherChambres = async () => {
     if (!arrivee || !depart) return;
 
@@ -162,17 +162,8 @@ export default function ReservationPage() {
                 onBlur={(e)  => { e.target.style.borderColor = "#ddd5c8"; e.target.style.boxShadow = "none"; }}
               />
             </div>
-            <div
-              className="relative w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer"
-              style={{ background: "#fff", border: "1px solid #ddd5c8" }}
-            >
-              <span className="text-stone-500">🔔</span>
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-[#f5f0eb]" style={{ background: "#a07850" }} />
-            </div>
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-              style={{ background: "linear-gradient(135deg,#a07850,#7c5a38)" }}
-            >SL</div>
+            
+            
           </div>
         </div>
 

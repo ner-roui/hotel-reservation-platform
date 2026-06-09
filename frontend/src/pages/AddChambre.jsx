@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useToast } from "../components/useToast";
 
 const AMENITIES = [
   { icon: "📶", label: "Wi-Fi" },
@@ -120,6 +121,7 @@ export default function CreateRoomPage() {
   const { id }  = useParams();
   const isEdit  = !!id;
 
+  const { toast, ToastPortal } = useToast();
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   useEffect(() => {
@@ -176,9 +178,9 @@ export default function CreateRoomPage() {
     if (!form.capacity)  missingFields.push("Capacité");
     if (!form.priceWeek) missingFields.push("Prix semaine");
     if (!form.priceWE)   missingFields.push("Prix week-end");
-    if (missingFields.length > 0) return alert("❌ Champs manquants : " + missingFields.join(", "));
-    if (images.length === 0)      return alert("❌ Ajoutez au moins une image");
-    if (!amenities.length)        return alert("❌ Sélectionnez au moins un équipement");
+    if (missingFields.length > 0) return toast.info("❌ Champs manquants : " + missingFields.join(", "));
+    if (images.length === 0)      return toast.info("❌ Ajoutez au moins une image");
+    if (!amenities.length)        return toast.info("❌ Sélectionnez au moins un équipement");
 
     const formData = new FormData();
     formData.append("numero",    form.num);
@@ -196,17 +198,19 @@ export default function CreateRoomPage() {
     try {
       if (id) {
         await axios.put(`http://localhost:3000/api/chambres/update-room/${id}`, formData, { withCredentials: true });
-        alert("✅ Chambre modifiée");
+        toast.success("✅ Chambre modifiée");
       } else {
         await axios.post("http://localhost:3000/api/chambres/add-room", formData, { withCredentials: true });
-        alert("✅ Chambre ajoutée");
+        toast.success("✅ Chambre ajoutée");
       }
     } catch (err) {
-      alert(err.response?.data?.message || "Erreur serveur");
+      toast.error(err.response?.data?.message || "Erreur serveur");
     }
   };
 
   return (
+    <>
+     <ToastPortal />
     <div className="flex min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: "#faf7f4" }}>
       <div className="flex-1 flex flex-col overflow-auto">
         <div className="flex-1 p-7 grid gap-5" style={{ gridTemplateColumns: "1fr 320px", alignItems: "start" }}>
@@ -512,5 +516,6 @@ export default function CreateRoomPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

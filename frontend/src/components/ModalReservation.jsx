@@ -57,7 +57,6 @@ export default function ModalReservation({ chambre, onClose }) {
           return { start, end };
 
         });
-        console.log(parsed);
         setExcludedIntervals(parsed);
       })
       .catch(() => {
