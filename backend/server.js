@@ -31,7 +31,7 @@ app.use(cors({
   origin: function(origin, callback) {
     const allowed = [
       "https://hotel-reservation-platform-one.vercel.app",
-      "https://hotel-reservation-platform-lum.vercel.app/home",
+      "https://hotel-reservation-platform-lum.vercel.app",
       "http://localhost:5173",
     ];
     if (!origin || allowed.includes(origin)) {
