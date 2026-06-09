@@ -178,9 +178,9 @@ export default function CreateRoomPage() {
     if (!form.capacity)  missingFields.push("Capacité");
     if (!form.priceWeek) missingFields.push("Prix semaine");
     if (!form.priceWE)   missingFields.push("Prix week-end");
-    if (missingFields.length > 0) return toast.info("❌ Champs manquants : " + missingFields.join(", "));
-    if (images.length === 0)      return toast.info("❌ Ajoutez au moins une image");
-    if (!amenities.length)        return toast.info("❌ Sélectionnez au moins un équipement");
+    if (missingFields.length > 0) return toast.info(" Champs manquants : " + missingFields.join(", "));
+    if (images.length === 0)      return toast.info(" Ajoutez au moins une image");
+    if (!amenities.length)        return toast.info(" Sélectionnez au moins un équipement");
 
     const formData = new FormData();
     formData.append("numero",    form.num);
@@ -198,11 +198,20 @@ export default function CreateRoomPage() {
     try {
       if (id) {
         await axios.put(`http://localhost:3000/api/chambres/update-room/${id}`, formData, { withCredentials: true });
-        toast.success("✅ Chambre modifiée");
+        toast.success(" Chambre modifiée");
       } else {
         await axios.post("http://localhost:3000/api/chambres/add-room", formData, { withCredentials: true });
-        toast.success("✅ Chambre ajoutée");
+        toast.success(" Chambre ajoutée");
       }
+      setImages([])
+      setForm({
+        num: "", type: "", floor: "", capacity: "", area: "", view: "",
+        description: "", checkin: "14h00", checkout: "12h00",
+        pets: "Non autorisés", smoking: "Non-fumeur", notes: "",
+        bedType: "Grand lit (160×200)", beds: "1", bathroom: "Privée",
+        priceWeek: "", priceWE: "", discount: "",
+      });
+      setAmenities([])
     } catch (err) {
       toast.error(err.response?.data?.message || "Erreur serveur");
     }

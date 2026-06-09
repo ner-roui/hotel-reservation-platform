@@ -31,7 +31,6 @@ const STATUS_ICONS = {
 export const DetailModal = ({ res, onClose }) => {
     if (!res) return null;
   
-    console.log('resssssss===>', res);
     const start = new Date(res.arrivee).toLocaleDateString("fr-FR", {
       weekday: "long", day: "numeric", month: "long", year: "numeric",
     });

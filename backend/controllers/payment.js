@@ -119,7 +119,7 @@ const createPayment = async (req, res) => {
             )
         );
 
-        console.log(`${idsAnnules.length} réservation(s) annulée(s) au profit de ${reservationData._id}`);
+    
       }
 
       // Confirmer la réservation actuelle
@@ -274,7 +274,7 @@ const getTotalPayments = async (req, res) => {
 // GET SUM  PAYMENT FOR THIS MONTH
 // ─────────────────────────────────────
 const getTotalPaymentsThisMonth = async (req, res) => {
-  console.log('getTotalPaymentsThisMonth')
+  
   try {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);

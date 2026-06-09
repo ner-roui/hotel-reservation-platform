@@ -12,7 +12,7 @@ const createReservation = async (req, res) => {
     const { userId } = req.user;
     const { roomId } = req.params;
     const { arrivee, depart, prixParNuit } = req.body;
-    console.log('rrrrrr', roomId)
+   
     const room = await RoomModel.findById(roomId);
 
    
@@ -270,7 +270,7 @@ const cancelReservation = async (req, res) => {
     if (!reservation) {
       return res.status(404).json({ message: "Réservation introuvable" });
     }
-    console.log('user===>', reservation.user ,  userId)
+   
 
     if (reservation.user.toString() !== userId.toString()) {
       return res.status(403).json({ message: "Non autorisé alm3alm" });

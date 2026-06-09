@@ -8,8 +8,7 @@ const Reservation = require('../models/ReservationModel');
 // ─────────────────────────────────────────────
 
 addRoom = async (req, res) => {
-  console.log("BODY:", req.body);
-  console.log("FILES:", req.files);
+ 
   try {
     const {
       numero,
@@ -318,7 +317,7 @@ const updateRoomStatus = async (req, res) => {
 
 
 const getChambresDisponibles = async (req, res) => {
-  console.log('jkasjkadsjksdjkasjkjks')
+ 
   try {
     const {
       arrivee,
@@ -358,7 +357,7 @@ const getChambresDisponibles = async (req, res) => {
       arrivee: { $lt: dateDepart },
       depart: { $gt: dateArrivee },
     });
-    console.log('reserveesIds', reserveesIds);
+    
     const chambres = await ChambreModel.find({
       _id: { $nin: reserveesIds },
       capacite: { $gte: nbVoyageurs },
