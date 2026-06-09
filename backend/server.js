@@ -27,19 +27,14 @@ const app = express();
 
 
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowed = [
-      "http://localhost:5173",
-    ];
-    // Accepte tous les domaines vercel.app de votre projet
-    if (!origin || allowed.includes(origin) || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: [
+    "https://hotel-reservation-platform-one.vercel.app",
+    "https://hotel-reservation-platform-lzxzdolak.vercel.app", // ← ajouter
+    "http://localhost:5173",
+  ],
   credentials: true,
 }));
+
 // Répondre aux requêtes preflight OPTIONS
 app.options("*", cors());
 app.use((req, res, next) => {
