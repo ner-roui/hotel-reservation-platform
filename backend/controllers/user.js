@@ -45,8 +45,8 @@ register = async (req, res) => {
     //  STORE TOKEN IN COOKIE
     res.cookie("token", token, {
       httpOnly: true,        //  impossible à accéder via JS frontend
-      secure: false,         // true en production (HTTPS)
-      sameSite: "lax",       // protection CSRF basique
+      secure: true,        // true en production (HTTPS)
+      sameSite: "none",      // protection CSRF basique
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
     });
 
@@ -108,8 +108,8 @@ login = async (req, res) => {
     // 5. cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // true en production
-      sameSite: "lax",
+      secure: true,  // true en production
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -372,8 +372,8 @@ logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,     
+      sameSite: "none",
     });
 
     return res.status(200).json({
