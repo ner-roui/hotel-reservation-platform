@@ -26,7 +26,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://hotel-reservation-platform-one.vercel.app/"],
+    origin: ["http://localhost:5173", "https://hotel-reservation-platform-one.vercel.app"],
     credentials: true,
   })
 );
