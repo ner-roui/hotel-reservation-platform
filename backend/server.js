@@ -43,7 +43,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// app.options("*", cors());
+app.options("/(.*)", cors());
 
 // Répondre aux requêtes preflight OPTIONS
 app.options("*", cors());
