@@ -150,28 +150,29 @@ hotel-management/
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/votre-username/hotel-management.git
-cd hotel-management
+git clone https://github.com/ner-roui/hotel-reservation-platform
+cd hotel-reservation-platform
 
 # 2. Installer les dépendances du backend
-cd server
+cd backend
 npm install
 
 # 3. Installer les dépendances du frontend
-cd ../client
+cd ../frontend
 npm install
+npm install vite@latest .
 
 # 4. Lancer le backend (depuis /server)
-cd ../server
-npm run dev
+cd ../backend
+node server.js
 
 # 5. Lancer le frontend (depuis /client)
-cd ../client
-npm start
+cd ../frontend
+npm run dev
 ```
 
-L'application sera accessible sur `http://localhost:3000`  
-L'API backend tourne sur `http://localhost:5000`
+L'application sera accessible sur `http://localhost:5173`  
+L'API backend tourne sur `http://localhost:3000`
 
 ---
 
@@ -182,8 +183,10 @@ Créez un fichier `.env` dans le dossier `server/` :
 ```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/hotel_db
+CLIENT_URL=http://localhost:5173
 JWT_SECRET=votre_secret_jwt
-JWT_EXPIRE=7d
+JWT_EXPIRES_IN=7d
+MAX_FILE_SIZE=5242880
 NODE_ENV=development
 ```
 
