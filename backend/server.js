@@ -24,13 +24,16 @@ const app = express();
 // Middlewares
 // ─────────────────────────────────────────────
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://hotel-reservation-platform-one.vercel.app"],
-    credentials: true,
-  })
-);
 
+
+app.use(cors({
+  origin: [
+
+    "https://hotel-reservation-platform-one.vercel.app",
+    "http://localhost:5173",
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
