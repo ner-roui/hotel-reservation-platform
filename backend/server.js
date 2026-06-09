@@ -30,13 +30,11 @@ const app = express();
 app.use(cors({
   origin: function(origin, callback) {
     const allowed = [
+      "https://hotel-reservation-platform-one.vercel.app",
+      "https://hotel-reservation-platform-lum.vercel.app/home",
       "http://localhost:5173",
     ];
-
-    // ✅ Accepte TOUTES les URLs Vercel de ton projet
-    const vercelRegex = /^https:\/\/hotel-reservation-platform[a-z0-9-]*\.vercel\.app$/;
-
-    if (!origin || allowed.includes(origin) || vercelRegex.test(origin)) {
+    if (!origin || allowed.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS: " + origin));
