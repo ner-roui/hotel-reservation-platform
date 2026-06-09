@@ -1,91 +1,90 @@
-# 🏨 Système de Gestion Hôtelière
+# 🏨 Lumière — Système de Gestion Hôtelière
 
-> Application web full-stack développée dans le cadre d'un projet de fin d'études, permettant de gérer les réservations, les chambres, les clients et les opérations internes d'un hôtel.
+<div align="center">
+
+![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Tailwind](https://img.shields.io/badge/Tailwind-3.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+
+*Application full-stack de gestion hôtelière — Projet de Fin d'Études*
+
+</div>
 
 ---
 
 ## 📋 Table des matières
 
-- [Aperçu du projet](#aperçu-du-projet)
-- [Fonctionnalités](#fonctionnalités)
-- [Technologies utilisées](#technologies-utilisées)
-- [Architecture du projet](#architecture-du-projet)
-- [Installation](#installation)
-- [Variables d'environnement](#variables-denvironnement)
-- [Utilisation](#utilisation)
-- [Rôles et permissions](#rôles-et-permissions)
-- [Scénario principal](#scénario-principal)
-- [API Endpoints](#api-endpoints)
-- [Schéma de la base de données](#schéma-de-la-base-de-données)
+- [Aperçu](#-aperçu)
+- [Fonctionnalités](#-fonctionnalités)
+- [Stack technique](#-stack-technique)
+- [Architecture](#-architecture-du-projet)
+- [Installation](#-installation)
+- [Variables d'environnement](#-variables-denvironnement)
+- [Comptes de démo](#-comptes-de-démonstration)
+- [Rôles & Permissions](#-rôles--permissions)
+- [Scénario principal](#-scénario-principal)
+- [Modèles MongoDB](#-modèles-mongodb)
+- [API Endpoints](#-api-endpoints)
 
 ---
 
-## 📌 Aperçu du projet
+## 📌 Aperçu
 
-Ce projet répond aux problématiques rencontrées par de nombreux hôtels utilisant des méthodes manuelles ou des systèmes peu optimisés :
-
-- Erreurs de réservation
-- Mauvaise gestion des chambres
-- Manque de suivi des clients
-- Perte de temps pour les employés
-
-La solution proposée est une **application centralisée et automatisée** couvrant l'ensemble du cycle de vie d'une réservation, du check-in au check-out, avec génération de factures PDF.
+Système centralisé couvrant l'intégralité du cycle de vie d'une réservation hôtelière — de la consultation des chambres jusqu'à la génération de facture PDF — en remplaçant les processus manuels sources d'erreurs.
 
 ---
 
 ## ✨ Fonctionnalités
 
 ### 🔐 Authentification
-- Inscription et connexion sécurisée
-- Gestion des rôles (Admin / Employé / Client)
+- Inscription / connexion sécurisée (JWT + bcrypt)
+- Gestion des rôles : `Admin` · `Réception` · `Client`
 - Protection des routes selon le rôle
 
 ### 🛏️ Gestion des chambres
-- Ajouter, modifier, supprimer une chambre
-- Définir le type et le prix
-- Suivi de l'état en temps réel :
-  - ✅ **Disponible**
-  - 🔴 **Occupée**
-  - 🧹 **À nettoyer**
-- Cycle automatique des états :
-  ```
-  Check-in → Occupée → Check-out → À nettoyer → Nettoyage terminé → Disponible
-  ```
+- CRUD complet (type, prix, superficie, équipements, images)
+- Suivi de l'état en temps réel
 
-### 📅 Gestion des réservations
-- Réservation de chambre (disponibles uniquement)
-- Vérification de disponibilité selon les dates
-- Modification et annulation
-- Historique des réservations
-- Statuts : `en attente` → `confirmée` → `check-in` → `check-out`
+| Statut | Description |
+|--------|-------------|
+| ✅ Disponible | Prête à être réservée |
+| 🔴 Occupée | Client en séjour |
+| 🧹 À nettoyer | Post check-out |
+| 🔧 Maintenance | Hors service temporaire |
 
-### 👥 Gestion des clients
-- Création de compte et connexion
-- Consultation de l'historique des séjours
-- Gestion des informations personnelles
+- Cycle automatique : `Check-in → Occupée → Check-out → À nettoyer → Disponible`
 
-### 💳 Gestion des paiements
-- Simulation de paiement en ligne
-- Génération automatique de facture
-- Téléchargement de la facture en **format PDF**
+### 📅 Réservations
+- Vérification de disponibilité par dates et capacité
+- Statuts : `PENDING → CONFIRMED → CHECKIN → CHECKOUT / CANCELLED`
+- Historique complet par client
+- Calendrier interactif avec dates bloquées
 
-### 📊 Statistiques (Admin)
-- Nombre total de réservations
-- Revenus générés
+### 💳 Paiements
+- Simulation de paiement multi-méthodes
+- Génération automatique de facture PDF
+- Suivi : `En attente → Partiellement payé → Payé`
+
+### 📊 Statistiques Admin
+- Revenus totaux et mensuels
 - Taux d'occupation des chambres
+- Réservations en attente de validation
 
 ---
 
-## 🛠️ Technologies utilisées
+## 🛠️ Stack technique
 
 | Couche | Technologie |
 |--------|-------------|
-| **Frontend** | React.js, CSS / Tailwind, Axios |
+| **Frontend** | React 18, Tailwind CSS, Axios, React Router |
 | **Backend** | Node.js, Express.js |
 | **Base de données** | MongoDB, Mongoose |
-| **Authentification** | JWT (JSON Web Tokens), bcrypt |
-| **Génération PDF** | jsPDF / PDFKit |
-| **Gestion de l'état** | Redux / Context API |
+| **Auth** | JWT, bcrypt |
+| **Upload** | Multer |
+| **PDF** | jsPDF / PDFKit |
+| **État global** | Context API |
 
 ---
 
@@ -93,44 +92,48 @@ La solution proposée est une **application centralisée et automatisée** couvr
 
 ```
 hotel-management/
-├── client/                     # Frontend React
-│   ├── public/
+├── client/                        # Frontend React
 │   └── src/
-│       ├── components/         # Composants réutilisables
-│       ├── pages/              # Pages principales
-│       │   ├── Home.jsx
-│       │   ├── Rooms.jsx
+│       ├── components/            # Composants réutilisables
+│       │   ├── ChambreCard.jsx
+│       │   ├── ModalReservation.jsx
+│       │   ├── Navbar.jsx
+│       │   ├── Footer.jsx
+│       │   └── SidebarReservation.jsx
+│       ├── pages/
+│       │   ├── HomePage.jsx
+│       │   ├── ReservationPage.jsx
 │       │   ├── Login.jsx
 │       │   ├── Register.jsx
-│       │   ├── Reservation.jsx
-│       │   ├── Dashboard/
-│       │   │   ├── AdminDashboard.jsx
-│       │   │   ├── EmployeeDashboard.jsx
-│       │   │   └── ClientDashboard.jsx
-│       ├── context/            # Auth Context / Redux
-│       ├── services/           # Appels API (Axios)
-│       └── utils/
+│       │   ├── PayementPage.jsx
+│       │   └── Dashboard/
+│       │       ├── AdminDashboard.jsx
+│       │       ├── EmployeeDashboard.jsx
+│       │       └── ClientDashboard.jsx
+│       ├── context/
+│       │   └── Context.jsx        # AppContext global
+│       └── services/              # Appels API Axios
 │
-└── server/                     # Backend Node.js / Express
+└── server/                        # Backend Express
     ├── config/
-    │   └── db.js               # Connexion MongoDB
+    │   └── db.js                  # Connexion MongoDB
     ├── controllers/
-    │   ├── authController.js
-    │   ├── roomController.js
-    │   ├── reservationController.js
-    │   ├── clientController.js
-    │   └── paymentController.js
+    │   ├── user.js
+    │   ├── chambre.js
+    │   ├── reservation.js
+    │   └── payment.js
     ├── middleware/
-    │   ├── authMiddleware.js    # Vérification JWT
-    │   └── roleMiddleware.js    # Contrôle d'accès par rôle
+    │   ├── auth.js                # Vérification JWT
+    │   ├── isAdmin.js             # Contrôle rôle Admin
+    │   └── multer.js              # Upload images
     ├── models/
     │   ├── User.js
-    │   ├── Room.js
+    │   ├── Chambre.js
     │   ├── Reservation.js
     │   └── Payment.js
     ├── routes/
-    │   ├── authRoutes.js
-    │   ├── roomRoutes.js
+    │   ├── userRoutes.js
+    │   ├── chambreRoutes.js
     │   ├── reservationRoutes.js
     │   └── paymentRoutes.js
     └── server.js
@@ -142,8 +145,8 @@ hotel-management/
 
 ### Prérequis
 
-- [Node.js](https://nodejs.org/) v18+
-- [MongoDB](https://www.mongodb.com/) (local ou Atlas)
+- **Node.js** v18+
+- **MongoDB** (local ou [Atlas](https://www.mongodb.com/atlas))
 - npm ou yarn
 
 ### Étapes
@@ -153,201 +156,236 @@ hotel-management/
 git clone https://github.com/votre-username/hotel-management.git
 cd hotel-management
 
-# 2. Installer les dépendances du backend
+# 2. Installer et lancer le backend
 cd server
 npm install
-
-# 3. Installer les dépendances du frontend
-cd ../client
-npm install
-
-# 4. Lancer le backend (depuis /server)
-cd ../server
 npm run dev
 
-# 5. Lancer le frontend (depuis /client)
+# 3. Installer et lancer le frontend (nouveau terminal)
 cd ../client
+npm install
 npm start
 ```
 
-L'application sera accessible sur `http://localhost:3000`  
-L'API backend tourne sur `http://localhost:5000`
+> Frontend : `http://localhost:5173` · API : `http://localhost:3000`
 
 ---
 
 ## 🔑 Variables d'environnement
 
-Créez un fichier `.env` dans le dossier `server/` :
+Créez un fichier `.env` dans `/server` :
 
 ```env
-PORT=5000
+PORT=3000
 MONGO_URI=mongodb://localhost:27017/hotel_db
-JWT_SECRET=votre_secret_jwt
+JWT_SECRET=votre_secret_jwt_ici
 JWT_EXPIRE=7d
 NODE_ENV=development
 ```
 
 ---
 
-## 🚀 Utilisation
-
-### Comptes de démonstration
+## 👤 Comptes de démonstration
 
 | Rôle | Email | Mot de passe |
 |------|-------|--------------|
-| Admin | admin@hotel.com | admin123 |
-| Employé | employe@hotel.com | employe123 |
-| Client | client@hotel.com | client123 |
+| 🟡 Admin | admin@hotel.com | admin123 |
+| 🟢 Employé | employe@hotel.com | employe123 |
+| 🔵 Client | client@hotel.com | client123 |
 
 ---
 
-## 👤 Rôles et permissions
+## 👥 Rôles & Permissions
 
 ### 🟡 Administrateur
-- Gestion complète du système
+- Gestion complète : chambres, clients, employés
 - Accès aux statistiques et tableaux de bord
-- Gestion des chambres, clients et employés
 - Consultation de tous les historiques
 
 ### 🟢 Employé (Réception)
-- Gestion des réservations
-- Effectuer check-in / check-out
-- Consulter et mettre à jour l'état des chambres
-- Consultation des chambres à nettoyer
+- Check-in / Check-out
+- Mise à jour du statut des chambres
+- Consultation des chambres à nettoyer / en maintenance
 
 ### 🔵 Client
-- Consultation des chambres, prix et disponibilités (sans connexion)
-- Inscription et connexion
-- Réservation d'une chambre
-- Consultation de ses réservations
-- Effectuer un paiement
-- Télécharger sa facture PDF
+- Consultation des chambres sans connexion
+- Réservation, paiement, téléchargement de facture PDF
 
 ---
 
 ## 🔄 Scénario principal
 
 ```
-1.  Le client visite le site (sans connexion)
-2.  Il consulte les chambres disponibles et les prix
-3.  Il clique sur "Réserver"
-4.  Le système demande une connexion / inscription
-5.  Le client se connecte
-6.  Le système vérifie la disponibilité selon les dates
-7.  Une réservation est créée → statut : "en attente"
-8.  Le client effectue le paiement (simulation)
-9.  La réservation est confirmée → facture PDF générée
-10. L'employé valide la réservation
-11. Le client arrive → Check-in → chambre : "Occupée"
-12. Le client quitte → Check-out → chambre : "À nettoyer"
-13. L'employé consulte les chambres à nettoyer
-14. L'employé met à jour l'état → chambre : "Disponible"
+1.  Client visite le site (sans connexion)
+2.  Consulte les chambres disponibles et les prix
+3.  Clique sur "Réserver" → redirection vers connexion
+4.  Se connecte ou crée un compte
+5.  Sélectionne des dates → vérification disponibilité
+6.  Réservation créée                     [status: PENDING]
+7.  Client effectue le paiement
+8.  Réservation confirmée + facture PDF   [status: CONFIRMED / paymentStatus: PAID]
+9.  Client arrive → Check-in              [status: CHECKIN  | chambre: Occupée]
+10. Client quitte → Check-out             [status: CHECKOUT | chambre: À nettoyer]
+11. Employé nettoie la chambre            [chambre: Disponible]
 ```
+
+---
+
+## 🗄️ Modèles MongoDB
+
+<details>
+<summary><strong>User</strong></summary>
+
+```js
+{
+  name         : String,            // required
+  prenom       : String,            // required
+  email        : String,            // required, unique, lowercase
+  password     : String,            // min 6 caractères, hashé bcrypt
+  role         : 'Admin' | 'Réception' | 'Client',   // default: 'Client'
+  avatar       : String,
+  isActive     : Boolean,           // default: true
+  statut       : 'Actif' | 'Inactif',
+  lastLogin    : Date,
+  reservations : [ObjectId → Reservation]
+}
+```
+</details>
+
+<details>
+<summary><strong>Chambre</strong></summary>
+
+```js
+{
+  numero       : String,            // required
+  type         : 'Standard' | 'Supérieure' | 'Deluxe' | 'Suite' | 'Suite Présidentielle',
+  etage        : Number,
+  capacite     : Number,            // required, min: 1
+  superficie   : Number,
+  vue          : String,
+  prix_nuit    : Number,            // required
+  prix_week    : Number,            // required
+  statut       : 'Disponible' | 'Occupée' | 'À nettoyer' | 'Maintenance' | 'Inactive',
+  images       : [String],
+  equipements  : [{ nom: String, disponible: Boolean }],
+  reservation_active : [reservationActiveSchema],
+  nettoyages   : [nettoyageSchema],
+  maintenances : [maintenanceSchema],
+  meta         : { note_moyenne, total_avis, total_sejours },
+  disponible_reservation : Boolean  // default: true
+}
+```
+</details>
+
+<details>
+<summary><strong>Reservation</strong></summary>
+
+```js
+{
+  user         : ObjectId → User,   // required
+  chambre      : ObjectId → Chambre,// required
+  arrivee      : Date,              // required
+  depart       : Date,              // required
+  nuits        : Number,
+  prixParNuit  : Number,
+  total        : Number,
+  status       : 'PENDING' | 'CONFIRMED' | 'CHECKIN' | 'CHECKOUT' | 'CANCELLED',
+  paymentStatus: 'UNPAID' | 'PAID',
+  paymentMethod: 'Espèces' | 'Carte bancaire' | 'PayPal' | 'Virement bancaire' | 'Stripe',
+  cancelledAt  : Date,
+  cancelledBy  : ObjectId → User
+}
+```
+</details>
+
+<details>
+<summary><strong>Payment</strong></summary>
+
+```js
+{
+  reservation   : ObjectId → Reservation,  // required
+  chambre       : ObjectId → Chambre,       // required
+  user          : ObjectId → User,          // required
+  montant_total : Number,
+  montant_paye  : Number,
+  taxe          : Number,
+  reduction     : Number,
+  methode       : 'Espèces' | 'Carte bancaire' | 'PayPal' | 'Virement bancaire' | 'Stripe',
+  statut        : 'En attente' | 'Partiellement payé' | 'Payé' | 'Remboursé' | 'Échoué',
+  transaction_id: String,
+  date_paiement : Date,
+  date_limite   : Date,
+  facture       : { numero_facture, url_pdf, genere_le },
+  valide_par    : String
+}
+```
+</details>
 
 ---
 
 ## 📡 API Endpoints
 
-### Auth
+### 🔐 Auth — `/api/auth`
+
 | Méthode | Route | Description | Accès |
 |---------|-------|-------------|-------|
-| POST | `/api/auth/register` | Inscription | Public |
-| POST | `/api/auth/login` | Connexion | Public |
-| GET | `/api/auth/me` | Profil connecté | Authentifié |
+| `POST` | `/register` | Inscription | Public |
+| `POST` | `/login` | Connexion | Public |
+| `POST` | `/logout` | Déconnexion | Authentifié |
+| `GET` | `/getuserdata` | Profil connecté | Authentifié |
+| `GET` | `/users` | Lister tous les users | Admin |
+| `POST` | `/users/createuser` | Créer un user | Admin |
+| `PUT` | `/users/updateuser/:id` | Modifier un user | Admin |
+| `DELETE` | `/users/deleteuser/:id` | Supprimer un user | Admin |
 
-### Chambres
+### 🛏️ Chambres — `/api/chambres`
+
 | Méthode | Route | Description | Accès |
 |---------|-------|-------------|-------|
-| GET | `/api/rooms` | Lister toutes les chambres | Public |
-| GET | `/api/rooms/:id` | Détail d'une chambre | Public |
-| POST | `/api/rooms` | Ajouter une chambre | Admin |
-| PUT | `/api/rooms/:id` | Modifier une chambre | Admin |
-| DELETE | `/api/rooms/:id` | Supprimer une chambre | Admin |
-| PATCH | `/api/rooms/:id/status` | Mettre à jour l'état | Employé / Admin |
+| `POST` | `/add-room` | Ajouter une chambre | Admin |
+| `GET` | `/get-room` | Toutes les chambres | Public |
+| `GET` | `/disponibles` | Dispo par dates & capacité | Public |
+| `GET` | `/available` | Chambres disponibles | Public |
+| `GET` | `/not-available` | Chambres occupées | Admin |
+| `GET` | `/to-clean` | Chambres à nettoyer | Employé |
+| `GET` | `/cleaned` | Chambres nettoyées | Employé |
+| `GET` | `/unavailable-dates/:id` | Dates bloquées d'une chambre | Public |
+| `PUT` | `/clean/:id` | Valider le nettoyage | Employé |
+| `GET` | `/:id` | Détail d'une chambre | Public |
+| `PUT` | `/update-room/:id` | Modifier une chambre | Admin |
+| `PATCH` | `/status/:id` | Changer le statut | Employé |
+| `DELETE` | `/delete/:id` | Supprimer une chambre | Admin |
 
-### Réservations
+### 📅 Réservations — `/api/reservations`
+
 | Méthode | Route | Description | Accès |
 |---------|-------|-------------|-------|
-| GET | `/api/reservations` | Toutes les réservations | Admin / Employé |
-| GET | `/api/reservations/my` | Mes réservations | Client |
-| POST | `/api/reservations` | Créer une réservation | Client |
-| PUT | `/api/reservations/:id` | Modifier une réservation | Client / Admin |
-| DELETE | `/api/reservations/:id` | Annuler une réservation | Client / Admin |
-| PATCH | `/api/reservations/:id/checkin` | Check-in | Employé / Admin |
-| PATCH | `/api/reservations/:id/checkout` | Check-out | Employé / Admin |
+| `POST` | `/:roomId` | Créer une réservation | Client |
+| `GET` | `/getallreservations` | Toutes les réservations | Admin |
+| `GET` | `/getreservationsannule` | Réservations annulées | Admin |
+| `GET` | `/myreservation` | Mes réservations | Client |
+| `GET` | `/monthly-revenue` | Revenus mensuels | Admin |
+| `GET` | `/invoice/:id/download` | Télécharger facture PDF | Client |
+| `GET` | `/getonereservation/:id` | Détail (public) | Public |
+| `GET` | `/reservationbyid/:id` | Détail (auth) | Authentifié |
+| `PUT` | `/updatereservation/:id` | Modifier | Client |
+| `DELETE` | `/deletereservation/:id` | Supprimer | Admin |
+| `PATCH` | `/cancel/:id` | Annuler | Client |
+| `PATCH` | `/checkin/:id` | Check-in | Employé |
+| `PATCH` | `/checkout/:id` | Check-out | Employé |
 
-### Paiements
+### 💳 Paiements — `/api/payments`
+
 | Méthode | Route | Description | Accès |
 |---------|-------|-------------|-------|
-| POST | `/api/payments` | Simuler un paiement | Client |
-| GET | `/api/payments/:id/invoice` | Télécharger facture PDF | Client |
-
-### Statistiques
-| Méthode | Route | Description | Accès |
-|---------|-------|-------------|-------|
-| GET | `/api/stats` | Statistiques générales | Admin |
-
----
-
-## 🗄️ Schéma de la base de données
-
-### User
-```js
-{
-  name: String,
-  email: String (unique),
-  password: String (hashé),
-  role: { type: String, enum: ['admin', 'employe', 'client'] },
-  createdAt: Date
-}
-```
-
-### Room
-```js
-{
-  number: String,
-  type: String,        // simple, double, suite...
-  price: Number,
-  status: { type: String, enum: ['disponible', 'occupée', 'à nettoyer'] },
-  description: String,
-  images: [String]
-}
-```
-
-### Reservation
-```js
-{
-  client: { type: ObjectId, ref: 'User' },
-  room: { type: ObjectId, ref: 'Room' },
-  checkIn: Date,
-  checkOut: Date,
-  status: { type: String, enum: ['en attente', 'confirmée', 'annulée', 'terminée'] },
-  totalPrice: Number,
-  createdAt: Date
-}
-```
-
-### Payment
-```js
-{
-  reservation: { type: ObjectId, ref: 'Reservation' },
-  client: { type: ObjectId, ref: 'User' },
-  amount: Number,
-  method: String,
-  status: { type: String, enum: ['en attente', 'payé', 'échoué'] },
-  invoiceUrl: String,
-  paidAt: Date
-}
-```
-
----
-
-## 👨‍💻 Auteurs
-
-Projet de fin d'études — [Votre établissement]
+| `POST` | `/createpayment/:id` | Créer un paiement | Client |
+| `GET` | `/getpayments` | Tous les paiements | Admin |
+| `GET` | `/total` | Total global | Admin |
+| `GET` | `/total-month` | Total du mois | Admin |
+| `GET` | `/pending` | En attente ce mois | Admin |
 
 ---
 
 ## 📄 Licence
 
-Ce projet est réalisé à des fins académiques.
+Projet réalisé à des fins académiques — Projet de Fin d'Études.
