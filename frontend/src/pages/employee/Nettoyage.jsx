@@ -48,7 +48,7 @@ export default function Nettoyage() {
   const handleMark = async (item) => {
     setMarking(item._id);
     await new Promise((r) => setTimeout(r, 600));
-    const res  = await fetch(`http://localhost:3000/api/chambres/clean/${item._id}`, { method: "PUT" });
+    const res  = await fetch(`https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/clean/${item._id}`, { method: "PUT" });
     const data = await res.json();
    
     toast.success(data.message);
@@ -60,9 +60,9 @@ export default function Nettoyage() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const resPending = await axios.get("http://localhost:3000/api/chambres/to-clean");
+        const resPending = await axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/to-clean");
         setPending(resPending.data.chambres);
-        const resDone = await axios.get("http://localhost:3000/api/chambres/cleaned");
+        const resDone = await axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/cleaned");
         setDone(resDone.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des chambres :", error);

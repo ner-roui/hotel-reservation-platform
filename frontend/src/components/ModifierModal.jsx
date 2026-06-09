@@ -62,7 +62,7 @@ export default function ModifierModal({ sejour, onClose }) {
       return;
     }
       const { data } = await axios.put(
-        `http://localhost:3000/api/reservations/updatereservation/${sejour._id}`,
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/updatereservation/${sejour._id}`,
         {
           arrivee:      form.arrivee,
           depart:       form.depart,

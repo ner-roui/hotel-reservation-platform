@@ -168,7 +168,7 @@ npm install vite@latest .
 npm run dev
 ```
 
-> Frontend : `http://localhost:5173` · API : `http://localhost:3000`
+> Frontend : `http://localhost:5173` · API : `https://hotel-reservation-platform-dgtp.onrender.com`
 
 ---
 

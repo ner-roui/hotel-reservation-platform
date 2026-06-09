@@ -153,7 +153,7 @@ export default function ResEmployePage() {
 
   const handleCheckin = async (id) => {
     try {
-      await axios.patch(`http://localhost:3000/api/reservations/checkin/${id}`, {}, { withCredentials: true });
+      await axios.patch(`https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/checkin/${id}`, {}, { withCredentials: true });
         setReservations((prev) =>
         prev.map((r) => {
           if (r._id === id) {
@@ -172,7 +172,7 @@ export default function ResEmployePage() {
 
   const handleCheckout = async (id) => {
     try {
-      await axios.patch(`http://localhost:3000/api/reservations/checkout/${id}`, {}, { withCredentials: true });
+      await axios.patch(`https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/checkout/${id}`, {}, { withCredentials: true });
       setReservations((prev) => prev.map((r) => (r._id === id ? { ...r, status: "CHECKOUT" } : r)));
     } catch (err) { console.error("Checkout error:", err); }
   };

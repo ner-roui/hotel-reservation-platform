@@ -65,7 +65,7 @@ function InvoiceModal({ reservation, onClose }) {
     setError(null);
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/reservations/invoice/${reservation._id}/download`,
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/invoice/${reservation._id}/download`,
         { responseType: "blob", withCredentials: true }
       );
       const url  = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
@@ -338,7 +338,7 @@ function SejourCard({ s, onCancel, onInvoice, onModify, style }) {
         {/* Image strip */}
         <div className="relative overflow-hidden shrink-0" style={{ width: 140 }}>
           <img
-            src={`http://localhost:3000${chambre?.images?.[0]}`}
+            src={`https://hotel-reservation-platform-dgtp.onrender.com${chambre?.images?.[0]}`}
             alt={chambre?.type}
             className="w-full h-full object-cover transition-transform duration-500"
             style={{
@@ -504,7 +504,7 @@ export default function MesSejours() {
 
   const handleCancel = async (id) => {
     try {
-      await axios.patch(`http://localhost:3000/api/reservations/cancel/${id}`, {}, { withCredentials: true });
+      await axios.patch(`https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/cancel/${id}`, {}, { withCredentials: true });
       fetchSejours();
       toast.success("Réservation annulée avec succès.");
      

@@ -220,7 +220,7 @@ export default function StepChambre({ selected, onSelect, voyageurs, currentRese
               {/* Image */}
               <div className="w-20 h-16 shrink-0 overflow-hidden">
                 <img
-                  src={`http://localhost:3000${c.images[0]}`}
+                  src={`https://hotel-reservation-platform-dgtp.onrender.com${c.images[0]}`}
                   alt={c.type}
                   className="w-full h-full object-cover transition-transform duration-300"
                   style={{ transform: isHov ? "scale(1.08)" : "scale(1)", filter: "brightness(.95)" }}

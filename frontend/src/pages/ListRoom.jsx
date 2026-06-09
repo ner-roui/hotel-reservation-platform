@@ -108,7 +108,7 @@ function ChambreCard({ chambre, onSelect, onDeleteClick }) {
     >
       {/* Image */}
       <div className="h-40 relative overflow-hidden" onClick={() => onSelect(chambre)}>
-        <img src={`http://localhost:3000${chambre.images[0]}`} className="w-full h-full object-cover" />
+        <img src={`https://hotel-reservation-platform-dgtp.onrender.com${chambre.images[0]}`} className="w-full h-full object-cover" />
         <div className="absolute top-3 left-3">
           <span className="text-xs font-bold text-white bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
             Ch. {chambre.numero}
@@ -214,7 +214,7 @@ function DetailPanel({ chambre, onClose, onDeleteClick }) {
       >
         {/* Header */}
         <div className="h-40 relative overflow-hidden">
-          <img className="w-full h-full object-cover block" src={`http://localhost:3000${chambre.images[0]}`} />
+          <img className="w-full h-full object-cover block" src={`https://hotel-reservation-platform-dgtp.onrender.com${chambre.images[0]}`} />
           <button
             onClick={onClose}
             className="absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
@@ -387,7 +387,7 @@ export default function ChambresAdmin() {
     setDeleteLoading(true);
     try {
       await axios.delete(
-        `http://localhost:3000/api/chambres/delete/${toDelete._id}`,
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/delete/${toDelete._id}`,
         { withCredentials: true }
       );
      toast.success("success", `Chambre #${toDelete.numero} supprimée avec succès.`);

@@ -63,8 +63,8 @@ const handleSubmit = async (e) => {
 
     const url =
       mode === "login"
-        ? "http://localhost:3000/api/auth/login"
-        : "http://localhost:3000/api/auth/register";
+        ? "https://hotel-reservation-platform-dgtp.onrender.com/api/auth/login"
+        : "https://hotel-reservation-platform-dgtp.onrender.com/api/auth/register";
 
     const payload =
       mode === "login"

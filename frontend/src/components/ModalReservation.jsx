@@ -42,7 +42,7 @@ export default function ModalReservation({ chambre, onClose }) {
     setLoadingDates(true);
     axios
       .get(
-        `http://localhost:3000/api/chambres/unavailable-dates/${chambre._id}`,
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/unavailable-dates/${chambre._id}`,
         { withCredentials: true }
       )
 
@@ -99,7 +99,7 @@ export default function ModalReservation({ chambre, onClose }) {
   const reserver = async (c) => {
     try {
       const { data } = await axios.post(
-        `http://localhost:3000/api/reservations/${c._id}`,
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/${c._id}`,
         { arrivee, depart, prixParNuit: c.prix_nuit },
         { withCredentials: true }
       );
@@ -193,7 +193,7 @@ export default function ModalReservation({ chambre, onClose }) {
               style={{ background: "#faf7f4", border: "1px solid #ede5db" }}
             >
               <img
-                src={`http://localhost:3000${chambre.images[0]}`}
+                src={`https://hotel-reservation-platform-dgtp.onrender.com${chambre.images[0]}`}
                 className="w-28 h-24 object-cover flex-shrink-0"
                 alt=""
                 style={{ filter: "brightness(.95)" }}

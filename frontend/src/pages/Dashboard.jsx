@@ -65,12 +65,12 @@ export default function LumiereHotelsDashboard() {
     const get = (url, setter, key) =>
       axios.get(url).then(({ data }) => setter(data[key])).catch(console.error);
 
-    get("http://localhost:3000/api/chambres/available",                  setAvailableRooms, "chambres");
-    get("http://localhost:3000/api/chambres/to-clean",                   setRoomsToClean,   "chambres");
-    get("http://localhost:3000/api/chambres/not-available",              setOccupiedRooms,  "chambres");
-    get("http://localhost:3000/api/payments/total",                      setTotal,          "totalMontantPaye");
-    get("http://localhost:3000/api/reservations/getreservationsannule",  setResAnnule,      "reservations");
-    axios.get("http://localhost:3000/api/reservations/monthly-revenue")
+    get("https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/available",                  setAvailableRooms, "chambres");
+    get("https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/to-clean",                   setRoomsToClean,   "chambres");
+    get("https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/not-available",              setOccupiedRooms,  "chambres");
+    get("https://hotel-reservation-platform-dgtp.onrender.com/api/payments/total",                      setTotal,          "totalMontantPaye");
+    get("https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/getreservationsannule",  setResAnnule,      "reservations");
+    axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/monthly-revenue")
       .then(({ data }) => setRevenueData(data.revenueData)).catch(console.error);
   }, []);
 

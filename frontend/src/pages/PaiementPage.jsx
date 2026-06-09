@@ -154,7 +154,7 @@ function Summary({ reservation }) {
       <div className="h-px" style={{ background: "#ede5db" }} />
 
       <div className="overflow-hidden" style={{ height: 140 }}>
-        <img src={`http://localhost:3000${reservation?.chambre?.images?.[0]}`} alt={reservation?.chambre.type} className="w-full h-full object-cover" style={{ filter: "brightness(.92)" }} />
+        <img src={`https://hotel-reservation-platform-dgtp.onrender.com${reservation?.chambre?.images?.[0]}`} alt={reservation?.chambre.type} className="w-full h-full object-cover" style={{ filter: "brightness(.92)" }} />
       </div>
 
       <div className="p-5">
@@ -287,7 +287,7 @@ export default function PaiementPage() {
         setLoading(true);
 
         const {data} = await axios.get(
-          `http://localhost:3000/api/reservations/getonereservation/${id}`
+          `https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/getonereservation/${id}`
         );
         setReservation(data.reservation);
       } catch (err) {
@@ -313,7 +313,7 @@ export default function PaiementPage() {
     try {
       setPaying(true);
       const res = await axios.post(
-        `http://localhost:3000/api/payments/createpayment/${id}`,
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/payments/createpayment/${id}`,
         {
           methode:
             method === "carte"   ? "Carte bancaire" :

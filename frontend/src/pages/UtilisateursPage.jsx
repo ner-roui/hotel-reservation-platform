@@ -392,7 +392,7 @@ export default function UtilisateursPage() {
   };
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/auth/users").then(({ data }) => {
+    axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/auth/users").then(({ data }) => {
       setUsers(data.users.map(u => ({
         id: u._id, prenom: u.prenom, name: u.name, email: u.email,
         role: u.role || "Client", statut: u.status || "Actif",
@@ -406,12 +406,12 @@ export default function UtilisateursPage() {
   const handleSave = async (u) => {
     try {
       if (editTarget) {
-        const { data } = await axios.put(`http://localhost:3000/api/auth/users/updateuser/${u.id}`, { prenom: u.prenom, name: u.name, email: u.email, role: u.role || "Client", statut: u.status || "Actif" });
+        const { data } = await axios.put(`https://hotel-reservation-platform-dgtp.onrender.com/api/auth/users/updateuser/${u.id}`, { prenom: u.prenom, name: u.name, email: u.email, role: u.role || "Client", statut: u.status || "Actif" });
         if (!data.success) throw new Error(data.message);
         setUsers(prev => prev.map(x => x.id === u.id ? u : x));
         showToast(`${u.prenom} ${u.name} mis à jour`);
       } else {
-        const { data } = await axios.post("http://localhost:3000/api/auth/users/createuser", u);
+        const { data } = await axios.post("https://hotel-reservation-platform-dgtp.onrender.com/api/auth/users/createuser", u);
         if (!data.success) throw new Error(data.message);
         setUsers(prev => [...prev, { id: data.user._id, ...u }]);
         showToast(`${u.prenom} ${u.name} créé avec succès`);
@@ -425,7 +425,7 @@ export default function UtilisateursPage() {
   const handleDelete = async (id) => {
     try {
       const u = users.find(x => x.id === id);
-      const { data } = await axios.delete(`http://localhost:3000/api/auth/users/deleteuser/${id}`);
+      const { data } = await axios.delete(`https://hotel-reservation-platform-dgtp.onrender.com/api/auth/users/deleteuser/${id}`);
       if (!data.success) throw new Error(data.message);
       setUsers(prev => prev.filter(x => x.id !== id));
       setDeleteTarget(null);

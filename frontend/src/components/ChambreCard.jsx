@@ -82,7 +82,7 @@ export default function ChambreCard({ c, onReserver }) {
       {/* Image */}
       <div className="relative overflow-hidden" style={{ height: 200 }}>
         <img
-          src={`http://localhost:3000${c.images[0]}`}
+          src={`https://hotel-reservation-platform-dgtp.onrender.com${c.images[0]}`}
           alt={c.type}
           className="w-full h-full object-cover transition-transform duration-500"
           style={{ transform: hovered ? "scale(1.06)" : "scale(1)" }}

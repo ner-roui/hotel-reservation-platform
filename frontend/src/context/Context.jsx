@@ -33,7 +33,7 @@ export default function ContextProvider({ children }) {
   const getUserData = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/auth/getuserdata",
+        "https://hotel-reservation-platform-dgtp.onrender.com/api/auth/getuserdata",
         { withCredentials: true }
       );
       setUser(data.user);
@@ -49,7 +49,7 @@ export default function ContextProvider({ children }) {
   const fetchChambres = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/chambres/get-room"
+        "https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/get-room"
       );
       setChambres(data.chambres);
       setLenChambres(data.count);
@@ -62,7 +62,7 @@ export default function ContextProvider({ children }) {
   const fetchSejours = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/reservations/myreservation",
+        "https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/myreservation",
         { withCredentials: true }
       );
       setSejours(data.reservations);
@@ -75,7 +75,7 @@ export default function ContextProvider({ children }) {
   const fetchAllReservations = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/reservations/getallreservations",
+        "https://hotel-reservation-platform-dgtp.onrender.com/api/reservations/getallreservations",
         { withCredentials: true }
       );
       setReservations(data.reservations);

@@ -68,7 +68,7 @@ export default function ReservationPage() {
     setLoadingSearch(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/chambres/disponibles?arrivee=${arrivee}&depart=${depart}&capacite=${voyageurs}`
+        `https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/disponibles?arrivee=${arrivee}&depart=${depart}&capacite=${voyageurs}`
       );
 
       if (!response.ok) {

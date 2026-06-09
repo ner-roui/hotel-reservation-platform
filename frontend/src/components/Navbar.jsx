@@ -18,7 +18,7 @@ export default function Navbar() {
     try {
       setLoggingOut(true);
       await axios.post(
-        "http://localhost:3000/api/auth/logout",
+        "https://hotel-reservation-platform-dgtp.onrender.com/api/auth/logout",
         {},
         { withCredentials: true }
       );

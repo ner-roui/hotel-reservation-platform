@@ -197,7 +197,7 @@ const handleStatusChange = async (roomId, newStatus) => {
   try {
 
     await axios.patch(
-      `http://localhost:3000/api/chambres/status/${roomId}`,
+      `https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/status/${roomId}`,
       { statut: newStatus },
       { withCredentials: true }
     );

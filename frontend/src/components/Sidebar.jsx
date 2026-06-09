@@ -19,7 +19,7 @@ export default function Sidebar() {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/api/auth/logout",
+        "https://hotel-reservation-platform-dgtp.onrender.com/api/auth/logout",
         {},
         {
           withCredentials: true,

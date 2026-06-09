@@ -126,7 +126,7 @@ export default function CreateRoomPage() {
 
   useEffect(() => {
     if (!id) return;
-    axios.get(`http://localhost:3000/api/chambres/${id}`).then(({ data }) => {
+    axios.get(`https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/${id}`).then(({ data }) => {
       const room = data.chambre;
       setForm({
         num: room.numero || "", type: room.type || "", floor: room.etage || "",
@@ -138,7 +138,7 @@ export default function CreateRoomPage() {
         priceWeek: room.prix_nuit || "", priceWE: room.prix_week || "", discount: room.discount || "",
       });
       setAmenities(room.equipements.filter(e => e.disponible).map(e => e.nom));
-      setImages(room.images.map(img => ({ src: `http://localhost:3000${img}`, file: null, name: img })));
+      setImages(room.images.map(img => ({ src: `https://hotel-reservation-platform-dgtp.onrender.com${img}`, file: null, name: img })));
       setTags(room.tags || []);
     }).catch(console.error);
   }, [id]);
@@ -197,10 +197,10 @@ export default function CreateRoomPage() {
 
     try {
       if (id) {
-        await axios.put(`http://localhost:3000/api/chambres/update-room/${id}`, formData, { withCredentials: true });
+        await axios.put(`https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/update-room/${id}`, formData, { withCredentials: true });
         toast.success(" Chambre modifiée");
       } else {
-        await axios.post("http://localhost:3000/api/chambres/add-room", formData, { withCredentials: true });
+        await axios.post("https://hotel-reservation-platform-dgtp.onrender.com/api/chambres/add-room", formData, { withCredentials: true });
         toast.success(" Chambre ajoutée");
       }
       setImages([])

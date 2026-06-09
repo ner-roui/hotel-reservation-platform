@@ -221,11 +221,11 @@ export default function PaiementsPage() {
   const [currentPage,  setCurrentPage]  = useState(1);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/payments/total-month")
+    axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/payments/total-month")
       .then(({ data }) => setTotal(data.totalMontantPaye)).catch(console.error);
-    axios.get("http://localhost:3000/api/payments/pending")
+    axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/payments/pending")
       .then(({ data }) => setPending(data.totalPending)).catch(console.error);
-    axios.get("http://localhost:3000/api/payments/getpayments")
+    axios.get("https://hotel-reservation-platform-dgtp.onrender.com/api/payments/getpayments")
       .then(({ data }) => setPayments(data.payments)).catch(console.error);
   }, []);
 

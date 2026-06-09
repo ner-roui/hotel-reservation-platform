@@ -126,7 +126,7 @@ export default function StepRecap({ res, chambre, dateIn, dateOut, voyageurs, no
         style={{ background: "#faf7f4", border: "1px solid #ddd5c8" }}
       >
         <img
-          src={`http://localhost:3000${chambre.images?.[0]}`}
+          src={`https://hotel-reservation-platform-dgtp.onrender.com${chambre.images?.[0]}`}
           className="w-28 h-24 object-cover shrink-0"
           alt=""
           style={{ filter: "brightness(.95)" }}
