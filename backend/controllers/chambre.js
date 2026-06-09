@@ -312,7 +312,7 @@ const updateRoomStatus = async (req, res) => {
 
 
 // GET /api/chambres/disponibles
-// Query params: arrivee, depart, adults, children, rooms
+
 
 
 
@@ -354,10 +354,11 @@ const getChambresDisponibles = async (req, res) => {
 
     const reserveesIds = await Reservation.distinct('chambre', {
       statut: { $ne: 'annulee' },
+      paymentStatus : "PAID",
       arrivee: { $lt: dateDepart },
       depart: { $gt: dateArrivee },
     });
-
+    console.log('reserveesIds', reserveesIds);
     const chambres = await ChambreModel.find({
       _id: { $nin: reserveesIds },
       capacite: { $gte: nbVoyageurs },

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 register = async (req, res) => {
   try {
-    console.log(req.body)
+ 
     const { name, prenom, email, password, role } = req.body;
 
     // validation
@@ -191,29 +191,26 @@ const createUser = async (req, res) => {
   }
 };
 
-
 const getuserData = async (req, res) => {
   try {
-    const { userId } = req.user;
-    console.log(userId)
+   
+    const userId = req.user?.id || req.user?.userId || req.user?._id;
 
+    if (!userId) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+
+    
     const user = await User.findById(userId).select("-password");
 
     if (!user) {
-      return res.status(404).json({
-        message: "Utilisateur introuvable",
-      });
+      return res.status(404).json({ message: "Utilisateur introuvable" });
     }
 
-    //  ICI tu transformes le user
-    const userWithoutPassword = user.toObject();
-    delete userWithoutPassword.password;
-
-    //  puis tu retournes la réponse SANS password
-    return res.status(201).json({
+  
+    return res.status(200).json({
       success: true,
-      message: "Utilisateur créé avec succès",
-      user: userWithoutPassword
+      user,
     });
 
   } catch (error) {
@@ -223,7 +220,6 @@ const getuserData = async (req, res) => {
     });
   }
 };
-
 
 const deleteUser = async (req, res) => {
   try {
