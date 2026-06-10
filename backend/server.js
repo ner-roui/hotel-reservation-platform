@@ -9,10 +9,10 @@ require("dotenv").config();
 
 dns.setDefaultResultOrder("ipv4first");
 
-const chambreRoutes     = require("./routes/chambreRoutes");
-const authRoutes        = require("./routes/userRoutes");
-const reservationRoute  = require("./routes/reservation");
-const paymentRoute      = require("./routes/paymentRoutes");
+const chambreRoutes    = require("./routes/chambreRoutes");
+const authRoutes       = require("./routes/userRoutes");
+const reservationRoute = require("./routes/reservation");
+const paymentRoute     = require("./routes/paymentRoutes");
 
 const PORT       = process.env.PORT || 3000;
 const RENDER_URL = "https://hotel-reservation-platform-dgtp.onrender.com";
@@ -40,7 +40,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // preflight pour toutes les routes
+app.options("(.*)", cors(corsOptions)); // ← fix: (.*) au lieu de *
 
 // ─────────────────────────────────────────────
 // Middlewares
@@ -82,7 +82,7 @@ function startKeepAlive() {
       .on("error", (err) => {
         console.error("[keep-alive] erreur:", err.message);
       });
-  }, 14 * 60 * 1000); // toutes les 14 minutes
+  }, 14 * 60 * 1000);
 }
 
 // ─────────────────────────────────────────────
@@ -95,7 +95,7 @@ mongoose
     console.log("✅ MongoDB connected");
 
     app.listen(PORT, () => {
-      console.log(` Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
 
       if (process.env.NODE_ENV === "production") {
         startKeepAlive();
