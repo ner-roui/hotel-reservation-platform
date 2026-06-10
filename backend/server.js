@@ -39,8 +39,8 @@ const corsOptions = {
   credentials: true,
 };
 
+// app.use(cors()) intercepts OPTIONS preflight automatically — no app.options() needed
 app.use(cors(corsOptions));
-app.options("(.*)", cors(corsOptions)); // ← fix: (.*) au lieu de *
 
 // ─────────────────────────────────────────────
 // Middlewares
