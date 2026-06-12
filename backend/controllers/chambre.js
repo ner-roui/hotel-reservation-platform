@@ -8,7 +8,7 @@ const Reservation = require('../models/ReservationModel');
 // ─────────────────────────────────────────────
 
 addRoom = async (req, res) => {
- 
+
   try {
     const {
       numero,
